@@ -1,0 +1,6 @@
+{
+  "name": "Calisthenics Progressions & PB Tracker",
+  "description": "Master calisthenics skill trees with detailed progressions, pass criteria, biomechanics illustrations, and personal best (PB) progress graphs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
