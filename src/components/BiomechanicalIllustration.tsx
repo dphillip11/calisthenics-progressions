@@ -683,6 +683,299 @@ function renderFigureContent(
         </g>
       );
 
+    // ----------------- WARMUP & STRETCHING ILLUSTRATIONS -----------------
+    case 'dead-hang':
+    case 'scapular-pullup':
+      return (
+        <g id="dead-hang-svg">
+          <line x1="40" y1="25" x2="240" y2="25" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="110" cy="25" r="4" fill={apparatus} />
+          <circle cx="170" cy="25" r="4" fill={apparatus} />
+          <path d="M 110 25 L 126 55" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <path d="M 170 25 L 154 55" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <circle cx="140" cy="40" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 126 55 L 132 120 M 154 55 L 148 120" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 128 62 L 132 110 M 152 62 L 148 110" stroke={highlight} strokeWidth="4" strokeLinecap="round" filter={`url(#${glowId})`} />
+          )}
+          <path d="M 132 120 L 135 180 M 148 120 L 145 180" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <text x="100" y="195" fill={highlight} fontSize="8" fontFamily="sans-serif">DECOMPRESS</text>
+        </g>
+      );
+
+    case 'wrist-rocks':
+    case 'wrist-flexor':
+    case 'wrist-extensor':
+    case 'finger-waves':
+      return (
+        <g id="wrist-prep-svg">
+          <line x1="40" y1="160" x2="240" y2="160" stroke={apparatus} strokeWidth="4" />
+          <circle cx="180" cy="70" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 175 82 L 135 110" stroke={primary} strokeWidth="8" strokeLinecap="round" />
+          <path d="M 135 110 L 100 155 L 75 158" stroke={primary} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="100" cy="155" r="4" fill={highlight} />
+          {showHighlight && (
+            <path d="M 115 130 L 100 155 L 85 158" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <path d="M 135 110 L 155 160" stroke={secondary} strokeWidth="6" strokeLinecap="round" />
+          <text x="70" y="145" fill={highlight} fontSize="8" fontFamily="sans-serif">WRIST ANGLE</text>
+        </g>
+      );
+
+    case 'chest-stretch':
+    case 'shoulder-dislocates':
+    case 'arm-swings':
+      return (
+        <g id="chest-shoulder-stretch-svg">
+          <line x1="40" y1="20" x2="40" y2="180" stroke={apparatus} strokeWidth="5" strokeLinecap="round" />
+          <circle cx="130" cy="55" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 130 68 L 130 120" stroke={primary} strokeWidth="8" strokeLinecap="round" />
+          <path d="M 40 70 L 85 70 L 126 72" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <path d="M 130 72 L 165 95" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 90 70 L 128 72" stroke={highlight} strokeWidth="4" filter={`url(#${glowId})`} />
+          )}
+          <path d="M 130 120 L 110 165 M 130 120 L 150 165" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <text x="75" y="60" fill={highlight} fontSize="8" fontFamily="sans-serif">PECTORAL / BICEPS</text>
+        </g>
+      );
+
+    case 'puppy-pose':
+    case 'tricep-stretch':
+      return (
+        <g id="puppy-pose-svg">
+          <line x1="30" y1="160" x2="250" y2="160" stroke={apparatus} strokeWidth="4" />
+          <circle cx="95" cy="140" r="9" fill="none" stroke={primary} strokeWidth="3.5" />
+          {/* Arms stretched far out */}
+          <path d="M 95 145 L 45 158" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Angled torso melting to floor */}
+          <path d="M 98 142 L 160 115" stroke={primary} strokeWidth="7" strokeLinecap="round" />
+          {/* Knees stacked under hips */}
+          <path d="M 160 115 L 160 158 L 190 158" stroke={primary} strokeWidth="6" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 90 145 L 135 125" stroke={highlight} strokeWidth="4" filter={`url(#${glowId})`} />
+          )}
+          <text x="90" y="115" fill={highlight} fontSize="8" fontFamily="sans-serif">THORACIC / LATS</text>
+        </g>
+      );
+
+    case 'cat-cow':
+    case 'thoracic-rotations':
+    case 'scapular-pushup':
+      return (
+        <g id="quadruped-mobility-svg">
+          <line x1="30" y1="160" x2="250" y2="160" stroke={apparatus} strokeWidth="4" />
+          <circle cx="80" cy="105" r="9" fill="none" stroke={primary} strokeWidth="3.5" />
+          {/* Front arms */}
+          <path d="M 90 115 L 90 158" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Curved spine */}
+          <path d="M 90 115 Q 135 85 175 115" stroke={primary} strokeWidth="7" fill="none" />
+          {/* Rear hips & thighs */}
+          <path d="M 175 115 L 175 158" stroke={primary} strokeWidth="6" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 100 110 Q 135 88 165 110" stroke={highlight} strokeWidth="3.5" fill="none" filter={`url(#${glowId})`} />
+          )}
+          <text x="110" y="80" fill={highlight} fontSize="8" fontFamily="sans-serif">SPINAL ARTICULATION</text>
+        </g>
+      );
+
+    case 'cobra-stretch':
+      return (
+        <g id="cobra-stretch-svg">
+          <line x1="30" y1="160" x2="250" y2="160" stroke={apparatus} strokeWidth="4" />
+          <circle cx="90" cy="75" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Arms pressing up */}
+          <path d="M 95 90 L 95 158" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Arching chest and hips grounded */}
+          <path d="M 95 90 Q 135 125 170 155" stroke={primary} strokeWidth="7" fill="none" />
+          <path d="M 170 155 L 235 158" stroke={primary} strokeWidth="6" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 100 100 Q 135 130 160 150" stroke={highlight} strokeWidth="4" fill="none" filter={`url(#${glowId})`} />
+          )}
+          <text x="105" y="85" fill={highlight} fontSize="8" fontFamily="sans-serif">ANTERIOR CORE</text>
+        </g>
+      );
+
+    case 'couch-stretch':
+    case 'pigeon-pose':
+      return (
+        <g id="hip-flexor-stretch-svg">
+          <line x1="30" y1="160" x2="250" y2="160" stroke={apparatus} strokeWidth="4" />
+          <circle cx="120" cy="75" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 120 88 L 120 128" stroke={primary} strokeWidth="8" strokeLinecap="round" />
+          {/* Front lunging leg */}
+          <path d="M 120 128 L 80 135 L 80 158" stroke={primary} strokeWidth="6" strokeLinecap="round" />
+          {/* Back knee on ground, foot up */}
+          <path d="M 120 128 L 165 158 L 195 125" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 125 125 L 155 150" stroke={highlight} strokeWidth="4" filter={`url(#${glowId})`} />
+          )}
+          <text x="135" y="115" fill={highlight} fontSize="8" fontFamily="sans-serif">HIP FLEXOR / PSOAS</text>
+        </g>
+      );
+
+    case 'pike-fold':
+    case 'straddle-pancake':
+      return (
+        <g id="pike-fold-svg">
+          <line x1="30" y1="160" x2="250" y2="160" stroke={apparatus} strokeWidth="4" />
+          <circle cx="155" cy="120" r="9" fill="none" stroke={primary} strokeWidth="3.5" />
+          {/* Hips seated */}
+          <circle cx="210" cy="155" r="5" fill={primary} />
+          {/* Legs flat on floor */}
+          <path d="M 210 155 L 75 155" stroke={primary} strokeWidth="6.5" strokeLinecap="round" />
+          {/* Torso folded forward */}
+          <path d="M 205 150 L 135 125" stroke={primary} strokeWidth="6.5" strokeLinecap="round" />
+          {/* Arms reaching for toes */}
+          <path d="M 140 128 L 80 152" stroke={primary} strokeWidth="4.5" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 200 155 L 85 155" stroke={highlight} strokeWidth="4" filter={`url(#${glowId})`} />
+          )}
+          <text x="110" y="105" fill={highlight} fontSize="8" fontFamily="sans-serif">POSTERIOR CHAIN</text>
+        </g>
+      );
+
+    case 'boxer-bounce':
+    case 'jumping-jacks':
+    case 'leg-swings':
+    case 'calf-stretch':
+      return (
+        <g id="dynamic-standing-svg">
+          <line x1="40" y1="170" x2="240" y2="170" stroke={apparatus} strokeWidth="4" />
+          <circle cx="140" cy="50" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 140 63 L 140 115" stroke={primary} strokeWidth="8" strokeLinecap="round" />
+          {/* Dynamic arms */}
+          <path d="M 140 75 L 105 50 M 140 75 L 175 50" stroke={primary} strokeWidth="4.5" strokeLinecap="round" />
+          {/* Dynamic legs */}
+          <path d="M 140 115 L 115 168 M 140 115 L 165 168" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {showHighlight && (
+            <circle cx="140" cy="90" r="12" stroke={highlight} strokeWidth="2" strokeDasharray="3 3" filter={`url(#${glowId})`} />
+          )}
+          <text x="100" y="185" fill={highlight} fontSize="8" fontFamily="sans-serif">DYNAMIC ACTIVATION</text>
+        </g>
+      );
+
+    // ----------------- BEGINNER PULL PROGRESSION SPECIFIC ILLUSTRATIONS -----------------
+    case 'incline-bodyweight-row':
+      return (
+        <g id="incline-bodyweight-row-svg">
+          {/* Higher bar apparatus at 50 degrees */}
+          <line x1="50" y1="45" x2="230" y2="45" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="120" cy="45" r="4" fill={apparatus} />
+          {/* Arms */}
+          <path d="M 120 45 L 130 75" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Head */}
+          <circle cx="105" cy="65" r="11" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Angled torso at ~50 degrees */}
+          <path d="M 115 75 L 160 125" stroke={primary} strokeWidth="11" strokeLinecap="round" />
+          {/* Legs straight to floor */}
+          <path d="M 160 125 L 205 165" stroke={primary} strokeWidth="7.5" strokeLinecap="round" />
+          <line x1="30" y1="168" x2="250" y2="168" stroke={secondary} strokeWidth="2" strokeDasharray="4 4" />
+          {showHighlight && (
+            <line x1="120" y1="80" x2="155" y2="120" stroke={highlight} strokeWidth="4" strokeLinecap="round" filter={`url(#${glowId})`} />
+          )}
+          <text x="50" y="38" fill={highlight} fontSize="8" fontFamily="sans-serif">HIGH VOLUME ANGLE</text>
+        </g>
+      );
+
+    case 'jackknife-pullup':
+      return (
+        <g id="jackknife-pullup-svg">
+          {/* Bar */}
+          <line x1="40" y1="35" x2="240" y2="35" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="110" cy="35" r="4" fill={apparatus} />
+          <circle cx="170" cy="35" r="4" fill={apparatus} />
+          {/* Arms pulling */}
+          <path d="M 110 35 L 125 68 M 170 35 L 155 68" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <circle cx="140" cy="50" r="11" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Vertical torso */}
+          <path d="M 125 68 L 132 120 M 155 68 L 148 120" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Elevated box / floor support under feet in front */}
+          <rect x="180" y="125" width="55" height="40" fill={apparatus} rx="4" />
+          {/* Legs extended forward in 90 degree jackknife */}
+          <path d="M 140 120 L 195 125" stroke={primary} strokeWidth="6" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 126 75 L 132 115 M 154 75 L 148 115" stroke={highlight} strokeWidth="4" strokeLinecap="round" filter={`url(#${glowId})`} />
+          )}
+          <text x="60" y="105" fill={highlight} fontSize="8" fontFamily="sans-serif">FOOT ASSISTED</text>
+        </g>
+      );
+
+    case 'band-assisted-pullup':
+      return (
+        <g id="band-assisted-pullup-svg">
+          {/* Bar */}
+          <line x1="40" y1="30" x2="240" y2="30" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="110" cy="30" r="4" fill={apparatus} />
+          <circle cx="170" cy="30" r="4" fill={apparatus} />
+          {/* Elastic loop band from bar around feet */}
+          <path d="M 140 30 Q 115 110 138 175 Q 165 110 140 30" stroke="#10B981" strokeWidth="3" strokeDasharray="3 3" fill="none" />
+          {/* Arms pulling */}
+          <path d="M 110 30 L 124 65 M 170 30 L 156 65" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <circle cx="140" cy="45" r="11" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Torso */}
+          <path d="M 124 65 L 132 118 M 156 65 L 148 118" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Straight legs in band */}
+          <path d="M 132 118 L 136 172 M 148 118 L 144 172" stroke={primary} strokeWidth="4.5" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 125 72 L 131 112 M 155 72 L 149 112" stroke={highlight} strokeWidth="4" strokeLinecap="round" filter={`url(#${glowId})`} />
+          )}
+          <text x="65" y="150" fill="#10B981" fontSize="8" fontFamily="sans-serif">BAND ASSISTANCE</text>
+        </g>
+      );
+
+    case 'flexed-arm-hang':
+      return (
+        <g id="flexed-arm-hang-svg">
+          {/* Bar */}
+          <line x1="40" y1="40" x2="240" y2="40" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          {/* Head well above bar */}
+          <circle cx="140" cy="20" r="11" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Fully flexed elbows locked tight */}
+          <path d="M 115 40 L 122 32 L 128 55" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <path d="M 165 40 L 158 32 L 152 55" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Body held static */}
+          <path d="M 128 55 L 133 110 M 152 55 L 147 110" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <path d="M 133 110 L 136 165 M 147 110 L 144 165" stroke={primary} strokeWidth="4.5" strokeLinecap="round" />
+          {showHighlight && (
+            <>
+              <circle cx="120" cy="36" r="6" fill={highlight} filter={`url(#${glowId})`} />
+              <circle cx="160" cy="36" r="6" fill={highlight} filter={`url(#${glowId})`} />
+              <path d="M 128 62 L 133 105 M 152 62 L 147 105" stroke={highlight} strokeWidth="3.5" filter={`url(#${glowId})`} />
+            </>
+          )}
+          <text x="65" y="60" fill={highlight} fontSize="8" fontFamily="sans-serif">ISOMETRIC LOCKOFF</text>
+        </g>
+      );
+
+    case 'chin-up':
+      return (
+        <g id="chin-up-svg">
+          {/* Bar */}
+          <line x1="40" y1="32" x2="240" y2="32" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          {/* Supinated Hands close grip */}
+          <circle cx="125" cy="32" r="4" fill={apparatus} />
+          <circle cx="155" cy="32" r="4" fill={apparatus} />
+          {/* Arms pulling supinated */}
+          <path d="M 125 32 L 130 60 M 155 32 L 150 60" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Head */}
+          <circle cx="140" cy="38" r="11" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Torso */}
+          <path d="M 130 60 L 134 115 M 150 60 L 146 115" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Legs */}
+          <path d="M 134 115 L 136 170 M 146 115 L 144 170" stroke={primary} strokeWidth="4.5" strokeLinecap="round" />
+          {showHighlight && (
+            <>
+              {/* Highlight Biceps & Lats */}
+              <line x1="126" y1="42" x2="130" y2="58" stroke={highlight} strokeWidth="4.5" strokeLinecap="round" filter={`url(#${glowId})`} />
+              <line x1="154" y1="42" x2="150" y2="58" stroke={highlight} strokeWidth="4.5" strokeLinecap="round" filter={`url(#${glowId})`} />
+              <path d="M 130 68 L 134 105 M 150 68 L 146 105" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+            </>
+          )}
+          <text x="60" y="55" fill={highlight} fontSize="8" fontFamily="sans-serif">SUPINATED BICEP</text>
+        </g>
+      );
+
     default:
       return (
         <g id="generic-calisthenics-svg">

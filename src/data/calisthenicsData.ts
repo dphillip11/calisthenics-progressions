@@ -2,6 +2,28 @@ import { SkillTree, ProgressionExercise, WorkoutLogEntry, PBRecord } from '../ty
 
 export const SKILL_TREES: SkillTree[] = [
   {
+    id: 'beginner-pull-up-tree',
+    name: 'Zero to First Pull-Up',
+    shortName: 'First Pull-Up',
+    category: 'Pull',
+    description: 'A high-volume entry pathway designed for beginners to build pulling capacity, grip stamina, scapular control, and eccentric power to achieve their first strict pull-up.',
+    iconName: 'Award',
+    color: 'from-emerald-500/20 to-teal-600/20',
+    accentColor: 'text-emerald-400',
+    exercises: [
+      'beg-dead-hang-grip',
+      'beg-incline-bodyweight-rows',
+      'beg-scapular-pull-downs',
+      'beg-horizontal-inverted-rows',
+      'beg-jackknife-pullups',
+      'beg-band-assisted-pullups',
+      'beg-flexed-arm-hang',
+      'beg-slow-eccentric-negatives',
+      'beg-strict-chin-ups',
+      'beg-strict-overhand-pullup'
+    ]
+  },
+  {
     id: 'pull-up-muscle-up',
     name: 'Pull-Up to Muscle-Up',
     shortName: 'Muscle-Up',
@@ -137,6 +159,372 @@ export const SKILL_TREES: SkillTree[] = [
 ];
 
 export const EXERCISES: Record<string, ProgressionExercise> = {
+  // ZERO TO FIRST PULL-UP (BEGINNER VOLUME PROGRESSION)
+  'beg-dead-hang-grip': {
+    id: 'beg-dead-hang-grip',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'Dead Hang Grip Endurance',
+    subtitle: 'Stage 1 · Tendon Durability & Grip Conditioning',
+    level: 1,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Pull-up Bar', 'Gymnastic Rings'],
+    metricType: 'seconds',
+    passCriteria: {
+      targetHoldSeconds: 45,
+      targetSets: 3,
+      restSeconds: 75,
+      formStandard: 'Full hanging grip with thumbs wrapped securely. Alternate smoothly between passive decompression and active scapular tension without letting feet touch the ground.',
+      tempo: 'Static Hold',
+      notes: 'Eliminates grip fatigue so forearms never hold back your pulling progress.'
+    },
+    prerequisites: [],
+    unlockedSkills: ['beg-incline-bodyweight-rows'],
+    description: 'The critical entry foundation for every aspiring pull-up practitioner. Builds forearm endurance, thickens connective tissue in the fingers and wrists, and decompresses the lumbar spine.',
+    formCues: [
+      'Wrap thumbs all the way around the bar for max security',
+      'Keep shoulder blades slightly engaged rather than jammed into ears',
+      'Breathe slowly through your nose with a calm heart rate',
+      'Hold until time expires with zero feet assistance'
+    ],
+    commonMistakes: [
+      'Holding on by fingertips without thumb wrap',
+      'Flailing legs or swinging excessively',
+      'Holding breath and creating unnecessary systemic fatigue'
+    ],
+    primaryMuscles: ['Forearms', 'Finger Flexors', 'Lower Trapezius'],
+    secondaryMuscles: ['Latissimus Dorsi', 'Rotator Cuff', 'Brachioradialis'],
+    illustrationType: 'dead-hang',
+    tips: 'Use chalk or athletic tape to protect palms and maximize friction.'
+  },
+  'beg-incline-bodyweight-rows': {
+    id: 'beg-incline-bodyweight-rows',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'High-Incline Bodyweight Rows',
+    subtitle: 'Stage 2 · High-Volume Hypertrophy & Scapular Squeeze',
+    level: 2,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Low Bar at Chest Height', 'Gymnastic Rings'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 15,
+      targetSets: 3,
+      restSeconds: 75,
+      formStandard: 'Bar or rings set at chest height (~50° torso incline). Straight plank line from heels to head. Touch chest to bar with a 1-second pause on every rep.',
+      tempo: '2-1-1-1',
+      notes: 'High repetition volume builds the upper back foundation without joint strain.'
+    },
+    prerequisites: ['beg-dead-hang-grip'],
+    unlockedSkills: ['beg-scapular-pull-downs'],
+    description: 'At an elevated incline angle, bodyweight load is reduced to ~35%, allowing beginners to easily accumulate 45+ clean pulling repetitions per workout. Rapidly develops rhomboids, middle trapezius, and posterior deltoids.',
+    formCues: [
+      'Maintain a rigid straight-body plank by squeezing glutes and abs',
+      'Drive elbows down and back past the ribcage',
+      'Touch the bar or rings firmly with your lower chest',
+      'Lower under control with a 2-second eccentric phase'
+    ],
+    commonMistakes: [
+      'Sagging hips or hyperextending the lower back',
+      'Reaching with the chin to fake full range of motion',
+      'Flaring elbows outward at 90 degrees'
+    ],
+    primaryMuscles: ['Rhomboids', 'Mid & Lower Trapezius', 'Rear Deltoids'],
+    secondaryMuscles: ['Biceps Brachii', 'Brachialis', 'Core'],
+    illustrationType: 'incline-bodyweight-row',
+    tips: 'Step feet further forward under the bar to increase difficulty as your strength develops.'
+  },
+  'beg-scapular-pull-downs': {
+    id: 'beg-scapular-pull-downs',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'Hanging Scapular Pull-Downs',
+    subtitle: 'Stage 3 · Lat Depression & Initial Pull Drive',
+    level: 3,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Pull-up Bar'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 12,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'Arms remain locked completely straight. Depress and retract scapulae downwards with a 2-second hold at peak retraction on every repetition.',
+      tempo: '2-2-1-1',
+      notes: 'Isolates the first 3 inches of the vertical pull.'
+    },
+    prerequisites: ['beg-incline-bodyweight-rows'],
+    unlockedSkills: ['beg-horizontal-inverted-rows'],
+    description: 'Teaches the nervous system how to activate the latissimus dorsi and lower traps to initiate vertical pull motion before any elbow flexion occurs.',
+    formCues: [
+      'Overhand shoulder-width grip with thumbs wrapped',
+      'Pull shoulder blades down away from ears with straight arms',
+      'Maintain hollow body posture with legs together and toes pointed',
+      'Pause for 2 full seconds in top scapular contraction'
+    ],
+    commonMistakes: [
+      'Bending the elbows to create fake elevation',
+      'Arching lower back into banana posture',
+      'Bouncing or jerking in the bottom dead hang'
+    ],
+    primaryMuscles: ['Lower Trapezius', 'Latissimus Dorsi', 'Serratus Anterior'],
+    secondaryMuscles: ['Forearms', 'Rhomboids', 'Core'],
+    illustrationType: 'scapular-pull',
+    tips: 'Imagine trying to bend the pull-up bar downwards into a U-shape.'
+  },
+  'beg-horizontal-inverted-rows': {
+    id: 'beg-horizontal-inverted-rows',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'Horizontal Inverted Rows',
+    subtitle: 'Stage 4 · Parallel Horizontal Pulling Strength',
+    level: 4,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Low Bar (Waist Height)', 'Gymnastic Rings'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 12,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'Bar at waist height, body parallel to floor. Chest touches bar on all 12 reps with zero hip sagging or momentum.',
+      tempo: '2-1-1-1'
+    },
+    prerequisites: ['beg-scapular-pull-downs'],
+    unlockedSkills: ['beg-jackknife-pullups'],
+    description: 'Parallel horizontal rowing loads approximately 55-60% of bodyweight, developing thick pulling density in the lats, biceps, and periscapular stabilizers.',
+    formCues: [
+      'Heels planted, toes pointing straight up',
+      'Straight line from heels to crown throughout',
+      'Pull sternum directly to bar or rings',
+      'Pause 1 second at top contraction before lowering'
+    ],
+    commonMistakes: [
+      'Kicking hips up to initiate the movement',
+      'Poking chin forward rather than pulling chest to bar',
+      'Incomplete arm extension at the bottom'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Rhomboids', 'Biceps Brachii'],
+    secondaryMuscles: ['Posterior Deltoids', 'Core', 'Forearms'],
+    illustrationType: 'inverted-row',
+    tips: 'Elevate your feet on an exercise box to increase resistance further.'
+  },
+  'beg-jackknife-pullups': {
+    id: 'beg-jackknife-pullups',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'Jackknife / Foot-Supported Pull-Ups',
+    subtitle: 'Stage 5 · True Overhead Vertical Pull Path',
+    level: 5,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Pull-up Bar or Low Bar', 'Bench / Box / Floor'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 10,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'Hips under bar with feet elevated on box in an L-shape. Full vertical overhead pull from dead hang to chin over bar with minimal leg assistance.',
+      tempo: '2-1-1-1'
+    },
+    prerequisites: ['beg-horizontal-inverted-rows'],
+    unlockedSkills: ['beg-band-assisted-pullups'],
+    description: 'Replicates the exact biomechanical vertical pulling path of a pull-up while offloading 35% of bodyweight through supported feet. Allows beginners to perform multiple sets of 8-12 strict vertical pulls.',
+    formCues: [
+      'Keep torso strictly vertical directly under the bar',
+      'Legs extended forward with heels resting on bench or floor',
+      'Pull straight up vertically until chin clears the bar cleanly',
+      'Lower smoothly to full dead hang stretch on every rep'
+    ],
+    commonMistakes: [
+      'Leaning backward into a horizontal row instead of pulling straight up',
+      'Pushing aggressively with legs instead of pulling with lats',
+      'Cutting the bottom range of motion short'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Biceps Brachii', 'Brachialis'],
+    secondaryMuscles: ['Teres Major', 'Lower Trapezius', 'Forearms'],
+    illustrationType: 'jackknife-pullup',
+    tips: 'Try resting only one heel on the box to gradually reduce assistance.'
+  },
+  'beg-band-assisted-pullups': {
+    id: 'beg-band-assisted-pullups',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'Resistance Band Assisted Pull-Ups',
+    subtitle: 'Stage 6 · Dynamic Full ROM Overhand Pulling',
+    level: 6,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Pull-up Bar', 'Resistance Band (Medium / Heavy)'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 8,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'Loop band under feet or knees. Full dead hang to chin over bar with zero kicking or kipping swing.',
+      tempo: '2-1-1-1'
+    },
+    prerequisites: ['beg-jackknife-pullups'],
+    unlockedSkills: ['beg-flexed-arm-hang'],
+    description: 'Bands offer variable accommodating resistance—providing maximum support in the stretched bottom position while requiring pure upper back recruitment to complete the top lockoff.',
+    formCues: [
+      'Step into the band loop with feet crossed',
+      'Start from a complete dead hang with arms fully straight',
+      'Drive elbows down towards back pockets',
+      'Clear chin cleanly over the bar with control'
+    ],
+    commonMistakes: [
+      'Bouncing rapidly at bottom to use band snap',
+      'Swinging wildly back and forth',
+      'Staying on the heaviest band for too many months'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Biceps Brachii', 'Upper Back'],
+    secondaryMuscles: ['Forearms', 'Core', 'Posterior Deltoids'],
+    illustrationType: 'band-assisted-pullup',
+    tips: 'Step down through band tensions: Heavy Green/Purple &rarr; Medium Black &rarr; Light Red.'
+  },
+  'beg-flexed-arm-hang': {
+    id: 'beg-flexed-arm-hang',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'Isometric Chin-Over-Bar Lockoff Hold',
+    subtitle: 'Stage 7 · Isometric Lock-Off Strength & Tendon Rigidity',
+    level: 7,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Pull-up Bar', 'Step Box'],
+    metricType: 'seconds',
+    passCriteria: {
+      targetHoldSeconds: 20,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'Step or jump to top with chin held cleanly above the bar. Maintain rigid hollow body and hold without sinking below bar level.',
+      tempo: 'Static Hold'
+    },
+    prerequisites: ['beg-band-assisted-pullups'],
+    unlockedSkills: ['beg-slow-eccentric-negatives'],
+    description: 'Isometric lockoffs generate immense neuromuscular tension and tendon stiffness at the top sticking point. Develops the upper-half pulling strength required to complete bodyweight reps.',
+    formCues: [
+      'Step up on box to place chin directly above bar',
+      'Squeeze elbows tight against ribcage',
+      'Keep legs glued and core braced in hollow hold',
+      'Resist gravity with everything you have'
+    ],
+    commonMistakes: [
+      'Resting chin on top of the bar to cheat the hold',
+      'Straining neck frantically upwards',
+      'Letting shoulders shrug up towards ears'
+    ],
+    primaryMuscles: ['Biceps Brachii', 'Brachialis', 'Latissimus Dorsi'],
+    secondaryMuscles: ['Rhomboids', 'Forearms', 'Core'],
+    illustrationType: 'flexed-arm-hang',
+    tips: 'Once comfortable, add mid-range 90-degree lockoff holds to eliminate sticking points.'
+  },
+  'beg-slow-eccentric-negatives': {
+    id: 'beg-slow-eccentric-negatives',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'Slow Eccentric Negative Pull-Ups (6-8s)',
+    subtitle: 'Stage 8 · Supramaximal Neuromuscular Adaptation',
+    level: 8,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Pull-up Bar', 'Step Box'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 5,
+      targetSets: 4,
+      restSeconds: 120,
+      formStandard: 'Jump or step to chin over bar. Lower down in a strictly uniform 6-to-8 second descent into a dead hang on each rep.',
+      tempo: '8-0-1-0'
+    },
+    prerequisites: ['beg-flexed-arm-hang'],
+    unlockedSkills: ['beg-strict-chin-ups'],
+    description: 'Muscles produce 20-40% more force eccentrically than concentrically. Controlled lowering overloads the muscles safely and rapidly triggers the strength gains needed for concentric pull-ups.',
+    formCues: [
+      'Jump gently to top with chin over bar',
+      'Count out loud 1-2-3-4-5-6-7-8 while descending',
+      'Maintain even speed—do not freefall the bottom 30%',
+      'Reach full dead hang before stepping on the box'
+    ],
+    commonMistakes: [
+      'Dropping abruptly in the lower half of the movement',
+      'Kicking legs or flailing',
+      'Rushing repetitions in under 5 seconds'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Biceps Brachii', 'Brachialis'],
+    secondaryMuscles: ['Forearms', 'Core', 'Lower Trapezius'],
+    illustrationType: 'negative-pull-up',
+    tips: 'Quality is everything on negatives. If you drop in under 4 seconds, end the set.'
+  },
+  'beg-strict-chin-ups': {
+    id: 'beg-strict-chin-ups',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'First Strict Supinated Chin-Ups',
+    subtitle: 'Stage 9 · Supinated Grip Leverage Bridge',
+    level: 9,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Pull-up Bar'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 3,
+      targetSets: 3,
+      restSeconds: 120,
+      formStandard: 'Underhand (palms facing you) shoulder-width grip. Full dead hang to chin clearing bar with zero leg swing or kipping.',
+      tempo: '2-1-1-1'
+    },
+    prerequisites: ['beg-slow-eccentric-negatives'],
+    unlockedSkills: ['beg-strict-overhand-pullup'],
+    description: 'The supinated grip places the biceps brachii in an optimal anatomical position of leverage, allowing beginners to achieve their very first full bodyweight concentric vertical pulls.',
+    formCues: [
+      'Underhand shoulder-width grip',
+      'Start from dead hang with arms locked',
+      'Drive elbows straight down and back',
+      'Clear chin easily over the bar with steady tempo'
+    ],
+    commonMistakes: [
+      'Kipping with knees or hips',
+      'Partial reps without touching bottom dead hang',
+      'Reaching chin upward instead of pulling chest up'
+    ],
+    primaryMuscles: ['Biceps Brachii', 'Latissimus Dorsi', 'Brachialis'],
+    secondaryMuscles: ['Pectoralis Major', 'Forearms', 'Core'],
+    illustrationType: 'chin-up',
+    tips: 'Once you can do 3 clean chin-ups, your overhand pull-up is just around the corner.'
+  },
+  'beg-strict-overhand-pullup': {
+    id: 'beg-strict-overhand-pullup',
+    skillTreeId: 'beginner-pull-up-tree',
+    title: 'Strict Overhand Pull-Up',
+    subtitle: 'Milestone Mastery · First Strict Bodyweight Pull-Up',
+    level: 10,
+    difficulty: 'Beginner',
+    category: 'Pull',
+    equipment: ['Pull-up Bar'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 3,
+      targetSets: 3,
+      restSeconds: 120,
+      formStandard: 'Overhand grip slightly wider than shoulders. Full dead hang, engage lats, drive elbows down, chin clears bar with zero swing.',
+      tempo: '2-1-1-1'
+    },
+    prerequisites: ['beg-strict-chin-ups'],
+    unlockedSkills: ['dead-hang-scapular-pulls', 'strict-pull-ups'],
+    description: 'The crown jewel milestone of calisthenics pulling foundations. Demonstrates complete relative strength, lat activation, and scapular control to pull 100% of bodyweight vertically.',
+    formCues: [
+      'Overhand grip slightly wider than shoulder-width',
+      'Initiate with scapular depression before arm bend',
+      'Drive elbows into back pockets',
+      'Clear chin cleanly with chest proud at the top',
+      'Control eccentric descent back to full dead hang'
+    ],
+    commonMistakes: [
+      'Kicking legs or swinging violently',
+      'Shorting the bottom range of motion',
+      'Jerking the neck forward'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Biceps Brachii', 'Lower Trapezius'],
+    secondaryMuscles: ['Rhomboids', 'Brachioradialis', 'Core'],
+    illustrationType: 'strict-pull-up',
+    tips: 'Congratulations! Achieving this milestone unlocks the advanced Pull-Up to Muscle-Up tree.'
+  },
+
   // PULL-UP TO MUSCLE-UP
   'dead-hang-scapular-pulls': {
     id: 'dead-hang-scapular-pulls',
@@ -1918,6 +2306,68 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
 
 // Initial Realistic Sample PB Logs to make the app interactive and graph-rich from the first load
 export const INITIAL_LOGS: WorkoutLogEntry[] = [
+  // Beginner Pull-Up Foundation Logs (Demonstrating completed foundational stages)
+  {
+    id: 'log-beg-1',
+    exerciseId: 'beg-dead-hang-grip',
+    date: '2026-05-15',
+    timestamp: new Date('2026-05-15').getTime(),
+    metricValue: 50,
+    sets: 3,
+    rpe: 7,
+    notes: 'Passed 45s benchmark easily with strong grip',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-beg-2',
+    exerciseId: 'beg-incline-bodyweight-rows',
+    date: '2026-05-28',
+    timestamp: new Date('2026-05-28').getTime(),
+    metricValue: 18,
+    sets: 3,
+    rpe: 7.5,
+    notes: 'Hit 3x18 clean reps with 1s chest squeeze',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-beg-3',
+    exerciseId: 'beg-scapular-pull-downs',
+    date: '2026-06-10',
+    timestamp: new Date('2026-06-10').getTime(),
+    metricValue: 14,
+    sets: 3,
+    rpe: 8,
+    notes: '2-second peak lat depression holds passed',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-beg-4',
+    exerciseId: 'beg-horizontal-inverted-rows',
+    date: '2026-06-25',
+    timestamp: new Date('2026-06-25').getTime(),
+    metricValue: 12,
+    sets: 3,
+    rpe: 8.5,
+    notes: 'Parallel horizontal chest touches passed!',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-beg-5',
+    exerciseId: 'beg-jackknife-pullups',
+    date: '2026-07-08',
+    timestamp: new Date('2026-07-08').getTime(),
+    metricValue: 10,
+    sets: 3,
+    rpe: 8.5,
+    notes: 'Clean vertical overhead path with box support',
+    isPB: true,
+    passedCriteria: true
+  },
+
   // Pull-ups history (showing real progression over 8 weeks)
   {
     id: 'log-1',

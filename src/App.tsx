@@ -3,10 +3,11 @@ import {
   SkillTree,
   ProgressionExercise,
   WorkoutLogEntry,
-  PBRecord,
-  SkillCategory
+  PBRecord
 } from './types';
 import { SKILL_TREES, EXERCISES } from './data/calisthenicsData';
+import { WARMUP_EXERCISES } from './data/warmupData';
+import { STRETCH_EXERCISES } from './data/stretchData';
 import {
   loadStoredLogs,
   saveStoredLogs,
@@ -22,20 +23,17 @@ import {
 } from './utils/storage';
 import { Header } from './components/Header';
 import { SkillTreeView } from './components/SkillTreeView';
-import { ExerciseCatalogView } from './components/ExerciseCatalogView';
+import { WarmupView } from './components/WarmupView';
+import { StretchView } from './components/StretchView';
 import { MasteryStats } from './components/MasteryStats';
 import { ExerciseDetailModal } from './components/ExerciseDetailModal';
 import { LogWorkoutModal } from './components/LogWorkoutModal';
+import { DataManagementModal } from './components/DataManagementModal';
 import { RestTimer } from './components/RestTimer';
 import {
-  Award,
   Layers,
-  Sparkles,
   Flame,
-  ChevronRight,
-  TrendingUp,
-  Target,
-  Dumbbell,
+  Activity,
   CheckCircle2,
   AlertCircle,
   X
@@ -46,13 +44,12 @@ export default function App() {
   const [logs, setLogs] = useState<WorkoutLogEntry[]>([]);
   const [pbRecords, setPbRecords] = useState<Record<string, PBRecord>>({});
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [selectedTreeId, setSelectedTreeId] = useState<string | null>('pull-up-muscle-up');
+  const [selectedTreeId, setSelectedTreeId] = useState<string>('pull-up-muscle-up');
   const [selectedExercise, setSelectedExercise] = useState<ProgressionExercise | null>(null);
   const [loggingExercise, setLoggingExercise] = useState<ProgressionExercise | null>(null);
-  const [activeCategory, setActiveCategory] = useState<SkillCategory | 'All'>('All');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [viewMode, setViewMode] = useState<'trees' | 'catalog' | 'stats'>('trees');
+  const [viewMode, setViewMode] = useState<'warmup' | 'trees' | 'stretches' | 'stats'>('trees');
   const [isTimerOpen, setIsTimerOpen] = useState<boolean>(false);
+  const [isDataModalOpen, setIsDataModalOpen] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Auto-dismiss toast after 4.5 seconds
@@ -244,47 +241,7 @@ export default function App() {
     }
   };
 
-  // Filtered Trees & Exercises based on search or category
-  const filteredTrees = SKILL_TREES.filter(tree => {
-    if (activeCategory !== 'All' && tree.category !== activeCategory) {
-      return false;
-    }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchTreeName = tree.name.toLowerCase().includes(q) || tree.description.toLowerCase().includes(q);
-      const matchExerciseInTree = tree.exercises.some(id => {
-        const ex = EXERCISES[id];
-        return ex && (
-          ex.title.toLowerCase().includes(q) ||
-          ex.description.toLowerCase().includes(q) ||
-          ex.primaryMuscles.some(m => m.toLowerCase().includes(q))
-        );
-      });
-      return matchTreeName || matchExerciseInTree;
-    }
-    return true;
-  });
-
-  const allFilteredExercises = Object.values(EXERCISES).filter(ex => {
-    if (activeCategory !== 'All' && ex.category !== activeCategory) {
-      return false;
-    }
-    if (selectedTreeId && ex.skillTreeId !== selectedTreeId) {
-      return false;
-    }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      return (
-        ex.title.toLowerCase().includes(q) ||
-        ex.description.toLowerCase().includes(q) ||
-        ex.primaryMuscles.some(m => m.toLowerCase().includes(q)) ||
-        ex.equipment.some(e => e.toLowerCase().includes(q))
-      );
-    }
-    return true;
-  });
-
-  const currentActiveTree = SKILL_TREES.find(t => t.id === selectedTreeId) || (filteredTrees.length > 0 ? filteredTrees[0] : SKILL_TREES[0]);
+  const currentActiveTree = SKILL_TREES.find(t => t.id === selectedTreeId) || SKILL_TREES[0];
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-zinc-100 flex flex-col font-sans selection:bg-[#D1FF00]/30 selection:text-[#D1FF00] bg-grid-pattern">
@@ -292,26 +249,19 @@ export default function App() {
       <Header
         trees={SKILL_TREES}
         selectedTreeId={selectedTreeId}
-        activeCategory={activeCategory}
-        searchQuery={searchQuery}
         viewMode={viewMode}
         isTimerOpen={isTimerOpen}
         onSelectTree={setSelectedTreeId}
-        onSelectCategory={setActiveCategory}
-        onSearchChange={setSearchQuery}
         onViewModeChange={setViewMode}
         onToggleTimer={() => setIsTimerOpen(!isTimerOpen)}
-        onExportData={handleExportData}
-        onImportData={handleImportData}
-        onClearData={handleClearData}
-        onResetData={handleResetData}
+        onOpenDataModal={() => setIsDataModalOpen(true)}
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6">
         {/* Floating / Side Rest Timer Bar (if opened) */}
         {isTimerOpen && (
-          <div className="max-w-xl mx-auto mb-4 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="max-w-xl mx-auto mb-2 animate-in fade-in slide-in-from-top-2 duration-300">
             <RestTimer
               onTransferHoldTime={handleTransferHoldTime}
               defaultRestSeconds={selectedExercise?.passCriteria.restSeconds || 90}
@@ -319,10 +269,10 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 1: SKILL TREES & PROGRESSION ROADMAPS */}
+        {/* VIEW 1: SKILL TREES & PROGRESSION PATHWAYS */}
         {viewMode === 'trees' && (
           <div className="space-y-6">
-            {/* Skill Trees Horizontal Selector Grid */}
+            {/* Unfiltered Progression Pathways Ribbon / Grid */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
@@ -330,12 +280,12 @@ export default function App() {
                   Progression Pathways
                 </span>
                 <span className="text-[11px] font-mono text-zinc-500">
-                  {filteredTrees.length} Skill Trees
+                  {SKILL_TREES.length} Total Pathways &middot; Select to Filter
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-                {filteredTrees.map(tree => {
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                {SKILL_TREES.map(tree => {
                   const isSelected = tree.id === selectedTreeId;
                   const treeExs = tree.exercises.map(id => EXERCISES[id]).filter(Boolean);
                   const passed = treeExs.filter(ex => {
@@ -350,10 +300,10 @@ export default function App() {
                     <button
                       key={tree.id}
                       onClick={() => setSelectedTreeId(tree.id)}
-                      className={`p-3 rounded-lg border text-left transition-all duration-150 cursor-pointer flex flex-col justify-between ${
+                      className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-150 cursor-pointer flex flex-col justify-between ${
                         isSelected
-                          ? 'bg-[#141414] border-[#D1FF00] shadow-sm shadow-[#D1FF00]/15 ring-1 ring-[#D1FF00]/30'
-                          : 'bg-[#141414] hover:bg-[#1a1a1a] border-[#222222] hover:border-zinc-700'
+                          ? 'bg-[#141414] border-[#D1FF00] shadow-md shadow-[#D1FF00]/10 ring-1 ring-[#D1FF00]/40'
+                          : 'bg-[#121212] hover:bg-[#181818] border-[#222222] hover:border-zinc-700'
                       }`}
                     >
                       <div>
@@ -367,9 +317,9 @@ export default function App() {
                         </h4>
                       </div>
 
-                      <div className="mt-3 flex items-center justify-between text-[10px] font-mono">
-                        <span className={isSelected ? 'text-[#D1FF00] font-bold' : 'text-zinc-500'}>
-                          {passed}/{treeExs.length}
+                      <div className="mt-2.5 pt-2 border-t border-[#1f1f1f] flex items-center justify-between text-[10px] font-mono">
+                        <span className={isSelected ? 'text-[#D1FF00] font-bold' : 'text-zinc-400'}>
+                          {passed}/{treeExs.length} done
                         </span>
                         {passed === treeExs.length && (
                           <span className="text-[#D1FF00] text-xs font-bold">★</span>
@@ -382,7 +332,7 @@ export default function App() {
             </div>
 
             {/* Active Selected Skill Tree Pathway View */}
-            {currentActiveTree ? (
+            {currentActiveTree && (
               <SkillTreeView
                 tree={currentActiveTree}
                 exercises={EXERCISES}
@@ -391,27 +341,27 @@ export default function App() {
                 onSelectExercise={setSelectedExercise}
                 onOpenLogModal={setLoggingExercise}
               />
-            ) : (
-              <div className="p-12 text-center bg-[#141414] border border-[#222222] rounded-xl text-zinc-400 font-mono text-xs">
-                No skill trees match the active filter.
-              </div>
             )}
           </div>
         )}
 
-        {/* VIEW 2: ALL EXERCISES CATALOG */}
-        {viewMode === 'catalog' && (
-          <ExerciseCatalogView
-            exercises={allFilteredExercises}
-            trees={SKILL_TREES}
-            pbRecords={pbRecords}
-            logs={logs}
-            onSelectExercise={setSelectedExercise}
-            onOpenLogModal={setLoggingExercise}
+        {/* VIEW: WARMUP & JOINT PREP */}
+        {viewMode === 'warmup' && (
+          <WarmupView
+            exercises={WARMUP_EXERCISES}
+            onOpenTimer={() => setIsTimerOpen(true)}
           />
         )}
 
-        {/* VIEW 3: MASTERY STATS & ANALYTICS */}
+        {/* VIEW: STRETCHES & MOBILITY */}
+        {viewMode === 'stretches' && (
+          <StretchView
+            exercises={STRETCH_EXERCISES}
+            onOpenTimer={() => setIsTimerOpen(true)}
+          />
+        )}
+
+        {/* VIEW: MASTERY STATS & ANALYTICS */}
         {viewMode === 'stats' && (
           <MasteryStats
             trees={SKILL_TREES}
@@ -453,6 +403,20 @@ export default function App() {
           existingPB={pbRecords[loggingExercise.id]}
           onSaveLog={handleSaveLog}
           onClose={() => setLoggingExercise(null)}
+        />
+      )}
+
+      {/* MODAL 3: DATA & STORAGE MANAGEMENT MODAL */}
+      {isDataModalOpen && (
+        <DataManagementModal
+          logsCount={logs.length}
+          pbsCount={Object.keys(pbRecords).length}
+          favoritesCount={favorites.length}
+          onExportData={handleExportData}
+          onImportData={handleImportData}
+          onClearData={handleClearData}
+          onResetData={handleResetData}
+          onClose={() => setIsDataModalOpen(false)}
         />
       )}
 

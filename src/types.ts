@@ -79,3 +79,31 @@ export interface UserProgressState {
   selectedTreeId: string | null;
   selectedExerciseId: string | null;
 }
+
+export interface WarmupExercise {
+  id: string;
+  name: string;
+  category: 'joint_prep' | 'scapular_shoulders' | 'spine_core' | 'hips_lower' | 'cardio_pulse';
+  categoryLabel: string;
+  target: string; // e.g. "10-15 slow reps" or "30-45s continuous"
+  focusArea: string[];
+  purpose: string;
+  cues: string[];
+  difficulty: 'Gentle' | 'Moderate' | 'Active';
+  demoVideoUrl?: string;
+  illustrationType?: string;
+}
+
+export interface StretchExercise {
+  id: string;
+  name: string;
+  category: 'upper_body' | 'lower_body' | 'spine_hips' | 'wrist_forearm';
+  categoryLabel: string;
+  target: string; // e.g. "30-45s hold" or "3 x 30s per side"
+  focusArea: string[];
+  purpose: string;
+  cues: string[];
+  intensity: 'Gentle Decompression' | 'Moderate Lengthening' | 'Deep Mobility';
+  demoVideoUrl?: string;
+  illustrationType?: string;
+}
