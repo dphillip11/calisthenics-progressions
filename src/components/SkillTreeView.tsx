@@ -135,31 +135,31 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
           const statusConfig = {
             mastered: {
               badge: 'Mastered',
-              badgeColor: 'bg-[#D1FF00]/15 text-[#D1FF00] border-[#D1FF00]/40 font-mono',
-              border: 'border-[#D1FF00]/40 hover:border-[#D1FF00]/70',
-              glow: 'bg-[#D1FF00]/[0.02]',
-              icon: <CheckCircle2 className="w-4 h-4 text-[#D1FF00]" />
+              badgeColor: 'bg-emerald-950/70 text-emerald-300 border-emerald-500/50 font-mono font-bold',
+              border: 'border-emerald-500/60 hover:border-emerald-400/90 ring-1 ring-emerald-500/20 shadow-md',
+              cardBg: 'bg-[#20232a]',
+              icon: <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             },
             'in-progress': {
               badge: 'In Progress',
-              badgeColor: 'bg-zinc-800 text-zinc-100 border-zinc-700 font-mono',
-              border: 'border-zinc-700 hover:border-zinc-500',
-              glow: 'bg-zinc-900/20',
-              icon: <Flame className="w-4 h-4 text-[#D1FF00]" />
+              badgeColor: 'bg-amber-950/70 text-amber-300 border-amber-500/50 font-mono font-bold',
+              border: 'border-amber-400/60 hover:border-amber-400/90 ring-1 ring-amber-400/20 shadow-sm',
+              cardBg: 'bg-[#20232a]',
+              icon: <Flame className="w-4 h-4 text-amber-400" />
             },
             ready: {
               badge: 'Unlocked',
-              badgeColor: 'bg-zinc-800 text-zinc-300 border-zinc-700 font-mono',
-              border: 'border-[#222222] hover:border-zinc-600',
-              glow: 'bg-transparent',
-              icon: <Target className="w-4 h-4 text-zinc-400" />
+              badgeColor: 'bg-[#2c303a] text-zinc-200 border-[#404654] font-mono font-bold',
+              border: 'border-[#383d4a] hover:border-[#4b5263] shadow-sm',
+              cardBg: 'bg-[#20232a]',
+              icon: <Target className="w-4 h-4 text-zinc-300" />
             },
             locked: {
               badge: 'Locked',
-              badgeColor: 'bg-[#0A0A0A] text-zinc-600 border-[#222222] font-mono',
-              border: 'border-[#222222]/80 opacity-60',
-              glow: 'bg-transparent',
-              icon: <Lock className="w-3.5 h-3.5 text-zinc-600" />
+              badgeColor: 'bg-[#181a1f] text-zinc-500 border-[#2a2d36] font-mono',
+              border: 'border-[#2a2d36] opacity-65',
+              cardBg: 'bg-[#181a1f]',
+              icon: <Lock className="w-3.5 h-3.5 text-zinc-500" />
             }
           }[status];
 
@@ -167,11 +167,11 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
             <div key={exercise.id} className="relative">
               {/* Connector line between steps */}
               {index < nodes.length - 1 && (
-                <div className="absolute left-6 sm:left-8 top-14 bottom-0 w-[1px] bg-[#222222] z-0" />
+                <div className="absolute left-6 sm:left-8 top-14 bottom-0 w-[1px] bg-[#383d4a] z-0" />
               )}
 
               <div
-                className={`relative z-10 bg-[#141414] border ${statusConfig.border} ${statusConfig.glow} rounded-xl p-4 sm:p-5 transition-all duration-150 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-5`}
+                className={`relative z-10 ${statusConfig.cardBg} border ${statusConfig.border} rounded-xl p-4 sm:p-5 transition-all duration-150 shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-5`}
               >
                 {/* Left: Level node + Info */}
                 <div className="flex items-start gap-3.5 sm:gap-4 flex-1 min-w-0">
@@ -179,15 +179,15 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                   <div
                     className={`w-11 h-11 sm:w-12 sm:h-12 rounded-lg flex flex-col items-center justify-center shrink-0 border ${
                       isPassed
-                        ? 'bg-[#0A0A0A] border-[#D1FF00]/50 text-[#D1FF00]'
+                        ? 'bg-[#14161b] border-emerald-500/60 text-[#D1FF00]'
                         : status === 'in-progress'
-                        ? 'bg-[#0A0A0A] border-zinc-700 text-white'
+                        ? 'bg-[#14161b] border-amber-500/60 text-amber-400'
                         : status === 'ready'
-                        ? 'bg-[#0A0A0A] border-zinc-800 text-zinc-400'
-                        : 'bg-[#0A0A0A] border-[#222222] text-zinc-600'
+                        ? 'bg-[#14161b] border-[#3b404d] text-zinc-200'
+                        : 'bg-[#121317] border-[#272a33] text-zinc-500'
                     }`}
                   >
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-zinc-500">LVL</span>
+                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-zinc-400">LVL</span>
                     <span className="text-sm sm:text-base font-black font-mono leading-none">
                       {exercise.level}
                     </span>
@@ -199,10 +199,10 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                       <span className={`px-2 py-0.5 rounded text-[9px] font-bold border uppercase tracking-wider ${statusConfig.badgeColor}`}>
                         {statusConfig.badge}
                       </span>
-                      <span className="text-xs font-mono text-zinc-400">
+                      <span className="text-xs font-mono font-semibold text-zinc-300">
                         {exercise.difficulty}
                       </span>
-                      <span className="text-xs font-mono text-zinc-500 hidden sm:inline-block">
+                      <span className="text-xs font-mono text-zinc-400 hidden sm:inline-block">
                         · {exercise.equipment.join(', ')}
                       </span>
                     </div>
@@ -212,15 +212,15 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                       className="text-base sm:text-lg font-bold text-white font-display tracking-tight hover:text-[#D1FF00] transition cursor-pointer flex items-center gap-1.5 truncate"
                     >
                       {exercise.title}
-                      <ChevronRight className="w-4 h-4 text-zinc-500 opacity-60" />
+                      <ChevronRight className="w-4 h-4 text-zinc-400 opacity-75" />
                     </h3>
 
                     {/* Pass Criteria Summary */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300 font-sans">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-200 font-sans">
                       <div className="flex items-center gap-1.5">
                         <Award className="w-3.5 h-3.5 text-[#D1FF00] shrink-0" />
                         <span>
-                          Pass Target: <strong className="text-white font-mono">{exercise.passCriteria.targetSets} × {target} {isSeconds ? 's' : 'reps'}</strong>
+                          Pass Target: <strong className="text-white font-mono font-bold">{exercise.passCriteria.targetSets} × {target} {isSeconds ? 's' : 'reps'}</strong>
                         </span>
                       </div>
                       <div className="flex items-center gap-1 text-zinc-400 font-mono text-[11px]">
@@ -229,7 +229,7 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                       </div>
                     </div>
 
-                    <p className="text-xs text-zinc-400 line-clamp-1 italic font-sans">
+                    <p className="text-xs text-zinc-300 line-clamp-1 italic font-sans">
                       "{exercise.passCriteria.formStandard}"
                     </p>
                   </div>
@@ -238,7 +238,7 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                 {/* Center: Movement Thumbnail Vector Illustration */}
                 <div
                   onClick={() => onSelectExercise(exercise)}
-                  className="w-full lg:w-44 h-24 shrink-0 rounded-lg overflow-hidden cursor-pointer border border-[#222222] hover:border-[#D1FF00]/40 transition"
+                  className="w-full lg:w-44 h-24 shrink-0 rounded-lg overflow-hidden cursor-pointer border border-[#333742] hover:border-[#4f5566] bg-[#121316] transition shadow-inner"
                   title="Click to view biomechanical illustration and full form cues"
                 >
                   <BiomechanicalIllustration
@@ -249,15 +249,15 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                 </div>
 
                 {/* Right: Personal Best & Action Buttons */}
-                <div className="flex sm:flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-3 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-[#222222]">
+                <div className="flex sm:flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-3 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-[#333742]">
                   {/* Current PB box */}
                   <div className="text-left lg:text-right">
-                    <span className="text-[10px] font-mono font-semibold text-zinc-400 uppercase tracking-widest block">
+                    <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">
                       PB RECORD
                     </span>
-                    <div className="text-lg sm:text-xl font-extrabold text-[#D1FF00] font-mono flex items-baseline gap-1">
+                    <div className="text-lg sm:text-xl font-black text-[#D1FF00] font-mono flex items-baseline gap-1">
                       {currentBest}
-                      <span className="text-xs font-normal font-mono text-zinc-500">
+                      <span className="text-xs font-semibold font-mono text-zinc-400">
                         / {target} {isSeconds ? 's' : 'reps'}
                       </span>
                     </div>
@@ -267,7 +267,7 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onSelectExercise(exercise)}
-                      className="px-3 py-1.5 rounded-lg bg-[#1a1a1a] hover:bg-[#222222] text-zinc-200 font-mono font-semibold text-xs transition flex items-center gap-1.5 border border-[#222222] hover:border-zinc-600 cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg bg-[#2c303a] hover:bg-[#373c48] text-zinc-200 font-mono font-bold text-xs transition flex items-center gap-1.5 border border-[#3f4553] hover:border-[#525a6c] shadow-sm cursor-pointer"
                     >
                       <TrendingUp className="w-3.5 h-3.5 text-[#D1FF00]" />
                       Details
@@ -275,7 +275,7 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
 
                     <button
                       onClick={() => onOpenLogModal(exercise)}
-                      className="px-3 py-1.5 rounded-lg bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-extrabold text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer border border-black/20"
                     >
                       <Dumbbell className="w-3.5 h-3.5" />
                       Log Set

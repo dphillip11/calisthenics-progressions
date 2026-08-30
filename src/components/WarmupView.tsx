@@ -166,10 +166,10 @@ export const WarmupView: React.FC<WarmupViewProps> = ({
             <div
               key={exercise.id}
               id={`warmup-item-${exercise.id}`}
-              className={`rounded-xl border transition-all duration-200 overflow-hidden flex flex-col justify-between ${
+              className={`rounded-xl border transition-all duration-200 overflow-hidden flex flex-col justify-between shadow-md ${
                 isDone
-                  ? 'bg-[#101010]/80 border-emerald-500/25'
-                  : 'bg-[#121212] border-[#222222] hover:border-zinc-700'
+                  ? 'bg-[#18271e] border-emerald-500/50'
+                  : 'bg-[#20232a] border-[#333742] hover:border-[#4b5263]'
               }`}
             >
               <div>
@@ -179,19 +179,19 @@ export const WarmupView: React.FC<WarmupViewProps> = ({
                   <div className="flex items-start gap-3 min-w-0">
                     <button
                       onClick={() => toggleComplete(exercise.id)}
-                      className="shrink-0 pt-0.5 text-zinc-500 hover:text-[#D1FF00] transition cursor-pointer"
+                      className="shrink-0 pt-0.5 text-zinc-400 hover:text-emerald-400 transition cursor-pointer"
                       title={isDone ? 'Mark as incomplete' : 'Mark as done'}
                     >
                       {isDone ? (
                         <CheckCircle2 className="w-5 h-5 text-emerald-400 fill-emerald-400/20" />
                       ) : (
-                        <Circle className="w-5 h-5 text-zinc-600 hover:text-zinc-400" />
+                        <Circle className="w-5 h-5 text-zinc-400 hover:text-zinc-200" />
                       )}
                     </button>
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[10px] font-mono text-zinc-500 font-bold">
+                        <span className="text-[10px] font-mono text-zinc-400 font-bold">
                           #{index + 1}
                         </span>
                         <h3 className={`text-sm font-bold font-sans tracking-tight transition ${
@@ -201,11 +201,11 @@ export const WarmupView: React.FC<WarmupViewProps> = ({
                         </h3>
                       </div>
 
-                      <div className="mt-1 flex items-center gap-2 flex-wrap text-xs text-zinc-400 font-mono">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#1a1a1a] text-zinc-300 border border-[#2b2b2b]">
+                      <div className="mt-1.5 flex items-center gap-2 flex-wrap text-xs font-mono">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#2b303a] text-zinc-200 border border-[#3e4453] font-semibold">
                           {exercise.categoryLabel}
                         </span>
-                        <span className="text-[#D1FF00] font-semibold text-[11px]">
+                        <span className="bg-[#14161b] text-[#D1FF00] border border-[#2b2f38] px-2 py-0.5 rounded font-bold text-[11px]">
                           Target: {exercise.target}
                         </span>
                       </div>
@@ -219,17 +219,17 @@ export const WarmupView: React.FC<WarmupViewProps> = ({
                         href={exercise.demoVideoUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 rounded-lg bg-[#181818] hover:bg-[#222222] text-[#D1FF00] border border-[#2b2b2b] text-[11px] font-mono flex items-center gap-1 transition"
+                        className="p-1.5 rounded-lg bg-[#2c303a] hover:bg-[#373c48] text-zinc-200 border border-[#3f4554] text-[11px] font-mono font-bold flex items-center gap-1 transition shadow-xs"
                         title="Watch video demo tutorial"
                       >
-                        <Video className="w-3.5 h-3.5" />
+                        <Video className="w-3.5 h-3.5 text-[#D1FF00]" />
                         <span className="hidden sm:inline">Demo</span>
                         <ExternalLink className="w-2.5 h-2.5 opacity-60" />
                       </a>
                     )}
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : exercise.id)}
-                      className="p-1.5 rounded-lg bg-[#181818] hover:bg-[#222222] text-zinc-400 hover:text-white border border-[#282828] text-xs font-mono transition cursor-pointer"
+                      className="p-1.5 rounded-lg bg-[#2c303a] hover:bg-[#373c48] text-zinc-300 hover:text-white border border-[#3f4554] text-xs font-mono transition cursor-pointer shadow-xs"
                       title="Toggle form cues"
                     >
                       {isExpanded ? (
@@ -246,7 +246,7 @@ export const WarmupView: React.FC<WarmupViewProps> = ({
                   <div className="px-3.5 pb-2">
                     <BiomechanicalIllustration
                       type={exercise.illustrationType}
-                      className="w-full h-32"
+                      className="w-full h-32 border border-[#333742] bg-[#121316] shadow-inner"
                       accentColor="#D1FF00"
                     />
                   </div>
@@ -255,8 +255,8 @@ export const WarmupView: React.FC<WarmupViewProps> = ({
 
               {/* Expandable Form Cues & Purpose */}
               {isExpanded && (
-                <div className="px-4 pb-4 pt-2 border-t border-[#1a1a1a] bg-[#0d0d0d] space-y-2.5 text-xs animate-in fade-in duration-150">
-                  <div className="p-2.5 rounded-lg bg-[#141414] border border-[#202020] text-zinc-300 font-sans leading-relaxed">
+                <div className="px-4 pb-4 pt-2 border-t border-[#333742] bg-[#16181d] space-y-2.5 text-xs animate-in fade-in duration-150">
+                  <div className="p-2.5 rounded-lg bg-[#1e2128] border border-[#2d313b] text-zinc-200 font-sans leading-relaxed">
                     <span className="font-bold text-zinc-400 font-mono uppercase text-[10px] tracking-wider block mb-1">
                       Biomechanical Purpose
                     </span>
@@ -270,23 +270,23 @@ export const WarmupView: React.FC<WarmupViewProps> = ({
                     <ul className="space-y-1 font-sans text-zinc-300">
                       {exercise.cues.map((cue, idx) => (
                         <li key={idx} className="flex items-start gap-1.5">
-                          <span className="text-[#D1FF00] font-mono text-[11px]">&rsaquo;</span>
+                          <span className="text-[#D1FF00] font-mono text-[11px] font-bold">&rsaquo;</span>
                           <span>{cue}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="flex items-center justify-between pt-1 border-t border-[#181818] text-[11px] font-mono text-zinc-500">
+                  <div className="flex items-center justify-between pt-1 border-t border-[#2d313b] text-[11px] font-mono text-zinc-400">
                     <div>
-                      Focus: <span className="text-zinc-400">{exercise.focusArea.join(', ')}</span>
+                      Focus: <span className="text-zinc-200 font-semibold">{exercise.focusArea.join(', ')}</span>
                     </div>
                     {exercise.demoVideoUrl && (
                       <a
                         href={exercise.demoVideoUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[#D1FF00] hover:underline flex items-center gap-1"
+                        className="text-[#D1FF00] font-bold hover:underline flex items-center gap-1"
                       >
                         <span>Watch Demo Video</span>
                         <ExternalLink className="w-3 h-3" />
