@@ -15,6 +15,8 @@ import {
   loadFavorites,
   saveFavorites,
   exportUserData,
+  clearAllData,
+  importUserData,
   resetAllDataToDefault,
   evaluateWorkoutEntry
 } from './utils/storage';
@@ -33,7 +35,10 @@ import {
   ChevronRight,
   TrendingUp,
   Target,
-  Dumbbell
+  Dumbbell,
+  CheckCircle2,
+  AlertCircle,
+  X
 } from 'lucide-react';
 
 export default function App() {
@@ -48,6 +53,16 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [viewMode, setViewMode] = useState<'trees' | 'catalog' | 'stats'>('trees');
   const [isTimerOpen, setIsTimerOpen] = useState<boolean>(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  // Auto-dismiss toast after 4.5 seconds
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => {
+      setToast(null);
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   // Load from local storage on mount
   useEffect(() => {
@@ -140,17 +155,81 @@ export default function App() {
     saveStoredPBs(newPBs);
   };
 
+  // Clear all data (empty state)
+  const handleClearData = () => {
+    if (window.confirm('Are you sure you want to clear ALL workouts, history, and personal records? This cannot be undone.')) {
+      const { logs: emptyLogs, pbs: emptyPBs, favs: emptyFavs } = clearAllData();
+      setLogs(emptyLogs);
+      setPbRecords(emptyPBs);
+      setFavorites(emptyFavs);
+      setToast({
+        type: 'info',
+        message: 'All workout logs and PB records have been cleared.'
+      });
+    }
+  };
+
   // Reset to initial sample data
   const handleResetData = () => {
-    const { logs: defaultLogs, pbs: defaultPBs, favs: defaultFavs } = resetAllDataToDefault();
-    setLogs(defaultLogs);
-    setPbRecords(defaultPBs);
-    setFavorites(defaultFavs);
+    if (window.confirm('Reset all workout logs and PBs to default sample data?')) {
+      const { logs: defaultLogs, pbs: defaultPBs, favs: defaultFavs } = resetAllDataToDefault();
+      setLogs(defaultLogs);
+      setPbRecords(defaultPBs);
+      setFavorites(defaultFavs);
+      setToast({
+        type: 'info',
+        message: 'Reset to default sample progression data.'
+      });
+    }
   };
 
   // Export data
   const handleExportData = () => {
     exportUserData(logs, pbRecords, favorites);
+    setToast({
+      type: 'success',
+      message: 'Exported backup JSON file successfully.'
+    });
+  };
+
+  // Import data from JSON file
+  const handleImportData = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      if (!content) {
+        setToast({
+          type: 'error',
+          message: 'Failed to read file content.'
+        });
+        return;
+      }
+
+      const result = importUserData(content);
+      if (result.success && result.logs && result.pbs) {
+        setLogs(result.logs);
+        setPbRecords(result.pbs);
+        if (result.favs) {
+          setFavorites(result.favs);
+        }
+        setToast({
+          type: 'success',
+          message: result.message
+        });
+      } else {
+        setToast({
+          type: 'error',
+          message: result.message
+        });
+      }
+    };
+    reader.onerror = () => {
+      setToast({
+        type: 'error',
+        message: 'Error reading selected file.'
+      });
+    };
+    reader.readAsText(file);
   };
 
   // Transfer stopwatch seconds directly into log modal
@@ -223,6 +302,8 @@ export default function App() {
         onViewModeChange={setViewMode}
         onToggleTimer={() => setIsTimerOpen(!isTimerOpen)}
         onExportData={handleExportData}
+        onImportData={handleImportData}
+        onClearData={handleClearData}
         onResetData={handleResetData}
       />
 
@@ -373,6 +454,30 @@ export default function App() {
           onSaveLog={handleSaveLog}
           onClose={() => setLoggingExercise(null)}
         />
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-5 right-5 z-50 max-w-sm animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <div className={`p-3.5 rounded-xl border shadow-xl flex items-center gap-3 backdrop-blur-md ${
+            toast.type === 'success'
+              ? 'bg-[#141414]/95 border-[#D1FF00]/40 text-zinc-100 shadow-[#D1FF00]/10'
+              : toast.type === 'error'
+              ? 'bg-[#141414]/95 border-rose-500/40 text-zinc-100 shadow-rose-500/10'
+              : 'bg-[#141414]/95 border-zinc-700 text-zinc-200 shadow-black/40'
+          }`}>
+            {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-[#D1FF00] shrink-0" />}
+            {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />}
+            {toast.type === 'info' && <Flame className="w-5 h-5 text-zinc-400 shrink-0" />}
+            <p className="text-xs font-sans font-medium flex-1">{toast.message}</p>
+            <button
+              onClick={() => setToast(null)}
+              className="p-1 text-zinc-500 hover:text-zinc-300 transition"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Footer */}

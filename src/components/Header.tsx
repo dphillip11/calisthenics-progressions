@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { SkillTree, SkillCategory } from '../types';
 import {
   Flame,
@@ -7,6 +7,8 @@ import {
   Layers,
   ListFilter,
   Download,
+  Upload,
+  Trash2,
   RotateCcw,
   Timer,
   CheckCircle2,
@@ -27,6 +29,8 @@ interface HeaderProps {
   onViewModeChange: (mode: 'trees' | 'catalog' | 'stats') => void;
   onToggleTimer: () => void;
   onExportData: () => void;
+  onImportData: (file: File) => void;
+  onClearData: () => void;
   onResetData: () => void;
 }
 
@@ -43,8 +47,22 @@ export const Header: React.FC<HeaderProps> = ({
   onViewModeChange,
   onToggleTimer,
   onExportData,
+  onImportData,
+  onClearData,
   onResetData
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onImportData(file);
+    }
+    // reset input value so re-importing the same file works
+    if (e.target) {
+      e.target.value = '';
+    }
+  };
   const categories: (SkillCategory | 'All')[] = [
     'All',
     'Pull',
@@ -172,25 +190,55 @@ export const Header: React.FC<HeaderProps> = ({
             <span>Chrono</span>
           </button>
 
-          {/* Export / Reset Dropdown */}
-          <div className="flex items-center gap-1">
+          {/* Data Backup & Management Actions */}
+          <div className="flex items-center gap-1 bg-[#141414] p-1 rounded-lg border border-[#222222]">
+            {/* Hidden JSON File Input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept=".json,application/json"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+
             <button
+              id="import-data-btn"
+              onClick={() => fileInputRef.current?.click()}
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-md text-zinc-400 hover:text-[#D1FF00] hover:bg-[#1f1f1f] transition cursor-pointer flex items-center gap-1.5 text-xs font-mono"
+              title="Import Data from JSON backup file"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span className="hidden lg:inline font-bold">Import</span>
+            </button>
+
+            <button
+              id="export-data-btn"
               onClick={onExportData}
-              className="p-2 rounded-lg bg-[#141414] hover:bg-[#1c1c1c] text-zinc-400 hover:text-[#D1FF00] border border-[#222222] transition cursor-pointer"
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-md text-zinc-400 hover:text-[#D1FF00] hover:bg-[#1f1f1f] transition cursor-pointer flex items-center gap-1.5 text-xs font-mono"
               title="Export Workout & PB Data (JSON Backup)"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden lg:inline font-bold">Export</span>
             </button>
+
             <button
-              onClick={() => {
-                if (window.confirm('Reset all workout logs and PBs to default sample data?')) {
-                  onResetData();
-                }
-              }}
-              className="p-2 rounded-lg bg-[#141414] hover:bg-[#1c1c1c] text-zinc-400 hover:text-rose-400 border border-[#222222] transition cursor-pointer"
-              title="Reset Sample Data"
+              id="clear-data-btn"
+              onClick={onClearData}
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-md text-zinc-400 hover:text-rose-400 hover:bg-[#1f1f1f] transition cursor-pointer flex items-center gap-1.5 text-xs font-mono"
+              title="Clear all stored logs, PBs, and custom data"
             >
-              <RotateCcw className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden lg:inline font-bold">Clear</span>
+            </button>
+
+            <button
+              id="reset-data-btn"
+              onClick={onResetData}
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-md text-zinc-400 hover:text-amber-300 hover:bg-[#1f1f1f] transition cursor-pointer flex items-center gap-1.5 text-xs font-mono"
+              title="Reset to default sample progression data"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden lg:inline font-bold">Reset</span>
             </button>
           </div>
         </div>

@@ -129,6 +129,80 @@ export function exportUserData(logs: WorkoutLogEntry[], pbs: Record<string, PBRe
   URL.revokeObjectURL(url);
 }
 
+export function clearAllData(): { logs: WorkoutLogEntry[]; pbs: Record<string, PBRecord>; favs: string[] } {
+  localStorage.removeItem(STORAGE_KEYS.LOGS);
+  localStorage.removeItem(STORAGE_KEYS.PB_RECORDS);
+  localStorage.removeItem(STORAGE_KEYS.FAVORITES);
+
+  const logs: WorkoutLogEntry[] = [];
+  const pbs: Record<string, PBRecord> = {};
+  const favs: string[] = [];
+
+  saveStoredLogs(logs);
+  saveStoredPBs(pbs);
+  saveFavorites(favs);
+
+  return { logs, pbs, favs };
+}
+
+export function importUserData(jsonContent: string): {
+  success: boolean;
+  logs?: WorkoutLogEntry[];
+  pbs?: Record<string, PBRecord>;
+  favs?: string[];
+  message: string;
+} {
+  try {
+    const parsed = JSON.parse(jsonContent);
+
+    // Support both direct array of logs or full export backup object
+    let logs: WorkoutLogEntry[] = [];
+    let pbs: Record<string, PBRecord> = {};
+    let favs: string[] = [];
+
+    if (Array.isArray(parsed)) {
+      logs = parsed;
+      pbs = deriveInitialPBRecords(logs);
+    } else if (typeof parsed === 'object' && parsed !== null) {
+      if (Array.isArray(parsed.logs)) {
+        logs = parsed.logs;
+      }
+      if (parsed.pbs && typeof parsed.pbs === 'object') {
+        pbs = parsed.pbs;
+      } else if (logs.length > 0) {
+        pbs = deriveInitialPBRecords(logs);
+      }
+      if (Array.isArray(parsed.favorites)) {
+        favs = parsed.favorites;
+      }
+    } else {
+      return { success: false, message: 'Invalid backup file format.' };
+    }
+
+    // Basic validation
+    logs = logs.filter(l => l && l.exerciseId && typeof l.metricValue === 'number');
+
+    saveStoredLogs(logs);
+    saveStoredPBs(pbs);
+    if (favs.length > 0) {
+      saveFavorites(favs);
+    }
+
+    return {
+      success: true,
+      logs,
+      pbs,
+      favs: favs.length > 0 ? favs : undefined,
+      message: `Successfully imported ${logs.length} workout logs and ${Object.keys(pbs).length} PB records.`
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: `Failed to import file: ${err?.message || 'Invalid JSON format'}`
+    };
+  }
+}
+
 export function resetAllDataToDefault(): { logs: WorkoutLogEntry[]; pbs: Record<string, PBRecord>; favs: string[] } {
   localStorage.removeItem(STORAGE_KEYS.LOGS);
   localStorage.removeItem(STORAGE_KEYS.PB_RECORDS);
