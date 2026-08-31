@@ -12,7 +12,7 @@ import {
   ReferenceLine
 } from 'recharts';
 import { ProgressionExercise, WorkoutLogEntry, PBRecord } from '../types';
-import { TrendingUp, Award, Calendar, CheckCircle2, Activity, Target } from 'lucide-react';
+import { TrendingUp, Calendar, Activity } from 'lucide-react';
 
 interface ProgressGraphProps {
   exercise: ProgressionExercise;
@@ -69,13 +69,13 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
   });
 
   const currentPB = pbRecord ? pbRecord.bestValue : (runningPB || 0);
-  const isPassed = pbRecord?.isPassed || (currentPB >= targetThreshold && targetThreshold > 0);
-  const percentToGoal = targetThreshold > 0 ? Math.min(100, Math.round((currentPB / targetThreshold) * 100)) : 100;
-  
-  const firstValue = chartData.length > 0 ? chartData[0].value : currentPB;
+  const firstValue = chartData.length > 0 ? chartData[0].value : (currentPB || 0);
   const growthPercent = firstValue > 0 && currentPB > firstValue
     ? Math.round(((currentPB - firstValue) / firstValue) * 100)
     : 0;
+
+  const totalSetsLogged = exerciseLogs.length;
+  const totalVolumeSum = exerciseLogs.reduce((acc, l) => acc + (l.metricValue || 0), 0);
 
   const yMax = Math.max(
     targetThreshold * 1.25,
@@ -84,77 +84,37 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
   );
 
   return (
-    <div className="bg-[#141414] border border-[#222222] rounded-2xl p-5 sm:p-6 shadow-xl flex flex-col gap-5">
+    <div className="bg-[#20232a] border border-[#333742] hover:border-[#4b5263] rounded-2xl p-5 sm:p-6 shadow-md flex flex-col gap-5 transition-all duration-200">
       {/* Top Stat Summary Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#222222]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#333742]">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono uppercase tracking-widest font-semibold text-zinc-500">
-              PROGRESSION ANALYTICS &amp; PB
-            </span>
-            {isPassed ? (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#D1FF00]/15 text-[#D1FF00] border border-[#D1FF00]/40">
-                <CheckCircle2 className="w-3 h-3" />
-                Pass Standard Met
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
-                <Target className="w-3 h-3 text-[#D1FF00]" />
-                {targetThreshold - currentPB} {metricLabel.toLowerCase()} to Pass
-              </span>
-            )}
-          </div>
-          <h3 className="text-lg sm:text-xl font-black text-white font-display tracking-tight flex items-center gap-2">
+          <span className="text-[10px] font-mono uppercase tracking-widest font-semibold text-zinc-400">
+            PROGRESSION TIMELINE &amp; ANALYTICS
+          </span>
+          <h3 className="text-lg sm:text-xl font-black text-white font-display tracking-tight">
             {exercise.title}
           </h3>
-        </div>
-
-        {/* Quick PB Badge */}
-        <div className="flex items-center gap-2.5">
-          <div className="bg-[#0A0A0A] border border-[#222222] rounded-lg px-3.5 py-1.5 text-right">
-            <div className="text-[9px] font-mono font-semibold text-zinc-500 uppercase tracking-widest">Current PB</div>
-            <div className="text-xl font-black text-[#D1FF00] font-mono flex items-baseline justify-end gap-1">
-              {currentPB}
-              <span className="text-[10px] font-mono text-zinc-500 font-normal">
-                {exercise.metricType === 'seconds' ? 'sec' : 'reps'}
-              </span>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Metrics Mini-Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        {/* Pass Target */}
-        <div className="bg-[#0A0A0A] border border-[#222222] rounded-lg p-3">
-          <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 mb-1">
-            <Award className="w-3 h-3 text-[#D1FF00]" />
-            <span>Target Pass</span>
-          </div>
-          <div className="text-base font-extrabold text-zinc-100 font-mono">
-            {targetThreshold} {exercise.metricType === 'seconds' ? 'sec' : 'reps'}
-          </div>
-          <div className="text-[10px] font-mono text-zinc-500 mt-0.5 truncate">
-            {exercise.passCriteria.targetSets} sets · {exercise.passCriteria.restSeconds}s rest
-          </div>
-        </div>
-
-        {/* Total Sessions */}
-        <div className="bg-[#0A0A0A] border border-[#222222] rounded-lg p-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        {/* Total Sessions / Sets */}
+        <div className="bg-[#14161b] border border-[#2b2f38] rounded-xl p-3.5 shadow-xs">
           <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 mb-1">
             <Calendar className="w-3 h-3 text-zinc-400" />
             <span>Logs</span>
           </div>
           <div className="text-base font-extrabold text-zinc-100 font-mono">
-            {chartData.length}
+            {chartData.length} <span className="text-xs text-zinc-400 font-normal">sessions</span>
           </div>
-          <div className="text-[10px] font-mono text-zinc-500 mt-0.5">
-            {chartData.length > 0 ? `Latest: ${chartData[chartData.length - 1].date}` : 'No logs'}
+          <div className="text-[10px] font-mono text-zinc-400 mt-0.5">
+            {totalSetsLogged} total sets recorded
           </div>
         </div>
 
         {/* Growth Rate */}
-        <div className="bg-[#0A0A0A] border border-[#222222] rounded-lg p-3">
+        <div className="bg-[#14161b] border border-[#2b2f38] rounded-xl p-3.5 shadow-xs">
           <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 mb-1">
             <TrendingUp className="w-3 h-3 text-[#D1FF00]" />
             <span>Growth</span>
@@ -162,28 +122,22 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
           <div className="text-base font-extrabold text-[#D1FF00] font-mono">
             +{growthPercent}%
           </div>
-          <div className="text-[10px] font-mono text-zinc-500 mt-0.5">
-            {firstValue} → {currentPB}
+          <div className="text-[10px] font-mono text-zinc-400 mt-0.5">
+            {firstValue} → {currentPB} ({exercise.metricType === 'seconds' ? 's' : 'r'})
           </div>
         </div>
 
-        {/* Milestone Completion */}
-        <div className="bg-[#0A0A0A] border border-[#222222] rounded-lg p-3">
+        {/* Total Volume */}
+        <div className="bg-[#14161b] border border-[#2b2f38] rounded-xl p-3.5 shadow-xs">
           <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 mb-1">
             <Activity className="w-3 h-3 text-zinc-400" />
-            <span>Progress</span>
+            <span>Total Volume</span>
           </div>
           <div className="text-base font-extrabold text-zinc-100 font-mono">
-            {percentToGoal}%
+            {totalVolumeSum} <span className="text-xs text-zinc-400 font-normal">{exercise.metricType === 'seconds' ? 'sec' : 'reps'}</span>
           </div>
-          {/* Mini progress bar */}
-          <div className="w-full bg-[#1c1c1c] h-1.5 rounded-full mt-1.5 overflow-hidden border border-[#222222]">
-            <div
-              className={`h-full transition-all duration-500 rounded-full ${
-                isPassed ? 'bg-[#D1FF00]' : 'bg-[#D1FF00]/60'
-              }`}
-              style={{ width: `${percentToGoal}%` }}
-            />
+          <div className="text-[10px] font-mono text-zinc-400 mt-0.5">
+            Across all recorded sets
           </div>
         </div>
       </div>
@@ -195,11 +149,11 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
           <span>Progress Timeline</span>
         </div>
 
-        <div className="flex items-center bg-[#0A0A0A] p-1 rounded-md border border-[#222222] text-xs font-mono">
+        <div className="flex items-center bg-[#14161b] p-1 rounded-xl border border-[#2b2f38] text-xs font-mono">
           <button
             id="view-pb-curve-tab"
             onClick={() => setGraphMode('curve')}
-            className={`px-2.5 py-1 rounded font-medium transition cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
               graphMode === 'curve'
                 ? 'bg-[#D1FF00] text-black font-bold shadow-sm'
                 : 'text-zinc-400 hover:text-white'
@@ -210,7 +164,7 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
           <button
             id="view-all-sessions-tab"
             onClick={() => setGraphMode('sessions')}
-            className={`px-2.5 py-1 rounded font-medium transition cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
               graphMode === 'sessions'
                 ? 'bg-[#D1FF00] text-black font-bold shadow-sm'
                 : 'text-zinc-400 hover:text-white'
@@ -221,7 +175,7 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
           <button
             id="view-volume-tab"
             onClick={() => setGraphMode('volume')}
-            className={`px-2.5 py-1 rounded font-medium transition cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
               graphMode === 'volume'
                 ? 'bg-[#D1FF00] text-black font-bold shadow-sm'
                 : 'text-zinc-400 hover:text-white'
@@ -233,7 +187,7 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
       </div>
 
       {/* Chart Canvas */}
-      <div className="w-full h-72 sm:h-80 bg-[#0A0A0A] border border-[#222222] rounded-lg p-3 sm:p-4">
+      <div className="w-full h-72 sm:h-80 bg-[#14161b] border border-[#2b2f38] rounded-xl p-3 sm:p-4 shadow-inner">
         {chartData.length === 0 ? (
           <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 text-zinc-500 font-mono text-xs">
             <Activity className="w-10 h-10 mb-2 stroke-1 text-zinc-700" />
@@ -427,8 +381,8 @@ const CustomTooltip = ({
     const unit = metricType === 'seconds' ? 's' : ' reps';
 
     return (
-      <div className="bg-[#0A0A0A] border border-[#222222] p-3 rounded-lg shadow-xl text-xs space-y-1.5 max-w-xs z-50 font-mono">
-        <div className="flex items-center justify-between gap-3 border-b border-[#222222] pb-1.5">
+      <div className="bg-[#16181d] border border-[#333742] p-3 rounded-xl shadow-xl text-xs space-y-1.5 max-w-xs z-50 font-mono">
+        <div className="flex items-center justify-between gap-3 border-b border-[#2d313b] pb-1.5">
           <span className="font-semibold text-zinc-200">{data.fullDate || data.date}</span>
           {data.isPB && (
             <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#D1FF00]/15 text-[#D1FF00] border border-[#D1FF00]/40">
