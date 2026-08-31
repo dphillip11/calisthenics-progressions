@@ -548,6 +548,58 @@ function renderFigureContent(
       );
 
     // ----------------- HANDSTAND & HSPU -----------------
+    case 'frog-stand':
+    case 'frog-stand-hold':
+      return (
+        <g id="frog-stand-svg">
+          <line x1="30" y1="165" x2="250" y2="165" stroke={apparatus} strokeWidth="3" strokeLinecap="round" />
+          {/* Hands flat on floor */}
+          <circle cx="110" cy="165" r="4" fill={apparatus} />
+          {/* Arms bent slightly in crow/frog shelf */}
+          <path d="M 110 165 L 115 130" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Head looking slightly forward */}
+          <circle cx="85" cy="120" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Compact torso angled forward over hands */}
+          <path d="M 100 125 L 140 115" stroke={primary} strokeWidth="8.5" strokeLinecap="round" />
+          {/* Knees resting on triceps / back of elbows */}
+          <path d="M 140 115 Q 120 120 115 130" stroke={primary} strokeWidth="7" strokeLinecap="round" />
+          {/* Feet tucked off floor */}
+          <path d="M 140 115 L 155 135" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {/* Forward lean center of gravity line */}
+          <line x1="110" y1="165" x2="110" y2="105" stroke={highlight} strokeWidth="1.5" strokeDasharray="3 3" />
+          {showHighlight && (
+            <circle cx="115" cy="130" r="6" stroke={highlight} strokeWidth="2.5" fill="none" filter={`url(#${glowId})`} />
+          )}
+          <text x="135" y="95" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">KNEE-TO-TRICEP SHELF</text>
+        </g>
+      );
+
+    case 'frog-stand-press':
+    case 'frog-stand-press-reps':
+      return (
+        <g id="frog-stand-press-svg">
+          <line x1="30" y1="165" x2="250" y2="165" stroke={apparatus} strokeWidth="3" strokeLinecap="round" />
+          <circle cx="110" cy="165" r="4" fill={apparatus} />
+          {/* Arms pressing straight pushing floor away */}
+          <path d="M 110 165 L 110 115" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          <circle cx="85" cy="105" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Elevated rounded upper back & floating tucked knees */}
+          <path d="M 100 110 L 140 95" stroke={primary} strokeWidth="8.5" strokeLinecap="round" />
+          {/* Knees lifted completely off triceps */}
+          <path d="M 140 95 Q 120 100 125 110" stroke={primary} strokeWidth="7" strokeLinecap="round" />
+          <path d="M 140 95 L 150 118" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Ghost position of knees resting on elbows */}
+          <circle cx="110" cy="135" r="4" fill="none" stroke={secondary} strokeWidth="1.5" strokeDasharray="2 2" />
+          {/* Elevation press arrow */}
+          <path d="M 115 135 Q 122 120 125 112" stroke={highlight} strokeWidth="2.5" strokeLinecap="round" />
+          <polygon points="122,110 129,112 124,117" fill={highlight} />
+          {showHighlight && (
+            <path d="M 105 160 L 105 120" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="125" y="80" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">STRAIGHT-ARM PRESS</text>
+        </g>
+      );
+
     case 'elevated-pike':
       return (
         <g id="elevated-pike-svg">
@@ -623,19 +675,52 @@ function renderFigureContent(
       );
 
     // ----------------- FRONT LEVER -----------------
-    case 'dragon-flag':
+    case 'fl-scapular-pull':
+    case 'front-lever-scapular':
       return (
-        <g id="dragon-flag-svg">
-          <rect x="40" y="130" width="160" height="20" fill={apparatus} rx="3" />
-          {/* Hand holding edge behind head */}
-          <circle cx="60" cy="125" r="4" fill={apparatus} />
-          {/* Pivot on upper back/traps */}
-          <circle cx="75" cy="125" r="10" fill="none" stroke={primary} strokeWidth="4" />
-          {/* Body lever elevated 30-40 degrees */}
-          <path d="M 80 125 L 180 75" stroke={primary} strokeWidth="9" strokeLinecap="round" />
+        <g id="fl-scapular-svg">
+          {/* Pull-Up Bar */}
+          <line x1="40" y1="35" x2="240" y2="35" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="140" cy="35" r="4" fill={apparatus} />
+          {/* Straight arms angled ~60 deg */}
+          <path d="M 140 35 L 125 80" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {/* Head */}
+          <circle cx="95" cy="85" r="11" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Torso angled 35-45 degrees from horizontal */}
+          <path d="M 115 85 L 175 115" stroke={primary} strokeWidth="8.5" strokeLinecap="round" />
+          {/* Legs straight aligned with torso */}
+          <path d="M 175 115 L 230 145" stroke={primary} strokeWidth="6.5" strokeLinecap="round" />
+          {/* Scapular retraction & depression highlight */}
           {showHighlight && (
-            <path d="M 95 120 L 155 88" stroke={highlight} strokeWidth="3.5" filter={`url(#${glowId})`} />
+            <path d="M 118 78 L 140 88" stroke={highlight} strokeWidth="3.5" filter={`url(#${glowId})`} />
           )}
+          <path d="M 115 110 Q 130 95 145 90" stroke={highlight} strokeWidth="2" strokeDasharray="3 3" />
+          <text x="110" y="65" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">SCAPULAR PULL</text>
+        </g>
+      );
+
+    case 'tuck-fl-reps':
+    case 'tuck-front-lever-reps':
+      return (
+        <g id="tuck-fl-reps-svg">
+          <line x1="40" y1="35" x2="240" y2="35" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="130" cy="35" r="4" fill={apparatus} />
+          {/* Straight arm angled with horizontal lift */}
+          <path d="M 130 35 L 130 85" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          <circle cx="95" cy="85" r="11" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Horizontal tuck body */}
+          <path d="M 110 85 L 170 85" stroke={primary} strokeWidth="8.5" strokeLinecap="round" />
+          <path d="M 170 85 Q 150 115 135 95" stroke={primary} strokeWidth="6.5" strokeLinecap="round" />
+          {/* Ghost hanging tuck position */}
+          <path d="M 130 85 L 130 140" stroke={secondary} strokeWidth="4" strokeDasharray="3 3" strokeLinecap="round" />
+          <circle cx="130" cy="145" r="7" fill="none" stroke={secondary} strokeWidth="2" strokeDasharray="2 2" />
+          {/* Dynamic raise arc */}
+          <path d="M 145 135 Q 185 125 170 95" stroke={highlight} strokeWidth="2.5" strokeDasharray="3 3" />
+          <polygon points="168,90 176,96 166,102" fill={highlight} />
+          {showHighlight && (
+            <path d="M 115 78 L 155 78" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="100" y="65" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">CONCENTRIC REPS</text>
         </g>
       );
 
@@ -692,6 +777,142 @@ function renderFigureContent(
         </g>
       );
 
+    // ----------------- DRAGON FLAG PROGRESSION -----------------
+    case 'df-hollow-hold':
+      return (
+        <g id="df-hollow-hold-svg">
+          {/* Floor baseline */}
+          <line x1="30" y1="150" x2="250" y2="150" stroke={apparatus} strokeWidth="3" />
+          {/* Hollow curve: lower back pressed to floor, head/legs hovering */}
+          <path d="M 55 120 Q 90 148 140 148 Q 190 148 230 122" stroke={primary} strokeWidth="7" strokeLinecap="round" />
+          {/* Arms extended overhead */}
+          <path d="M 70 125 L 45 110" stroke={primary} strokeWidth="4.5" strokeLinecap="round" />
+          {/* Head */}
+          <circle cx="80" cy="120" r="9" fill="none" stroke={primary} strokeWidth="3.5" />
+          {/* Core compression highlight */}
+          {showHighlight && (
+            <path d="M 115 140 Q 140 144 165 140" stroke={highlight} strokeWidth="4" filter={`url(#${glowId})`} />
+          )}
+          <text x="95" y="95" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">POSTERIOR PELVIC TILT</text>
+        </g>
+      );
+
+    case 'df-candlestick':
+      return (
+        <g id="df-candlestick-svg">
+          {/* Bench */}
+          <rect x="35" y="140" width="180" height="16" fill={apparatus} rx="3" />
+          {/* Hands holding behind head */}
+          <circle cx="55" cy="135" r="4" fill={apparatus} />
+          {/* Upper back pivot point */}
+          <circle cx="70" cy="135" r="9" fill="none" stroke={primary} strokeWidth="3.5" />
+          {/* Torso and legs vertical up (90 deg to bench) */}
+          <path d="M 75 135 L 75 45" stroke={primary} strokeWidth="8" strokeLinecap="round" />
+          {/* Vertical alignment dotted line */}
+          <line x1="75" y1="135" x2="75" y2="30" stroke={highlight} strokeWidth="1.5" strokeDasharray="3 3" />
+          {showHighlight && (
+            <line x1="78" y1="120" x2="78" y2="60" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="90" y="55" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">VERTICAL LINE</text>
+        </g>
+      );
+
+    case 'df-tuck':
+      return (
+        <g id="df-tuck-svg">
+          {/* Bench */}
+          <rect x="35" y="135" width="180" height="16" fill={apparatus} rx="3" />
+          <circle cx="55" cy="130" r="4" fill={apparatus} />
+          <circle cx="70" cy="130" r="9" fill="none" stroke={primary} strokeWidth="3.5" />
+          {/* Angled torso at ~35 deg with tucked knees */}
+          <path d="M 75 130 L 140 85" stroke={primary} strokeWidth="8" strokeLinecap="round" />
+          {/* Knees tucked tightly */}
+          <path d="M 140 85 Q 125 105 110 90" stroke={primary} strokeWidth="7" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 85 125 L 130 92" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="120" y="65" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">TUCK LEVER</text>
+        </g>
+      );
+
+    case 'df-adv-tuck':
+      return (
+        <g id="df-adv-tuck-svg">
+          {/* Bench */}
+          <rect x="35" y="135" width="180" height="16" fill={apparatus} rx="3" />
+          <circle cx="55" cy="130" r="4" fill={apparatus} />
+          <circle cx="70" cy="130" r="9" fill="none" stroke={primary} strokeWidth="3.5" />
+          {/* Torso elevated ~30 deg */}
+          <path d="M 75 130 L 145 90" stroke={primary} strokeWidth="8" strokeLinecap="round" />
+          {/* 90 deg thighs and bent knees */}
+          <path d="M 145 90 L 170 120 L 155 125" stroke={primary} strokeWidth="6.5" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 85 125 L 135 95" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="125" y="70" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">90° HIP LEVER</text>
+        </g>
+      );
+
+    case 'df-single-leg':
+      return (
+        <g id="df-single-leg-svg">
+          {/* Bench */}
+          <rect x="35" y="135" width="180" height="16" fill={apparatus} rx="3" />
+          <circle cx="55" cy="130" r="4" fill={apparatus} />
+          <circle cx="70" cy="130" r="9" fill="none" stroke={primary} strokeWidth="3.5" />
+          {/* Torso elevated ~25 deg */}
+          <path d="M 75 130 L 135 95" stroke={primary} strokeWidth="8" strokeLinecap="round" />
+          {/* One leg straight, one tucked */}
+          <path d="M 135 95 L 205 60" stroke={primary} strokeWidth="7" strokeLinecap="round" />
+          <path d="M 135 95 Q 120 115 110 100" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 85 125 L 130 98" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="135" y="45" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">ASYMMETRIC</text>
+        </g>
+      );
+
+    case 'df-straddle':
+      return (
+        <g id="df-straddle-svg">
+          {/* Bench */}
+          <rect x="35" y="135" width="180" height="16" fill={apparatus} rx="3" />
+          <circle cx="55" cy="130" r="4" fill={apparatus} />
+          <circle cx="70" cy="130" r="9" fill="none" stroke={primary} strokeWidth="3.5" />
+          {/* Torso straight line elevated ~25 deg with straddled legs */}
+          <path d="M 75 130 L 195 70" stroke={primary} strokeWidth="8" strokeLinecap="round" />
+          <path d="M 135 100 L 180 85" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 85 125 L 155 90" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="130" y="50" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">STRADDLE LEVER</text>
+        </g>
+      );
+
+    case 'df-eccentric':
+    case 'df-concentric':
+    case 'dragon-flag':
+    case 'full-dragon-flag':
+      return (
+        <g id="dragon-flag-svg">
+          <rect x="35" y="135" width="190" height="16" fill={apparatus} rx="3" />
+          {/* Hand holding edge behind head */}
+          <circle cx="55" cy="130" r="4" fill={apparatus} />
+          {/* Pivot on upper back/traps */}
+          <circle cx="70" cy="130" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Body lever low hover 20-30 degrees off bench */}
+          <path d="M 75 130 L 210 75" stroke={primary} strokeWidth="8.5" strokeLinecap="round" />
+          {/* Hover reference guideline */}
+          <line x1="75" y1="130" x2="215" y2="130" stroke={secondary} strokeWidth="1" strokeDasharray="3 3" />
+          {/* Range arrow */}
+          <path d="M 175 118 Q 185 100 178 85" stroke={highlight} strokeWidth="2" strokeDasharray="2 2" />
+          {showHighlight && (
+            <path d="M 85 125 L 165 92" stroke={highlight} strokeWidth="3.5" filter={`url(#${glowId})`} />
+          )}
+          <text x="130" y="55" fill={highlight} fontSize="10" fontWeight="bold" fontFamily="sans-serif">RIGID PLANK LINE</text>
+        </g>
+      );
+
     // ----------------- L-SIT, V-SIT, MANNA -----------------
     case 'pike-lifts':
       return (
@@ -707,8 +928,47 @@ function renderFigureContent(
       );
 
     case 'tuck-l-sit':
+      return (
+        <g id="tuck-l-sit-svg">
+          <line x1="30" y1="160" x2="250" y2="160" stroke={apparatus} strokeWidth="3" strokeLinecap="round" />
+          {/* Hands flat on floor or parallettes */}
+          <circle cx="110" cy="160" r="4" fill={apparatus} />
+          {/* Straight arm pushing down with scapular depression */}
+          <path d="M 110 160 L 110 115" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <circle cx="110" cy="85" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 110 100 L 110 135" stroke={primary} strokeWidth="9" strokeLinecap="round" />
+          {/* Knees tucked tightly into chest */}
+          <path d="M 110 135 Q 145 120 135 105" stroke={primary} strokeWidth="7.5" strokeLinecap="round" />
+          <path d="M 135 105 L 118 128" stroke={primary} strokeWidth="6" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 105 110 L 105 130" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="135" y="115" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">TUCK SUPPORT</text>
+        </g>
+      );
+
+    case 'single-leg-l-sit':
+    case 'one-leg-l-sit':
+      return (
+        <g id="single-leg-l-sit-svg">
+          <line x1="30" y1="160" x2="250" y2="160" stroke={apparatus} strokeWidth="3" strokeLinecap="round" />
+          <circle cx="110" cy="160" r="4" fill={apparatus} />
+          <path d="M 110 160 L 110 115" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <circle cx="110" cy="85" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 110 100 L 110 135" stroke={primary} strokeWidth="9" strokeLinecap="round" />
+          {/* One leg straight out at 90 degrees */}
+          <path d="M 110 135 L 195 135" stroke={primary} strokeWidth="7.5" strokeLinecap="round" />
+          {/* Other leg tucked into chest */}
+          <path d="M 110 135 Q 138 122 130 110" stroke={secondary} strokeWidth="5.5" strokeDasharray="3 2" strokeLinecap="round" />
+          <path d="M 130 110 L 118 130" stroke={secondary} strokeWidth="5" strokeDasharray="3 2" strokeLinecap="round" />
+          {showHighlight && (
+            <line x1="125" y1="130" x2="175" y2="130" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="130" y="100" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">ASYMMETRIC L-SIT</text>
+        </g>
+      );
+
     case 'full-l-sit':
-    case 'straddle-l-sit':
       return (
         <g id="full-l-sit-svg">
           <line x1="30" y1="160" x2="250" y2="160" stroke={apparatus} strokeWidth="3" strokeLinecap="round" />
@@ -723,7 +983,28 @@ function renderFigureContent(
           <path d="M 110 135 L 195 135" stroke={primary} strokeWidth="7.5" strokeLinecap="round" />
           {/* Clearance gap arrow */}
           <line x1="150" y1="160" x2="150" y2="140" stroke={highlight} strokeWidth="2" strokeLinecap="round" />
-          <text x="135" y="125" fill={highlight} fontSize="9" fontFamily="sans-serif">90° SUSPENSION</text>
+          {showHighlight && (
+            <line x1="120" y1="130" x2="185" y2="130" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="135" y="120" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">90° SUSPENSION</text>
+        </g>
+      );
+
+    case 'straddle-l-sit':
+      return (
+        <g id="straddle-l-sit-svg">
+          <line x1="30" y1="160" x2="250" y2="160" stroke={apparatus} strokeWidth="3" strokeLinecap="round" />
+          <circle cx="110" cy="160" r="4" fill={apparatus} />
+          <path d="M 110 160 L 110 115" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          <circle cx="110" cy="85" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 110 100 L 110 135" stroke={primary} strokeWidth="9" strokeLinecap="round" />
+          {/* Straddled legs */}
+          <path d="M 110 135 L 185 125" stroke={primary} strokeWidth="7" strokeLinecap="round" />
+          <path d="M 110 135 L 185 145" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {showHighlight && (
+            <path d="M 120 132 L 175 124" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+          )}
+          <text x="135" y="105" fill={highlight} fontSize="9" fontWeight="bold" fontFamily="sans-serif">STRADDLE COMPRESSION</text>
         </g>
       );
 

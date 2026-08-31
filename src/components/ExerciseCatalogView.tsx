@@ -67,7 +67,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
   return (
     <div className="space-y-5">
       {/* Filters Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 bg-[#141414] border border-[#222222] rounded-lg p-3.5 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 bg-[#20232a] border border-[#333742] hover:border-[#4b5263] rounded-2xl p-4 shadow-md transition-all duration-200">
         <div className="flex items-center gap-2 text-xs font-mono font-semibold text-zinc-400 uppercase tracking-wider">
           <Filter className="w-3.5 h-3.5 text-[#D1FF00]" />
           <span>Exercise Filter</span>
@@ -75,10 +75,10 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Status filter buttons */}
-          <div className="flex items-center bg-[#0A0A0A] p-1 rounded-md border border-[#222222] text-xs font-mono">
+          <div className="flex items-center bg-[#14161b] p-1 rounded-xl border border-[#2b2f38] text-xs font-mono">
             <button
               onClick={() => setStatusFilter('all')}
-              className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
                 statusFilter === 'all'
                   ? 'bg-[#D1FF00] text-black font-bold shadow-sm'
                   : 'text-zinc-400 hover:text-white'
@@ -88,7 +88,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
             </button>
             <button
               onClick={() => setStatusFilter('mastered')}
-              className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
                 statusFilter === 'mastered'
                   ? 'bg-[#D1FF00] text-black font-bold shadow-sm'
                   : 'text-zinc-400 hover:text-white'
@@ -98,7 +98,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
             </button>
             <button
               onClick={() => setStatusFilter('training')}
-              className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
                 statusFilter === 'training'
                   ? 'bg-[#D1FF00] text-black font-bold shadow-sm'
                   : 'text-zinc-400 hover:text-white'
@@ -112,7 +112,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
           <select
             value={difficultyFilter}
             onChange={e => setDifficultyFilter(e.target.value)}
-            className="bg-[#0A0A0A] border border-[#222222] rounded-md px-3 py-1.5 text-xs text-zinc-300 font-mono focus:border-[#D1FF00] outline-none cursor-pointer"
+            className="bg-[#14161b] border border-[#2b2f38] rounded-xl px-3 py-2 text-xs text-zinc-200 font-mono focus:border-[#D1FF00] outline-none cursor-pointer shadow-xs"
           >
             <option value="all">All Difficulties</option>
             <option value="Beginner">Beginner</option>
@@ -125,10 +125,10 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
 
       {/* Grid of Movement Cards */}
       {filteredExercises.length === 0 ? (
-        <div className="p-12 text-center bg-[#141414] border border-[#222222] rounded-lg text-zinc-400 font-mono space-y-2">
+        <div className="p-12 text-center bg-[#20232a] border border-[#333742] rounded-2xl text-zinc-400 font-mono space-y-2 shadow-md">
           <Target className="w-8 h-8 mx-auto text-zinc-600 mb-2" />
           <p className="font-bold text-zinc-200">No exercises match the selected filters</p>
-          <p className="text-xs text-zinc-500">Try adjusting your category or difficulty filter.</p>
+          <p className="text-xs text-zinc-400">Try adjusting your category or difficulty filter.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -146,13 +146,13 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
             return (
               <div
                 key={exercise.id}
-                className="bg-[#20232a] border border-[#333742] hover:border-[#4b5263] rounded-lg p-4 transition-all duration-150 shadow-md flex flex-col justify-between space-y-3.5 group"
+                className="bg-[#20232a] border border-[#333742] hover:border-[#4b5263] rounded-2xl p-5 transition-all duration-200 shadow-md flex flex-col justify-between space-y-3.5 group"
               >
                 <div className="space-y-2.5">
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5">
-                      <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold border uppercase tracking-wider bg-[#2c303a] text-zinc-200 border-[#3f4554]`}>
+                      <span className="px-2.5 py-0.5 rounded text-[9px] font-mono font-bold border uppercase tracking-wider bg-[#2b303a] text-zinc-200 border-[#3e4453]">
                         Lvl {exercise.level} · {exercise.difficulty}
                       </span>
                       {exercise.videoDemoUrl && (
@@ -161,7 +161,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={e => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-rose-500/15 border border-rose-500/40 text-rose-400 hover:text-white hover:bg-rose-500/30 transition"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-rose-500/15 border border-rose-500/40 text-rose-400 hover:text-white hover:bg-rose-500/30 transition"
                           title="Watch video demonstration on YouTube"
                         >
                           <span>Video</span>
@@ -171,15 +171,15 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
                     </div>
 
                     {isPassed ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-950/70 text-emerald-300 border border-emerald-500/50">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-950/70 text-emerald-300 border border-emerald-500/50">
                         <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Mastered
                       </span>
                     ) : currentBest > 0 ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-950/70 text-amber-300 border border-amber-500/50">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-950/70 text-amber-300 border border-amber-500/50">
                         <Flame className="w-3 h-3 text-amber-400" /> In Training
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-[#282c35] text-zinc-300 border border-[#393e4d]">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#2b303a] text-zinc-300 border border-[#3e4453]">
                         Ready
                       </span>
                     )}
@@ -201,7 +201,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
                   {/* Biomechanical Vector Illustration */}
                   <div
                     onClick={() => onSelectExercise(exercise)}
-                    className="w-full h-32 rounded-lg overflow-hidden cursor-pointer border border-[#333742] hover:border-[#4f5566] bg-[#121316] transition shadow-inner"
+                    className="w-full h-32 rounded-xl overflow-hidden cursor-pointer border border-[#333742] hover:border-[#4b5263] bg-[#14161b] transition shadow-inner"
                   >
                     <BiomechanicalIllustration
                       type={exercise.illustrationType}
@@ -211,7 +211,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
                   </div>
 
                   {/* Pass Standard Box */}
-                  <div className="bg-[#16181d] border border-[#2d313b] rounded-md p-2.5 space-y-1 shadow-xs">
+                  <div className="bg-[#14161b] border border-[#2b2f38] rounded-xl p-3 space-y-1 shadow-xs">
                     <div className="flex items-center justify-between text-xs font-mono">
                       <span className="text-zinc-300 flex items-center gap-1 text-[11px]">
                         <Award className="w-3 h-3 text-[#D1FF00]" />
@@ -228,27 +228,27 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
                 </div>
 
                 {/* Bottom Bar: PB Stat & Action Buttons */}
-                <div className="pt-2.5 border-t border-[#333742] flex items-center justify-between gap-2">
-                  <div>
+                <div className="pt-3 border-t border-[#333742] flex items-center justify-between gap-2">
+                  <div className="bg-[#14161b] border border-[#2b2f38] rounded-xl px-3 py-1.5 shadow-xs">
                     <span className="text-[9px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">
                       PB RECORD
                     </span>
-                    <span className="text-base font-black font-mono text-[#D1FF00]">
+                    <span className="text-sm sm:text-base font-black font-mono text-[#D1FF00]">
                       {currentBest} {isSeconds ? 's' : 'reps'}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => onSelectExercise(exercise)}
-                      className="p-1.5 rounded-md bg-[#2c303a] hover:bg-[#373c48] text-zinc-200 border border-[#3f4554] hover:border-[#525a6c] transition cursor-pointer shadow-xs"
+                      className="p-2 rounded-xl bg-[#2b303a] hover:bg-[#383e4c] text-zinc-200 border border-[#3e4453] hover:border-[#525a6c] transition cursor-pointer shadow-xs"
                       title="View Full Details & Graph"
                     >
-                      <TrendingUp className="w-3.5 h-3.5 text-[#D1FF00]" />
+                      <TrendingUp className="w-4 h-4 text-[#D1FF00]" />
                     </button>
                     <button
                       onClick={() => onOpenLogModal(exercise)}
-                      className="px-2.5 py-1.5 rounded-md bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition flex items-center gap-1 shadow-xs active:scale-95 cursor-pointer border border-black/20"
+                      className="px-3 py-2 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition flex items-center gap-1 shadow-xs active:scale-95 cursor-pointer border border-black/20"
                     >
                       <Dumbbell className="w-3.5 h-3.5" />
                       Log Set

@@ -313,14 +313,14 @@ export default function App() {
                     <button
                       key={tree.id}
                       onClick={() => setSelectedTreeId(tree.id)}
-                      className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-150 cursor-pointer flex flex-col justify-between ${
+                      className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between shadow-xs ${
                         isSelected
-                          ? 'bg-[#141414] border-[#D1FF00] shadow-md shadow-[#D1FF00]/10 ring-1 ring-[#D1FF00]/40'
-                          : 'bg-[#121212] hover:bg-[#181818] border-[#222222] hover:border-zinc-700'
+                          ? 'bg-[#20232a] border-[#D1FF00] shadow-md shadow-[#D1FF00]/10 ring-1 ring-[#D1FF00]/40'
+                          : 'bg-[#20232a]/70 hover:bg-[#20232a] border-[#333742] hover:border-[#4b5263]'
                       }`}
                     >
                       <div>
-                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-zinc-500 block">
+                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-zinc-400 block">
                           {tree.category}
                         </span>
                         <h4 className={`text-xs sm:text-sm font-bold tracking-tight mt-0.5 line-clamp-1 font-display ${
@@ -330,7 +330,7 @@ export default function App() {
                         </h4>
                       </div>
 
-                      <div className="mt-2.5 pt-2 border-t border-[#1f1f1f] flex items-center justify-between text-[10px] font-mono">
+                      <div className="mt-2.5 pt-2 border-t border-[#333742] flex items-center justify-between text-[10px] font-mono">
                         <span className={isSelected ? 'text-[#D1FF00] font-bold' : 'text-zinc-400'}>
                           {passed}/{treeExs.length} done
                         </span>

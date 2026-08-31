@@ -105,13 +105,15 @@ export const SKILL_TREES: SkillTree[] = [
     name: 'Handstand & Handstand Push-Up',
     shortName: 'Handstand / HSPU',
     category: 'Handstand',
-    description: 'Master balance, hollow-body alignment, and vertical overhead pushing from wall drills to freestanding HSPUs.',
+    description: 'Master balance, hollow-body alignment, and vertical overhead pushing from pike push-ups and wall drills to freestanding HSPUs.',
     iconName: 'Target',
     color: 'from-purple-500/20 to-indigo-600/20',
     accentColor: 'text-purple-400',
     exercises: [
       'elevated-pike-push-ups',
       'wall-handstand-chest-to-wall',
+      'frog-stand-hold',
+      'frog-stand-press-reps',
       'freestanding-handstand-hold',
       'wall-handstand-push-ups',
       'freestanding-handstand-push-up',
@@ -128,13 +130,35 @@ export const SKILL_TREES: SkillTree[] = [
     color: 'from-rose-500/20 to-red-600/20',
     accentColor: 'text-rose-400',
     exercises: [
-      'active-hang-dragon-flag',
+      'front-lever-scapular-pulls',
+      'tuck-front-lever-reps',
       'tuck-front-lever-hold',
       'advanced-tuck-front-lever',
       'single-leg-front-lever',
       'straddle-front-lever',
       'full-front-lever-hold',
       'front-lever-pull-ups'
+    ]
+  },
+  {
+    id: 'dragon-flag-tree',
+    name: 'Dragon Flag Preparation & Progression',
+    shortName: 'Dragon Flag (DF)',
+    category: 'Core',
+    description: 'Master the iconic straight-body lever on bench and floor popularized by Bruce Lee, progressing from hollow core mechanics to full dragon flag holds and concentric raises.',
+    iconName: 'Sparkles',
+    color: 'from-amber-500/20 to-rose-600/20',
+    accentColor: 'text-amber-400',
+    exercises: [
+      'df-hollow-body-hold',
+      'df-candlestick-shoulder-stand',
+      'df-tuck-dragon-flag',
+      'df-adv-tuck-dragon-flag',
+      'df-single-leg-dragon-flag',
+      'df-straddle-dragon-flag',
+      'df-eccentric-negatives',
+      'df-full-dragon-flag-hold',
+      'df-concentric-raises'
     ]
   },
   {
@@ -149,6 +173,7 @@ export const SKILL_TREES: SkillTree[] = [
     exercises: [
       'seated-pike-leg-lifts',
       'tuck-l-sit-support',
+      'single-leg-l-sit-hold',
       'full-l-sit-hold',
       'straddle-l-sit-hold',
       'v-sit-hold',
@@ -1608,7 +1633,7 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'elevated-pike-push-ups',
     skillTreeId: 'handstand-hspu',
     title: 'Feet-Elevated Pike Push-Ups',
-    subtitle: 'Foundation 1 · Overhead Pressing Mechanics',
+    subtitle: 'Foundation 1 · Overhead Pressing Mechanics & Tripod Tracking',
     level: 1,
     difficulty: 'Beginner',
     category: 'Handstand',
@@ -1657,7 +1682,7 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
       notes: 'No banana back; shoulders actively elevated into ears.'
     },
     prerequisites: ['elevated-pike-push-ups'],
-    unlockedSkills: ['freestanding-handstand-hold', 'wall-handstand-push-ups'],
+    unlockedSkills: ['frog-stand-hold'],
     description: 'Chest-to-wall enforces ideal hollow body gymnastics alignment, eliminating the lumbar arch common in back-to-wall handstands.',
     formCues: [
       'Walk feet up wall until hands are close (4-6 in)',
@@ -1675,12 +1700,86 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     illustrationType: 'wall-handstand',
     tips: 'Breathe smoothly in shallow rhythmic cycles while keeping the ribcage down.'
   },
+  'frog-stand-hold': {
+    id: 'frog-stand-hold',
+    skillTreeId: 'handstand-hspu',
+    title: 'Frog Stand (Crow Pose) Static Hold',
+    subtitle: 'Level 3 · Wrist Conditioning & Forward Lean Balance',
+    level: 3,
+    difficulty: 'Intermediate',
+    category: 'Handstand',
+    equipment: ['Floor', 'Parallettes (optional)'],
+    metricType: 'seconds',
+    passCriteria: {
+      targetHoldSeconds: 30,
+      targetSets: 3,
+      restSeconds: 60,
+      formStandard: 'Palms flat on floor, inner knees resting securely on the backs of triceps/elbows. Feet tucked off floor, balancing solely on hands for 30s.',
+      tempo: 'Static Hold',
+      notes: 'Grip floor actively with fingertips to control pitch.'
+    },
+    prerequisites: ['wall-handstand-chest-to-wall'],
+    unlockedSkills: ['frog-stand-press-reps'],
+    description: 'The foundational bent-arm balance drill. Conditions the wrists to bear full bodyweight, strengthens the anterior deltoids, and grooves forward-lean center-of-mass control before freestanding handstand balance.',
+    formCues: [
+      'Spread fingers wide and grip the floor firmly with fingertips',
+      'Rest inner knees securely against the back of your triceps',
+      'Shift weight forward until toes naturally lift off the ground',
+      'Look slightly forward of your hands to stabilize equilibrium'
+    ],
+    commonMistakes: [
+      'Jumping or hopping feet off the ground rather than leaning into balance',
+      'Looking straight down or letting head collapse',
+      'Relaxing fingers and letting wrists take raw compressive stress'
+    ],
+    primaryMuscles: ['Anterior Deltoids', 'Forearm Flexors', 'Wrist Stabilizers', 'Triceps'],
+    secondaryMuscles: ['Core (Transverse Abdominis)', 'Serratus Anterior', 'Hip Flexors'],
+    illustrationType: 'frog-stand',
+    tips: 'Place a soft mat or pillow in front of your face when first practicing to overcome fear of tipping forward.'
+  },
+  'frog-stand-press-reps': {
+    id: 'frog-stand-press-reps',
+    skillTreeId: 'handstand-hspu',
+    title: 'Frog Stand Press Reps (Straight-Arm Knee Lifts)',
+    subtitle: 'Level 4 · Straight-Arm Shoulder Elevation & Press Transition',
+    level: 4,
+    difficulty: 'Intermediate',
+    category: 'Handstand',
+    equipment: ['Floor', 'Parallettes'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 8,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'From frog stand, press through palms to lock arms 100% straight and elevate knees completely off triceps into a floating tuck, pause for 1s, and lower softly back onto elbows.',
+      tempo: '2-1-2-1',
+      notes: 'Knees must achieve full clearance from arms at the peak of every repetition.'
+    },
+    prerequisites: ['frog-stand-hold'],
+    unlockedSkills: ['freestanding-handstand-hold', 'wall-handstand-push-ups'],
+    description: 'Dynamic straight-arm press repetitions directly from the frog stand. Teaches scapular protraction, shoulder elevation, and straight-arm pressing power required for press to handstand and handstand push-up control.',
+    formCues: [
+      'Establish stable frog stand balance with knees on triceps',
+      'Drive palms through the floor to push arms completely straight',
+      'Protract and elevate shoulder blades to lift knees clean off elbows',
+      'Hold floating tuck peak for 1 second before lowering knees gently back to triceps'
+    ],
+    commonMistakes: [
+      'Kicking or jumping legs up instead of pressing through shoulders',
+      'Keeping elbows bent during the press phase',
+      'Crashing knees heavily back down onto triceps'
+    ],
+    primaryMuscles: ['Anterior Deltoids', 'Serratus Anterior', 'Triceps Brachii', 'Upper Trapezius'],
+    secondaryMuscles: ['Rectus Abdominis', 'Hip Flexors', 'Forearm Flexors'],
+    illustrationType: 'frog-stand-press',
+    tips: 'Focus on protracting and pushing your shoulder blades toward your ears as you straighten your arms.'
+  },
   'freestanding-handstand-hold': {
     id: 'freestanding-handstand-hold',
     skillTreeId: 'handstand-hspu',
     title: 'Freestanding Handstand Hold',
-    subtitle: 'Level 3 · Balance, Micro-Adjustments & Spatial Mastery',
-    level: 3,
+    subtitle: 'Level 5 · Balance, Micro-Adjustments & Spatial Mastery',
+    level: 5,
     difficulty: 'Intermediate',
     category: 'Handstand',
     equipment: ['Floor', 'Parallettes (optional)'],
@@ -1692,7 +1791,7 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
       formStandard: 'Freestanding without stepping or wall support. Straight line from wrists through shoulders, hips, and ankles for 30s.',
       notes: 'Balance controlled predominantly through fingertip pressure and heel of palm.'
     },
-    prerequisites: ['wall-handstand-chest-to-wall'],
+    prerequisites: ['frog-stand-press-reps'],
     unlockedSkills: ['freestanding-handstand-push-up'],
     description: 'The master balance skill. Involves constant micro-corrections using the "wrist camber" technique—fingertip pressing when falling over, palm pressure when under-balancing.',
     formCues: [
@@ -1715,8 +1814,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'wall-handstand-push-ups',
     skillTreeId: 'handstand-hspu',
     title: 'Wall Handstand Push-Ups (Chest-to-Wall / Full ROM)',
-    subtitle: 'Level 4 · True Vertical Strength',
-    level: 4,
+    subtitle: 'Level 6 · True Vertical Strength',
+    level: 6,
     difficulty: 'Advanced',
     category: 'Handstand',
     equipment: ['Wall', 'Parallettes / Floor'],
@@ -1751,8 +1850,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'freestanding-handstand-push-up',
     skillTreeId: 'handstand-hspu',
     title: 'Freestanding Handstand Push-Up',
-    subtitle: 'Level 5 · Synthesis of Balance & Raw Power',
-    level: 5,
+    subtitle: 'Level 7 · Synthesis of Balance & Raw Power',
+    level: 7,
     difficulty: 'Elite',
     category: 'Handstand',
     equipment: ['Floor', 'Parallettes'],
@@ -1787,8 +1886,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: '90-degree-push-up',
     skillTreeId: 'handstand-hspu',
     title: '90-Degree Push-Up (Hollowback Press)',
-    subtitle: 'Level 6 · The Ultimate Calisthenics Pushing Feat',
-    level: 6,
+    subtitle: 'Level 8 · The Ultimate Calisthenics Pushing Feat',
+    level: 8,
     difficulty: 'Elite',
     category: 'Handstand',
     equipment: ['Floor', 'Parallettes'],
@@ -1821,48 +1920,86 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
   },
 
   // FRONT LEVER
-  'active-hang-dragon-flag': {
-    id: 'active-hang-dragon-flag',
+  'front-lever-scapular-pulls': {
+    id: 'front-lever-scapular-pulls',
     skillTreeId: 'front-lever-progression',
-    title: 'Dragon Flags & Active Hang',
-    subtitle: 'Foundation 1 · Core Lever Tension & Lat Engagement',
+    title: 'Front Lever Scapular Pulls & Active Hang',
+    subtitle: 'Foundation 1 · Straight-Arm Lat Depressions & Scapular Retraction',
     level: 1,
     difficulty: 'Beginner',
     category: 'Static Hold',
-    equipment: ['Bench / Bar'],
+    equipment: ['Pull-up Bar', 'Gymnastic Rings'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 10,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'From active dead hang with straight arms, depress and retract scapulae with high lat torque to elevate body 30-45 degrees without elbow bend.',
+      tempo: '2-1-2-1',
+      notes: 'Builds straight-arm scapular control and lat engagement before tackling horizontal levers.'
+    },
+    prerequisites: [],
+    unlockedSkills: ['tuck-front-lever-reps'],
+    description: 'The definitive straight-arm pulling foundation for the front lever. Trains the scapular depressors, lats, and teres major to generate horizontal torque without cheating with the biceps.',
+    formCues: [
+      'Lock elbows 100% straight with thumbs over bar',
+      'Drive shoulder blades down toward back pockets and squeeze together',
+      'Pull the bar down toward hips to tilt torso backward',
+      'Pause for 1 full second at peak contraction'
+    ],
+    commonMistakes: [
+      'Bending elbows into a standard pull-up',
+      'Kipping with the hips or legs',
+      'Passive shoulder shrugging at the bottom'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Rhomboids', 'Lower Trapezius', 'Teres Major'],
+    secondaryMuscles: ['Posterior Deltoids', 'Forearms', 'Core Wall'],
+    illustrationType: 'fl-scapular-pull',
+    tips: 'Imagine snapping the pull-up bar across your thighs while keeping your arms as rigid as steel rods.'
+  },
+  'tuck-front-lever-reps': {
+    id: 'tuck-front-lever-reps',
+    skillTreeId: 'front-lever-progression',
+    title: 'Tuck Front Lever Dynamic Pulls & Reps',
+    subtitle: 'Foundation 2 · Straight-Arm Dynamic Pull to Horizontal',
+    level: 2,
+    difficulty: 'Intermediate',
+    category: 'Static Hold',
+    equipment: ['Pull-up Bar', 'Gymnastic Rings'],
     metricType: 'reps',
     passCriteria: {
       targetReps: 8,
       targetSets: 3,
       restSeconds: 90,
-      formStandard: 'Body rigid from shoulders to toes. Lower to 2 inches off bench and raise back up purely pivoting on upper back/shoulders.',
-      tempo: '3-1-1-1'
+      formStandard: 'From active dead hang with straight arms and tucked knees, pull down with lats to raise torso to completely horizontal plane, hold for 1s, and lower under strict 3-second control.',
+      tempo: '3-1-1-1',
+      notes: 'Zero elbow bend; initiate and control entirely with straight-arm lat torque.'
     },
-    prerequisites: [],
+    prerequisites: ['front-lever-scapular-pulls'],
     unlockedSkills: ['tuck-front-lever-hold'],
-    description: ' popularized by Bruce Lee, the dragon flag builds the intense straight-body abdominal lever strength and lat engagement required for levers.',
+    description: 'Dynamic straight-arm repetitions from dead hang into horizontal tuck front lever and back down. Builds the concentric and eccentric lat power required to hold the static horizontal position effortlessly.',
     formCues: [
-      'Grip bench firmly behind head',
-      'Pivot strictly from upper traps/scapulae',
-      'Maintain continuous straight line from chest to toes',
-      'Do not bend at the hips'
+      'Lock elbows 100% straight before initiating the pull',
+      'Tuck knees to chest and depress/retract shoulder blades',
+      'Pull down on the bar using lats to elevate hips to shoulder height',
+      'Pause 1 full second at horizontal before a controlled 3-second lowering'
     ],
     commonMistakes: [
-      'Bending at hips (hip flexion)',
-      'Resting hips on bench during movement',
-      'Using neck to pull'
+      'Bending elbows into a knee-tuck pull-up',
+      'Swinging or kipping from the hang for momentum',
+      'Failing to reach parallel horizontal at the top of each rep'
     ],
-    primaryMuscles: ['Rectus Abdominis', 'Latissimus Dorsi', 'Hip Flexors'],
-    secondaryMuscles: ['Glutes', 'Triceps Long Head', 'Spinal Erectors'],
-    illustrationType: 'dragon-flag',
-    tips: 'Think about pushing the bench away from you with your hands while keeping your glutes squeezed.'
+    primaryMuscles: ['Latissimus Dorsi', 'Teres Major', 'Rhomboids', 'Lower Trapezius'],
+    secondaryMuscles: ['Rectus Abdominis', 'Triceps Long Head', 'Forearms', 'Rear Deltoids'],
+    illustrationType: 'tuck-front-lever-reps',
+    tips: 'Think of doing a dynamic straight-arm cable pullover using your own bodyweight against gravity.'
   },
   'tuck-front-lever-hold': {
     id: 'tuck-front-lever-hold',
     skillTreeId: 'front-lever-progression',
     title: 'Tuck Front Lever Static Hold',
-    subtitle: 'Foundation 2 · Straight-Arm Horizontal Pulling',
-    level: 2,
+    subtitle: 'Level 3 · Horizontal Static Hold & Scapular Lock',
+    level: 3,
     difficulty: 'Intermediate',
     category: 'Static Hold',
     equipment: ['Pull-up Bar', 'Gymnastic Rings'],
@@ -1874,7 +2011,7 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
       formStandard: 'Arms locked straight. Scapulae retracted and depressed. Back completely horizontal parallel to ground with knees tucked to chest.',
       notes: 'No bending at elbows; torso must be horizontal, not angled.'
     },
-    prerequisites: ['active-hang-dragon-flag'],
+    prerequisites: ['tuck-front-lever-reps'],
     unlockedSkills: ['advanced-tuck-front-lever'],
     description: 'First straight-arm horizontal lever progression. Teaches full lat engagement, straight elbow stability, and scapular retraction under horizontal load.',
     formCues: [
@@ -1897,8 +2034,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'advanced-tuck-front-lever',
     skillTreeId: 'front-lever-progression',
     title: 'Advanced Tuck Front Lever',
-    subtitle: 'Level 3 · 90-Degree Hip Angle Flat Back',
-    level: 3,
+    subtitle: 'Level 4 · 90-Degree Hip Angle Flat Back',
+    level: 4,
     difficulty: 'Advanced',
     category: 'Static Hold',
     equipment: ['Pull-up Bar', 'Gymnastic Rings'],
@@ -1933,8 +2070,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'single-leg-front-lever',
     skillTreeId: 'front-lever-progression',
     title: 'Single-Leg Front Lever Hold',
-    subtitle: 'Level 4 · Asymmetric Long Lever Overload',
-    level: 4,
+    subtitle: 'Level 5 · Asymmetric Long Lever Overload',
+    level: 5,
     difficulty: 'Advanced',
     category: 'Static Hold',
     equipment: ['Pull-up Bar', 'Gymnastic Rings'],
@@ -1969,8 +2106,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'straddle-front-lever',
     skillTreeId: 'front-lever-progression',
     title: 'Straddle Front Lever Hold',
-    subtitle: 'Level 5 · Wide-Leg Horizontal Suspension',
-    level: 5,
+    subtitle: 'Level 6 · Wide-Leg Horizontal Suspension',
+    level: 6,
     difficulty: 'Advanced',
     category: 'Static Hold',
     equipment: ['Pull-up Bar', 'Gymnastic Rings'],
@@ -2005,8 +2142,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'full-front-lever-hold',
     skillTreeId: 'front-lever-progression',
     title: 'Full Front Lever Static Hold',
-    subtitle: 'Level 6 · Complete Gravity Defiance',
-    level: 6,
+    subtitle: 'Level 7 · Complete Gravity Defiance',
+    level: 7,
     difficulty: 'Elite',
     category: 'Static Hold',
     equipment: ['Pull-up Bar', 'Gymnastic Rings'],
@@ -2041,8 +2178,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'front-lever-pull-ups',
     skillTreeId: 'front-lever-progression',
     title: 'Front Lever Pull-Ups (Row to Bar)',
-    subtitle: 'Level 7 · Dynamic Horizontal Power',
-    level: 7,
+    subtitle: 'Level 8 · Dynamic Horizontal Power',
+    level: 8,
     difficulty: 'Elite',
     category: 'Static Hold',
     equipment: ['Pull-up Bar', 'Gymnastic Rings'],
@@ -2072,6 +2209,341 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     secondaryMuscles: ['Core', 'Glutes', 'Forearms'],
     illustrationType: 'front-lever-pullup',
     tips: 'Practice touch repetitions in advanced tuck before advancing to full straight-leg reps.'
+  },
+
+  // DRAGON FLAG PREPARATION & PROGRESSION
+  'df-hollow-body-hold': {
+    id: 'df-hollow-body-hold',
+    skillTreeId: 'dragon-flag-tree',
+    title: 'Hollow Body Hold & Rockers',
+    subtitle: 'Foundation 1 · Posterior Pelvic Tilt & Anti-Extension',
+    level: 1,
+    difficulty: 'Beginner',
+    category: 'Core',
+    equipment: ['Gym Mat / Floor'],
+    metricType: 'seconds',
+    passCriteria: {
+      targetHoldSeconds: 45,
+      targetSets: 3,
+      restSeconds: 60,
+      formStandard: 'Lower back (lumbar spine) firmly glued to the floor with zero gap. Arms extended straight overhead, legs locked with toes pointed 6-12 inches off floor.',
+      tempo: 'Static Hold',
+      notes: 'If lower back arches off floor, raise legs higher until pelvic tilt is restored.'
+    },
+    prerequisites: [],
+    unlockedSkills: ['df-candlestick-shoulder-stand'],
+    description: 'The fundamental calisthenics core posture. Teaches active posterior pelvic tilt and deep abdominal compression required to prevent lower back hyperextension during full-body levers.',
+    formCues: [
+      'Tuck pelvis backward so your entire lower back presses into the floor',
+      'Lock knees, point toes, and glue inner thighs together',
+      'Reach arms straight back past your ears with elbows locked',
+      'Keep shoulder blades elevated off the floor throughout the hold'
+    ],
+    commonMistakes: [
+      'Lower back arching off the mat (lumbar hyperextension)',
+      'Bending knees or relaxing feet',
+      'Holding breath instead of deep diaphragmatic breathing'
+    ],
+    primaryMuscles: ['Rectus Abdominis', 'Transverse Abdominis', 'Hip Flexors'],
+    secondaryMuscles: ['Quadriceps', 'Obliques', 'Serratus Anterior'],
+    illustrationType: 'df-hollow-hold',
+    tips: 'Imagine someone trying to slide a piece of paper under your lower back—your spine should pin it down firmly.'
+  },
+  'df-candlestick-shoulder-stand': {
+    id: 'df-candlestick-shoulder-stand',
+    skillTreeId: 'dragon-flag-tree',
+    title: 'Candlestick / Vertical Shoulder Stand',
+    subtitle: 'Foundation 2 · Upper Back Pivot & Straight Alignment',
+    level: 2,
+    difficulty: 'Beginner',
+    category: 'Core',
+    equipment: ['Workout Bench', 'Floor / Low Bar'],
+    metricType: 'seconds',
+    passCriteria: {
+      targetHoldSeconds: 30,
+      targetSets: 3,
+      restSeconds: 75,
+      formStandard: 'Pivot strictly on upper back and traps. Body pointed straight vertical toward the ceiling like a candlestick. Hips fully extended without piking.',
+      tempo: 'Static Hold',
+      notes: 'Weight rests on upper shoulder girdle, never on neck/cervical spine.'
+    },
+    prerequisites: ['df-hollow-body-hold'],
+    unlockedSkills: ['df-tuck-dragon-flag'],
+    description: 'Establishes the upper back pivot point on the bench while grooving vertical hip extension and lat grip security before introducing horizontal lever torque.',
+    formCues: [
+      'Firmly grip the edge of the bench behind your ears',
+      'Roll up onto your upper traps and posterior shoulders',
+      'Squeeze glutes and quads to create a razor-sharp vertical line',
+      'Keep head resting comfortably with no pressure on neck'
+    ],
+    commonMistakes: [
+      'Resting bodyweight directly on the neck or cervical vertebrae',
+      'Piking at the hips rather than extending to full vertical line',
+      'Loose grip allowing shoulders to slip down the bench'
+    ],
+    primaryMuscles: ['Upper Trapezius', 'Rectus Abdominis', 'Gluteus Maximus'],
+    secondaryMuscles: ['Latissimus Dorsi', 'Triceps', 'Spinal Erectors'],
+    illustrationType: 'df-candlestick',
+    tips: 'Push into the bench with your hands to keep your weight anchored onto the muscular shoulder shelf.'
+  },
+  'df-tuck-dragon-flag': {
+    id: 'df-tuck-dragon-flag',
+    skillTreeId: 'dragon-flag-tree',
+    title: 'Tuck Dragon Flag Lowers & Holds',
+    subtitle: 'Level 3 · Short-Lever Eccentric & Static Control',
+    level: 3,
+    difficulty: 'Intermediate',
+    category: 'Core',
+    equipment: ['Workout Bench', 'Floor / Low Post'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 8,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'Knees tucked tightly into chest. Lower torso from vertical until 2 inches above bench, hold for 1s, and raise back up using only core/lat tension.',
+      tempo: '3-1-1-1',
+      notes: 'No resting hips or lower back on the bench between reps.'
+    },
+    prerequisites: ['df-candlestick-shoulder-stand'],
+    unlockedSkills: ['df-adv-tuck-dragon-flag'],
+    description: 'The first true dragon flag movement. By folding the knees into the chest, lever torque is reduced by ~50%, allowing practitioners to safely build eccentric control and lat-to-core synchronization.',
+    formCues: [
+      'Tuck knees tight to chest while keeping upper back planted on bench',
+      'Lower torso smoothly with a strict 3-second tempo',
+      'Hover hips just 2 inches above bench without letting lower back touch',
+      'Pull through lats and anterior core to raise back to top'
+    ],
+    commonMistakes: [
+      'Letting hips drop onto bench to rest during repetitions',
+      'Flaring elbows out or losing firm grip on bench',
+      'Kicking legs dynamically to generate momentum'
+    ],
+    primaryMuscles: ['Rectus Abdominis', 'Latissimus Dorsi', 'Hip Flexors'],
+    secondaryMuscles: ['Triceps Long Head', 'Glutes', 'Rhomboids'],
+    illustrationType: 'df-tuck',
+    tips: 'Focus on feeling your lats engage as you pull the bench toward you during the ascent.'
+  },
+  'df-adv-tuck-dragon-flag': {
+    id: 'df-adv-tuck-dragon-flag',
+    skillTreeId: 'dragon-flag-tree',
+    title: 'Advanced Tuck Dragon Flag',
+    subtitle: 'Level 4 · 90-Degree Hip Extension Lever',
+    level: 4,
+    difficulty: 'Intermediate',
+    category: 'Core',
+    equipment: ['Workout Bench', 'Floor'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 6,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'Thighs open to 90 degrees with torso (shins bent). Lower to horizontal plane and press back to vertical without curling back into compact tuck.',
+      tempo: '3-1-1-1',
+      notes: 'Torso must remain straight like a ramp; do not round thoracic spine.'
+    },
+    prerequisites: ['df-tuck-dragon-flag'],
+    unlockedSkills: ['df-single-leg-dragon-flag'],
+    description: 'Opening the hips from a compact tuck to a 90-degree angle moves the center of mass further from the shoulder pivot, substantially increasing anti-extension demands on the rectus abdominis.',
+    formCues: [
+      'Open hip angle to 90 degrees with knees bent',
+      'Keep spine straight from shoulders through pelvis',
+      'Lower under control with no sudden dropping at the bottom',
+      'Maintain constant posterior pelvic tilt throughout the descent'
+    ],
+    commonMistakes: [
+      'Snapping back into compact tuck as soon as the load gets heavy',
+      'Hyperextending lumbar spine on the lower portion',
+      'Jerking the neck to initiate the upward drive'
+    ],
+    primaryMuscles: ['Rectus Abdominis', 'Latissimus Dorsi', 'Obliques'],
+    secondaryMuscles: ['Glutes', 'Quadriceps', 'Triceps Long Head'],
+    illustrationType: 'df-adv-tuck',
+    tips: 'Lock your hip angle into place before beginning each repetition and do not change it during the stroke.'
+  },
+  'df-single-leg-dragon-flag': {
+    id: 'df-single-leg-dragon-flag',
+    skillTreeId: 'dragon-flag-tree',
+    title: 'Single-Leg Dragon Flag',
+    subtitle: 'Level 5 · Asymmetric Long-Lever Overload',
+    level: 5,
+    difficulty: 'Advanced',
+    category: 'Core',
+    equipment: ['Workout Bench', 'Floor'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 6,
+      targetSets: 3,
+      restSeconds: 120,
+      formStandard: 'One leg extended 100% straight in line with torso; opposite knee tucked. Lower to hover and pull back to vertical. Complete 6 reps on each side.',
+      tempo: '3-1-1-1',
+      notes: 'Keep pelvis level and square without rotating toward the bent leg.'
+    },
+    prerequisites: ['df-adv-tuck-dragon-flag'],
+    unlockedSkills: ['df-straddle-dragon-flag'],
+    description: 'Extending one leg straight doubles the lever resistance on one side of the pelvic girdle, developing asymmetric anti-rotational core strength and preparing for full straight-body levers.',
+    formCues: [
+      'Lock one knee completely straight with pointed toe',
+      'Keep other knee tucked at 90 degrees against chest',
+      'Lower the straight bodyline down to horizontal hover',
+      'Alternate lead legs between sets for balanced abdominal development'
+    ],
+    commonMistakes: [
+      'Tilting or rotating pelvis sideways toward the tucked leg',
+      'Letting the straight leg droop lower than the torso line',
+      'Bending the knee of the extended leg'
+    ],
+    primaryMuscles: ['Rectus Abdominis', 'Internal & External Obliques', 'Latissimus Dorsi'],
+    secondaryMuscles: ['Quadriceps', 'Glutes', 'Spinal Erectors'],
+    illustrationType: 'df-single-leg',
+    tips: 'Squeeze the quad and glute of the extended leg to turn it into an immovable beam.'
+  },
+  'df-straddle-dragon-flag': {
+    id: 'df-straddle-dragon-flag',
+    skillTreeId: 'dragon-flag-tree',
+    title: 'Straddle Dragon Flag Hold & Reps',
+    subtitle: 'Level 6 · Straight-Leg Shortened Center of Mass',
+    level: 6,
+    difficulty: 'Advanced',
+    category: 'Core',
+    equipment: ['Workout Bench', 'Floor'],
+    metricType: 'seconds',
+    passCriteria: {
+      targetHoldSeconds: 15,
+      targetSets: 3,
+      restSeconds: 120,
+      formStandard: 'Both legs locked straight in a wide V-straddle. Full body held horizontally 2-4 inches above bench with straight spine and shoulder pivot.',
+      tempo: 'Static Hold',
+      notes: 'Can also perform 5 strict straddle reps for dynamic volume.'
+    },
+    prerequisites: ['df-single-leg-dragon-flag'],
+    unlockedSkills: ['df-eccentric-negatives'],
+    description: 'Spreading the legs into a wide straddle keeps both knees locked straight while bringing the center of gravity closer to the pivot point, teaching the full straight-body tension state.',
+    formCues: [
+      'Spread legs wide with locked knees and pointed toes',
+      'Lower whole body into single straight plane parallel to bench',
+      'Pull bench firmly with arms to engage lats and stabilize upper back',
+      'Hold hover without any contact between hips and bench'
+    ],
+    commonMistakes: [
+      'Piking forward at the hips to fake straight bodyline',
+      'Knees bending softly during fatigue',
+      'Dropping below bench level into lumbar hyperextension'
+    ],
+    primaryMuscles: ['Rectus Abdominis', 'Hip Abductors', 'Latissimus Dorsi'],
+    secondaryMuscles: ['Glutes', 'Posterior Chain', 'Triceps'],
+    illustrationType: 'df-straddle',
+    tips: 'The wider your active straddle mobility, the closer your center of mass and the cleaner the leverage.'
+  },
+  'df-eccentric-negatives': {
+    id: 'df-eccentric-negatives',
+    skillTreeId: 'dragon-flag-tree',
+    title: 'Full Dragon Flag Slow Eccentrics',
+    subtitle: 'Level 7 · 5-Second Straight-Body Negatives',
+    level: 7,
+    difficulty: 'Advanced',
+    category: 'Core',
+    equipment: ['Workout Bench', 'Floor'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 5,
+      targetSets: 3,
+      restSeconds: 150,
+      formStandard: 'Full straight legs together. From vertical candlestick, lower body over 5 strict seconds to bench hover without any break in hip or spine alignment.',
+      tempo: '5-1-X-1',
+      notes: 'Tuck legs to return to vertical between reps, focusing purely on maximum eccentric overload.'
+    },
+    prerequisites: ['df-straddle-dragon-flag'],
+    unlockedSkills: ['df-full-dragon-flag-hold'],
+    description: 'Supramaximal eccentric loading is the most effective protocol to bridge the final gap to the full dragon flag. Builds immense core stiffness under full straight-body gravitational torque.',
+    formCues: [
+      'Start in perfect vertical straight-body candlestick',
+      'Begin slow lowering phase counting 5 full seconds',
+      'Maintain 100% rigid plank from shoulders to toes with zero sag',
+      'Hover 1 second at bottom before tucking knees to reset'
+    ],
+    commonMistakes: [
+      'Rushing the bottom half of the descent',
+      'Arching lower back when approaching horizontal',
+      'Letting heels drop faster than hips (piking)'
+    ],
+    primaryMuscles: ['Rectus Abdominis', 'Latissimus Dorsi', 'Hip Flexors'],
+    secondaryMuscles: ['Glutes', 'Spinal Erectors', 'Triceps Long Head'],
+    illustrationType: 'df-eccentric',
+    tips: 'Breathe out slowly as you lower, bracing your abdominal wall like a boxer preparing for impact.'
+  },
+  'df-full-dragon-flag-hold': {
+    id: 'df-full-dragon-flag-hold',
+    skillTreeId: 'dragon-flag-tree',
+    title: 'Full Dragon Flag Static Hold',
+    subtitle: 'Level 8 · Horizontal Core Lever Suspension',
+    level: 8,
+    difficulty: 'Elite',
+    category: 'Core',
+    equipment: ['Workout Bench', 'Floor / Low Pole'],
+    metricType: 'seconds',
+    passCriteria: {
+      targetHoldSeconds: 10,
+      targetSets: 3,
+      restSeconds: 150,
+      formStandard: 'Complete straight bodyline from shoulders to toes, suspended horizontally 2-4 inches above bench with legs pinned together and locked knees.',
+      tempo: 'Static Hold',
+      notes: 'Only upper traps and shoulder girdle in contact with bench.'
+    },
+    prerequisites: ['df-eccentric-negatives'],
+    unlockedSkills: ['df-concentric-raises'],
+    description: 'The iconic static mastery standard made famous by Bruce Lee. Requires supreme abdominal isometric strength, lat engagement, and posterior chain cohesion to hold suspended horizontally.',
+    formCues: [
+      'Ankles and knees pinned firmly together with pointed toes',
+      'Squeeze glutes, abs, and lats simultaneously in full-body co-contraction',
+      'Hold body strictly horizontal without dipping hips or arching back',
+      'Keep head in neutral alignment on bench'
+    ],
+    commonMistakes: [
+      'Bending at hips (hip flexion / piking)',
+      'Banana arch with lower back sagging onto bench',
+      'Relaxing glutes and letting feet drop'
+    ],
+    primaryMuscles: ['Rectus Abdominis', 'Latissimus Dorsi', 'Gluteus Maximus', 'Hip Flexors'],
+    secondaryMuscles: ['Spinal Erectors', 'Triceps Long Head', 'Forearms'],
+    illustrationType: 'dragon-flag',
+    tips: 'Think of yourself as a solid wooden plank pivoting only on the upper shoulder blades.'
+  },
+  'df-concentric-raises': {
+    id: 'df-concentric-raises',
+    skillTreeId: 'dragon-flag-tree',
+    title: 'Full Dragon Flag Concentric Raises',
+    subtitle: 'Level 9 · The Ultimate Bruce Lee Calisthenics Feat',
+    level: 9,
+    difficulty: 'Elite',
+    category: 'Core',
+    equipment: ['Workout Bench', 'Floor'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 6,
+      targetSets: 3,
+      restSeconds: 180,
+      formStandard: 'From horizontal hover, lift the completely straight body all the way to vertical candlestick and lower under control with zero hip bend.',
+      tempo: '3-1-2-1',
+      notes: 'Full range of motion concentric and eccentric with rigid straight body.'
+    },
+    prerequisites: ['df-full-dragon-flag-hold'],
+    unlockedSkills: [],
+    description: 'The pinnacle of abdominal leverage strength. Demands dynamic concentric pulling power through the entire anterior kinetic chain while maintaining complete structural rigidity against gravity.',
+    formCues: [
+      'Initiate concentric lift from horizontal hover using lats and lower abs',
+      'Elevate the entire straight body as a single rigid unit to vertical',
+      'Pause 1s at top candlestick before starting controlled 3s descent',
+      'No momentum, kipping, or bending at the hips at any point'
+    ],
+    commonMistakes: [
+      'Piking at hips to pull legs up first then following with torso',
+      'Kicking or swinging legs to initiate concentric phase',
+      'Bouncing hips off bench at the bottom'
+    ],
+    primaryMuscles: ['Rectus Abdominis', 'Latissimus Dorsi', 'Obliques', 'Hip Flexors'],
+    secondaryMuscles: ['Glutes', 'Triceps Long Head', 'Full Posterior Chain'],
+    illustrationType: 'df-concentric',
+    tips: 'Pull down hard on the bench with your hands as if rowing yourself toward your feet to power the ascent.'
   },
 
   // L-SIT, V-SIT, MANNA
@@ -2129,7 +2601,7 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
       notes: 'No feet touching ground.'
     },
     prerequisites: ['seated-pike-leg-lifts'],
-    unlockedSkills: ['full-l-sit-hold'],
+    unlockedSkills: ['single-leg-l-sit-hold'],
     description: 'Combines straight-arm scapular depression with abdominal tuck compression to suspend the entire body off the floor.',
     formCues: [
       'Push floor away with locked elbows to create height',
@@ -2147,12 +2619,49 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     illustrationType: 'tuck-l-sit',
     tips: 'Perform on floor once you can hold 30s on parallettes to master pure ground clearance.'
   },
+  'single-leg-l-sit-hold': {
+    id: 'single-leg-l-sit-hold',
+    skillTreeId: 'l-sit-v-sit-manna',
+    title: 'Single-Leg (One-Leg) L-Sit Hold',
+    subtitle: 'Level 3 · Asymmetric Pike Compression & Ground Clearance',
+    level: 3,
+    difficulty: 'Intermediate',
+    category: 'Core',
+    equipment: ['Floor', 'Parallettes'],
+    metricType: 'seconds',
+    passCriteria: {
+      targetHoldSeconds: 20,
+      targetSets: 3,
+      restSeconds: 75,
+      formStandard: 'Hands flat on floor or parallettes. One leg fully extended straight out at 90 degrees with quad locked; opposite knee tucked into chest. 20s hold per side.',
+      tempo: 'Static Hold',
+      notes: 'Zero heel or glute contact with floor during the hold.'
+    },
+    prerequisites: ['tuck-l-sit-support'],
+    unlockedSkills: ['full-l-sit-hold'],
+    description: 'The critical bridge between the tuck support and the full L-sit. By extending one leg straight while keeping the other tucked, it halves the leverage load on hip flexors while conditioning full hamstring active flexibility and straight quad lockout.',
+    formCues: [
+      'Push floor away with locked arms and depressed scapulae',
+      'Lock one knee completely straight with pointed toe at hip height',
+      'Keep other knee tucked tight to chest',
+      'Switch lead leg between sets or halfway through hold'
+    ],
+    commonMistakes: [
+      'Extended leg sagging below parallel horizontal',
+      'Soft bend in the extended knee',
+      'Shrugging shoulders up toward ears'
+    ],
+    primaryMuscles: ['Rectus Abdominis', 'Iliopsoas', 'Rectus Femoris', 'Lower Trapezius'],
+    secondaryMuscles: ['Triceps Brachii', 'Quadriceps', 'Serratus Anterior'],
+    illustrationType: 'single-leg-l-sit',
+    tips: 'Alternate leading legs to ensure balanced hip flexor endurance and quad clamping.'
+  },
   'full-l-sit-hold': {
     id: 'full-l-sit-hold',
     skillTreeId: 'l-sit-v-sit-manna',
     title: 'Full L-Sit Static Hold (Floor / Parallettes)',
-    subtitle: 'Level 3 · The 90-Degree Benchmark',
-    level: 3,
+    subtitle: 'Level 4 · The 90-Degree Benchmark',
+    level: 4,
     difficulty: 'Intermediate',
     category: 'Core',
     equipment: ['Floor', 'Parallettes'],
@@ -2164,7 +2673,7 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
       formStandard: 'On flat floor. Palms flat, elbows locked. Legs locked straight parallel to ground at 90 degrees with toes pointed.',
       notes: 'Zero butt or heel touching floor.'
     },
-    prerequisites: ['tuck-l-sit-support'],
+    prerequisites: ['single-leg-l-sit-hold'],
     unlockedSkills: ['straddle-l-sit-hold', 'v-sit-hold'],
     description: 'The golden standard of calisthenics core strength. Requires scapular depression, tricep lockout, active hamstring flexibility, and quadriceps clamping.',
     formCues: [
@@ -2187,8 +2696,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'straddle-l-sit-hold',
     skillTreeId: 'l-sit-v-sit-manna',
     title: 'Straddle L-Sit Hold',
-    subtitle: 'Level 4 · Abductor Compression & Hip Flexion',
-    level: 4,
+    subtitle: 'Level 5 · Abductor Compression & Hip Flexion',
+    level: 5,
     difficulty: 'Intermediate',
     category: 'Core',
     equipment: ['Floor', 'Parallettes'],
@@ -2223,8 +2732,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'v-sit-hold',
     skillTreeId: 'l-sit-v-sit-manna',
     title: 'V-Sit Static Hold (45°+ Elevation)',
-    subtitle: 'Level 5 · Extreme Compression & Shoulder Extension',
-    level: 5,
+    subtitle: 'Level 6 · Extreme Compression & Shoulder Extension',
+    level: 6,
     difficulty: 'Advanced',
     category: 'Core',
     equipment: ['Floor', 'Parallettes'],
@@ -2259,8 +2768,8 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'manna-hold',
     skillTreeId: 'l-sit-v-sit-manna',
     title: 'Manna Static Hold',
-    subtitle: 'Level 6 · The Zenith of Gymnastic Compression',
-    level: 6,
+    subtitle: 'Level 7 · The Zenith of Gymnastic Compression',
+    level: 7,
     difficulty: 'Elite',
     category: 'Core',
     equipment: ['Floor', 'Parallettes'],
@@ -2928,6 +3437,30 @@ export const INITIAL_LOGS: WorkoutLogEntry[] = [
     passedCriteria: true
   },
   {
+    id: 'log-frog-stand',
+    exerciseId: 'frog-stand-hold',
+    date: '2026-08-18',
+    timestamp: new Date('2026-08-18').getTime(),
+    metricValue: 35,
+    sets: 3,
+    rpe: 7,
+    notes: 'Solid 35s hold with active fingertip grip and knee-to-tricep balance',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-frog-press',
+    exerciseId: 'frog-stand-press-reps',
+    date: '2026-08-24',
+    timestamp: new Date('2026-08-24').getTime(),
+    metricValue: 8,
+    sets: 3,
+    rpe: 8,
+    notes: 'Straight-arm knee lifts off elbows with 1s lockout pause at top',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
     id: 'log-26',
     exerciseId: 'freestanding-handstand-hold',
     date: '2026-08-01',
@@ -2967,13 +3500,25 @@ export const INITIAL_LOGS: WorkoutLogEntry[] = [
   // Front Lever logs
   {
     id: 'log-29',
-    exerciseId: 'active-hang-dragon-flag',
+    exerciseId: 'front-lever-scapular-pulls',
     date: '2026-07-08',
     timestamp: new Date('2026-07-08').getTime(),
-    metricValue: 10,
+    metricValue: 12,
+    sets: 3,
+    rpe: 7.5,
+    notes: 'Locked elbows with full scapular depression & 1s peak hold',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-fl-reps',
+    exerciseId: 'tuck-front-lever-reps',
+    date: '2026-07-22',
+    timestamp: new Date('2026-07-22').getTime(),
+    metricValue: 8,
     sets: 3,
     rpe: 8,
-    notes: 'Straight body dragon flag',
+    notes: 'Clean straight-arm concentric pulls to parallel with 3s negative',
     isPB: true,
     passedCriteria: true
   },
@@ -3002,6 +3547,56 @@ export const INITIAL_LOGS: WorkoutLogEntry[] = [
     passedCriteria: true
   },
 
+  // Dragon Flag Preparation & Progression logs
+  {
+    id: 'log-df-1',
+    exerciseId: 'df-hollow-body-hold',
+    date: '2026-07-12',
+    timestamp: new Date('2026-07-12').getTime(),
+    metricValue: 50,
+    sets: 3,
+    rpe: 7.5,
+    notes: 'Lower back glued flat to floor with zero gap',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-df-2',
+    exerciseId: 'df-candlestick-shoulder-stand',
+    date: '2026-07-28',
+    timestamp: new Date('2026-07-28').getTime(),
+    metricValue: 35,
+    sets: 3,
+    rpe: 7,
+    notes: 'Locked straight vertical line on upper traps shelf',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-df-3',
+    exerciseId: 'df-tuck-dragon-flag',
+    date: '2026-08-14',
+    timestamp: new Date('2026-08-14').getTime(),
+    metricValue: 8,
+    sets: 3,
+    rpe: 8.5,
+    notes: 'Passed 8 reps with strict 3-second eccentric tempo',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-df-4',
+    exerciseId: 'df-adv-tuck-dragon-flag',
+    date: '2026-08-28',
+    timestamp: new Date('2026-08-28').getTime(),
+    metricValue: 5,
+    sets: 3,
+    rpe: 9,
+    notes: '90 deg hip angle, 1 rep away from 6 reps standard',
+    isPB: true,
+    passedCriteria: false
+  },
+
   // L-Sit logs
   {
     id: 'log-32',
@@ -3024,6 +3619,18 @@ export const INITIAL_LOGS: WorkoutLogEntry[] = [
     sets: 3,
     rpe: 8,
     notes: 'Passed criteria (30s hold)',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-33b',
+    exerciseId: 'single-leg-l-sit-hold',
+    date: '2026-07-30',
+    timestamp: new Date('2026-07-30').getTime(),
+    metricValue: 22,
+    sets: 3,
+    rpe: 8.5,
+    notes: 'Passed 20s hold per side on floor with zero heel drag!',
     isPB: true,
     passedCriteria: true
   },
