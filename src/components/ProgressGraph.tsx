@@ -12,20 +12,18 @@ import {
   ReferenceLine
 } from 'recharts';
 import { ProgressionExercise, WorkoutLogEntry, PBRecord } from '../types';
-import { TrendingUp, Award, Calendar, CheckCircle2, Clock, Dumbbell, Activity, Target } from 'lucide-react';
+import { TrendingUp, Award, Calendar, CheckCircle2, Activity, Target } from 'lucide-react';
 
 interface ProgressGraphProps {
   exercise: ProgressionExercise;
   logs: WorkoutLogEntry[];
   pbRecord?: PBRecord;
-  onOpenLogModal?: () => void;
 }
 
 export const ProgressGraph: React.FC<ProgressGraphProps> = ({
   exercise,
   logs,
-  pbRecord,
-  onOpenLogModal
+  pbRecord
 }) => {
   const [graphMode, setGraphMode] = useState<'curve' | 'sessions' | 'volume'>('curve');
 
@@ -86,7 +84,7 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
   );
 
   return (
-    <div className="bg-[#141414] border border-[#222222] rounded-xl p-5 sm:p-6 shadow-md flex flex-col gap-5">
+    <div className="bg-[#141414] border border-[#222222] rounded-2xl p-5 sm:p-6 shadow-xl flex flex-col gap-5">
       {/* Top Stat Summary Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#222222]">
         <div className="space-y-1">
@@ -111,7 +109,7 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
           </h3>
         </div>
 
-        {/* Quick PB Badge and action */}
+        {/* Quick PB Badge */}
         <div className="flex items-center gap-2.5">
           <div className="bg-[#0A0A0A] border border-[#222222] rounded-lg px-3.5 py-1.5 text-right">
             <div className="text-[9px] font-mono font-semibold text-zinc-500 uppercase tracking-widest">Current PB</div>
@@ -122,17 +120,6 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
               </span>
             </div>
           </div>
-
-          {onOpenLogModal && (
-            <button
-              id="log-workout-quick-btn"
-              onClick={onOpenLogModal}
-              className="px-3.5 py-2 rounded-lg bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-extrabold text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
-            >
-              <Dumbbell className="w-3.5 h-3.5" />
-              Log Set / PB
-            </button>
-          )}
         </div>
       </div>
 
@@ -380,7 +367,7 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
         )}
       </div>
 
-      {/* Legend & Guidance Note */}
+      {/* Legend */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-zinc-400 pt-1 font-mono">
         <div className="flex flex-wrap items-center gap-4 text-[11px]">
           <div className="flex items-center gap-1.5">
@@ -397,11 +384,6 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
               <span>Session Log</span>
             </div>
           )}
-        </div>
-
-        <div className="flex items-center gap-1 text-[10px] text-zinc-500">
-          <Clock className="w-3 h-3" />
-          <span>Form standard: {exercise.passCriteria.formStandard}</span>
         </div>
       </div>
     </div>

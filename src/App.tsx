@@ -49,6 +49,8 @@ export default function App() {
   const [loggingExercise, setLoggingExercise] = useState<ProgressionExercise | null>(null);
   const [viewMode, setViewMode] = useState<'warmup' | 'trees' | 'stretches' | 'stats'>('trees');
   const [isTimerOpen, setIsTimerOpen] = useState<boolean>(false);
+  const [timerInitialMode, setTimerInitialMode] = useState<'rest' | 'hold'>('rest');
+  const [timerTargetExercise, setTimerTargetExercise] = useState<ProgressionExercise | null>(null);
   const [isDataModalOpen, setIsDataModalOpen] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
@@ -229,16 +231,37 @@ export default function App() {
     reader.readAsText(file);
   };
 
-  // Transfer stopwatch seconds directly into log modal
-  const handleTransferHoldTime = (seconds: number) => {
-    if (selectedExercise) {
-      setLoggingExercise(selectedExercise);
+  // Open Front-most Timer modal with contextual exercise & mode
+  const handleOpenTimer = (exercise?: ProgressionExercise | null, mode?: 'rest' | 'hold') => {
+    const targetEx = exercise || selectedExercise || (SKILL_TREES.find(t => t.id === selectedTreeId)?.exercises[0] ? EXERCISES[SKILL_TREES.find(t => t.id === selectedTreeId)!.exercises[0]] : null);
+    setTimerTargetExercise(targetEx);
+
+    if (mode) {
+      setTimerInitialMode(mode);
+    } else if (targetEx?.metricType === 'seconds') {
+      setTimerInitialMode('hold');
     } else {
-      // Pick first static hold exercise or current tree's active exercise
-      const currentTree = SKILL_TREES.find(t => t.id === selectedTreeId) || SKILL_TREES[0];
-      const ex = EXERCISES[currentTree.exercises[0]];
-      setLoggingExercise(ex);
+      setTimerInitialMode('rest');
     }
+
+    setIsTimerOpen(true);
+  };
+
+  // Callback when RestTimer logs a completed set
+  const handleTimerLogSet = (exercise: ProgressionExercise, metricValue: number) => {
+    handleSaveLog({
+      exerciseId: exercise.id,
+      date: new Date().toISOString().slice(0, 10),
+      metricValue,
+      sets: 1,
+      rpe: 8,
+      notes: `Logged via Chrono / Timer (${metricValue} ${exercise.metricType === 'seconds' ? 's hold' : 'reps'})`
+    });
+
+    setToast({
+      type: 'success',
+      message: `Set recorded: ${metricValue} ${exercise.metricType === 'seconds' ? 'seconds' : 'reps'} for ${exercise.title}`
+    });
   };
 
   const currentActiveTree = SKILL_TREES.find(t => t.id === selectedTreeId) || SKILL_TREES[0];
@@ -253,22 +276,12 @@ export default function App() {
         isTimerOpen={isTimerOpen}
         onSelectTree={setSelectedTreeId}
         onViewModeChange={setViewMode}
-        onToggleTimer={() => setIsTimerOpen(!isTimerOpen)}
+        onToggleTimer={() => handleOpenTimer(selectedExercise)}
         onOpenDataModal={() => setIsDataModalOpen(true)}
       />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6">
-        {/* Floating / Side Rest Timer Bar (if opened) */}
-        {isTimerOpen && (
-          <div className="max-w-xl mx-auto mb-2 animate-in fade-in slide-in-from-top-2 duration-300">
-            <RestTimer
-              onTransferHoldTime={handleTransferHoldTime}
-              defaultRestSeconds={selectedExercise?.passCriteria.restSeconds || 90}
-            />
-          </div>
-        )}
-
         {/* VIEW 1: SKILL TREES & PROGRESSION PATHWAYS */}
         {viewMode === 'trees' && (
           <div className="space-y-6">
@@ -349,7 +362,7 @@ export default function App() {
         {viewMode === 'warmup' && (
           <WarmupView
             exercises={WARMUP_EXERCISES}
-            onOpenTimer={() => setIsTimerOpen(true)}
+            onOpenTimer={() => handleOpenTimer(null, 'rest')}
           />
         )}
 
@@ -357,7 +370,7 @@ export default function App() {
         {viewMode === 'stretches' && (
           <StretchView
             exercises={STRETCH_EXERCISES}
-            onOpenTimer={() => setIsTimerOpen(true)}
+            onOpenTimer={() => handleOpenTimer(null, 'hold')}
           />
         )}
 
@@ -376,7 +389,7 @@ export default function App() {
         )}
       </main>
 
-      {/* MODAL 1: EXERCISE DETAIL & GRAPH MODAL */}
+      {/* FULL-SCREEN DISMISSABLE EXERCISE DETAIL PAGE */}
       {selectedExercise && (
         <ExerciseDetailModal
           exercise={selectedExercise}
@@ -384,6 +397,7 @@ export default function App() {
           logs={logs}
           pbRecord={pbRecords[selectedExercise.id]}
           allExercises={EXERCISES}
+          isTimerOpen={isTimerOpen}
           onSelectExercise={id => {
             const next = EXERCISES[id];
             if (next) setSelectedExercise(next);
@@ -391,6 +405,10 @@ export default function App() {
           onOpenLogModal={ex => {
             setLoggingExercise(ex);
           }}
+          onSaveLog={handleSaveLog}
+          onOpenTimer={(ex, mode) => handleOpenTimer(ex, mode)}
+          onToggleTimer={() => handleOpenTimer(selectedExercise)}
+          onOpenDataModal={() => setIsDataModalOpen(true)}
           onDeleteLog={handleDeleteLog}
           onClose={() => setSelectedExercise(null)}
         />
@@ -401,6 +419,7 @@ export default function App() {
         <LogWorkoutModal
           exercise={loggingExercise}
           existingPB={pbRecords[loggingExercise.id]}
+          logs={logs}
           onSaveLog={handleSaveLog}
           onClose={() => setLoggingExercise(null)}
         />
@@ -420,6 +439,16 @@ export default function App() {
         />
       )}
 
+      {/* FRONT-MOST TIMER & CHRONO MODAL (Floats on top of all screens and modals) */}
+      <RestTimer
+        isOpen={isTimerOpen}
+        onClose={() => setIsTimerOpen(false)}
+        activeExercise={timerTargetExercise || selectedExercise}
+        defaultRestSeconds={(timerTargetExercise || selectedExercise)?.passCriteria.restSeconds || 90}
+        initialMode={timerInitialMode}
+        onLogCompletedSet={handleTimerLogSet}
+      />
+
       {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-5 right-5 z-50 max-w-sm animate-in fade-in slide-in-from-bottom-3 duration-200">
@@ -436,7 +465,7 @@ export default function App() {
             <p className="text-xs font-sans font-medium flex-1">{toast.message}</p>
             <button
               onClick={() => setToast(null)}
-              className="p-1 text-zinc-500 hover:text-zinc-300 transition"
+              className="p-1 text-zinc-500 hover:text-zinc-300 transition cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>

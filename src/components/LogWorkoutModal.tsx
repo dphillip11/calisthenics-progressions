@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { ProgressionExercise, WorkoutLogEntry, PBRecord } from '../types';
 import { soundFX } from '../utils/sound';
 import { evaluateWorkoutEntry } from '../utils/storage';
-import { X, Award, CheckCircle2, Dumbbell, Sparkles, Flame, Calendar, Clock } from 'lucide-react';
+import {
+  X,
+  Award,
+  Dumbbell,
+  Sparkles,
+  Flame,
+  Clock,
+  Plus,
+  Minus,
+  Check
+} from 'lucide-react';
 
 interface LogWorkoutModalProps {
   exercise: ProgressionExercise;
   existingPB?: PBRecord;
+  logs?: WorkoutLogEntry[];
   onSaveLog: (entry: Omit<WorkoutLogEntry, 'id' | 'timestamp'>) => void;
   onClose: () => void;
 }
@@ -15,6 +26,7 @@ interface LogWorkoutModalProps {
 export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
   exercise,
   existingPB,
+  logs = [],
   onSaveLog,
   onClose
 }) => {
@@ -25,26 +37,68 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
 
   const currentBest = existingPB ? existingPB.bestValue : 0;
 
+  const todayStr = new Date().toISOString().slice(0, 10);
+  // logs is stored newest-first in state ([newest, ..., oldest])
+  // We sort todaysSets chronologically so Set #1 is on the left and the most recent set is furthest right
+  const todaysSets = logs
+    .filter(l => l.exerciseId === exercise.id && l.date === todayStr)
+    .sort((a, b) => {
+      const timeA = a.timestamp || 0;
+      const timeB = b.timestamp || 0;
+      if (timeA !== timeB && timeA > 0 && timeB > 0) {
+        return timeA - timeB; // ascending: oldest -> newest
+      }
+      // If timestamps are identical or missing, use array position (higher index in `logs` = older)
+      return logs.indexOf(b) - logs.indexOf(a);
+    });
+
+  const setsScrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll horizontally to the right so the most recent set is visible
+  useEffect(() => {
+    if (setsScrollRef.current) {
+      setsScrollRef.current.scrollLeft = setsScrollRef.current.scrollWidth;
+      const timeoutId = setTimeout(() => {
+        if (setsScrollRef.current) {
+          setsScrollRef.current.scrollLeft = setsScrollRef.current.scrollWidth;
+        }
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [todaysSets.length]);
+
+  // Strictly a Single Set Prompt
   const [metricValue, setMetricValue] = useState<number>(
-    currentBest > 0 ? currentBest : Math.max(1, Math.round(targetThreshold * 0.7))
+    currentBest > 0 ? currentBest : Math.max(1, Math.round(targetThreshold * 0.8))
   );
-  const [sets, setSets] = useState<number>(exercise.passCriteria.targetSets || 3);
   const [weightAddedKg, setWeightAddedKg] = useState<number>(0);
   const [rpe, setRpe] = useState<number>(8);
-  const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState<string>('');
 
   const evaluation = evaluateWorkoutEntry(
     exercise,
     metricValue,
-    sets,
+    1,
     weightAddedKg,
     existingPB
   );
 
+  const getRpeBorderColor = (rpeVal?: number): string => {
+    if (rpeVal === undefined || rpeVal === null) return 'rgba(0, 0, 0, 0)';
+    const clamped = Math.max(0, Math.min(10, rpeVal));
+    if (clamped <= 5) {
+      // 0 is green, 5 is clear / transparent
+      const alpha = (5 - clamped) / 5;
+      return `rgba(34, 197, 94, ${alpha.toFixed(2)})`;
+    } else {
+      // 5 is clear / transparent, 10 is red
+      const alpha = (clamped - 5) / 5;
+      return `rgba(239, 68, 68, ${alpha.toFixed(2)})`;
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (metricValue <= 0) return;
 
     if (evaluation.isPB || evaluation.isPass) {
@@ -58,13 +112,17 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
       } catch (err) {
         console.error('Confetti error', err);
       }
+    } else {
+      soundFX.playCountdownBeep(true);
     }
+
+    const todayDate = new Date().toISOString().slice(0, 10);
 
     onSaveLog({
       exerciseId: exercise.id,
-      date,
+      date: todayDate,
       metricValue,
-      sets,
+      sets: 1,
       weightAddedKg: weightAddedKg > 0 ? weightAddedKg : undefined,
       rpe,
       notes: notes.trim() || undefined,
@@ -87,7 +145,7 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm overflow-y-auto">
       <div
         id="log-workout-modal-container"
-        className="relative w-full max-w-lg bg-[#141414] border border-[#222222] rounded-xl shadow-2xl overflow-hidden my-6"
+        className="relative w-full max-w-md bg-[#141414] border border-[#222222] rounded-2xl shadow-2xl overflow-hidden my-6 font-mono"
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#222222] bg-[#0A0A0A]">
@@ -96,7 +154,9 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
               <Dumbbell className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">Log Workout &amp; PB</h3>
+              <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                Log Single Set
+              </h3>
               <p className="text-xs text-zinc-400 font-sans truncate max-w-xs">{exercise.title}</p>
             </div>
           </div>
@@ -111,21 +171,21 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
         {/* Live Evaluation Banner */}
         <div className="px-5 pt-4 pb-1">
           {evaluation.isPass ? (
-            <div className="p-3 rounded-lg bg-[#D1FF00]/15 border border-[#D1FF00]/40 text-[#D1FF00] text-xs font-mono flex items-center gap-2.5 shadow-sm">
+            <div className="p-3 rounded-xl bg-[#D1FF00]/15 border border-[#D1FF00]/40 text-[#D1FF00] text-xs font-mono flex items-center gap-2.5 shadow-sm">
               <Sparkles className="w-4 h-4 text-[#D1FF00] shrink-0" />
               <div>
-                <span className="font-bold uppercase tracking-wider">Pass Standard Met!</span> You hit {metricValue} {isSeconds ? 's' : 'reps'} (Target: {targetThreshold} {isSeconds ? 's' : 'reps'}).
+                <span className="font-bold uppercase tracking-wider">Pass Standard Met!</span> Hit {metricValue} {isSeconds ? 's' : 'reps'} (Target: {targetThreshold} {isSeconds ? 's' : 'reps'}).
               </div>
             </div>
           ) : evaluation.isPB ? (
-            <div className="p-3 rounded-lg bg-[#D1FF00]/10 border border-[#D1FF00]/30 text-zinc-100 text-xs font-mono flex items-center gap-2.5 shadow-sm">
+            <div className="p-3 rounded-xl bg-[#D1FF00]/10 border border-[#D1FF00]/30 text-zinc-100 text-xs font-mono flex items-center gap-2.5 shadow-sm">
               <Flame className="w-4 h-4 text-[#D1FF00] shrink-0" />
               <div>
-                <span className="font-bold text-[#D1FF00] uppercase tracking-wider">New Personal Best!</span> Beating prior best of {currentBest} {isSeconds ? 's' : 'reps'}.
+                <span className="font-bold text-[#D1FF00] uppercase tracking-wider">New Personal Best!</span> Exceeds prior best of {currentBest} {isSeconds ? 's' : 'reps'}.
               </div>
             </div>
           ) : (
-            <div className="p-2.5 rounded-lg bg-[#0A0A0A] border border-[#222222] text-zinc-400 text-xs font-mono flex items-center justify-between">
+            <div className="p-2.5 rounded-xl bg-[#0A0A0A] border border-[#222222] text-zinc-400 text-xs font-mono flex items-center justify-between">
               <span>Current PB: <strong className="text-zinc-200">{currentBest} {isSeconds ? 's' : 'reps'}</strong></span>
               <span>Pass Target: <strong className="text-[#D1FF00]">{targetThreshold} {isSeconds ? 's' : 'reps'}</strong></span>
             </div>
@@ -134,12 +194,63 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          {/* Primary Metric: Reps or Seconds */}
+          {/* Today's Sets Pills */}
+          <div className="space-y-2 font-mono">
+            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              <span>Today's Sets ({todaysSets.length})</span>
+            </div>
+
+            {todaysSets.length > 0 ? (
+              <div
+                ref={setsScrollRef}
+                className="flex items-center gap-2 overflow-x-auto py-1 px-0.5 no-scrollbar scroll-smooth whitespace-nowrap"
+              >
+                {todaysSets.map((s, idx) => {
+                  const borderColor = getRpeBorderColor(s.rpe);
+                  return (
+                    <span
+                      key={s.id}
+                      style={{ borderColor }}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-200 text-zinc-950 border-2 shadow-sm text-xs font-mono font-bold shrink-0 transition-colors"
+                    >
+                      <span className="text-[10px] text-zinc-500 font-extrabold uppercase">
+                        #{idx + 1}
+                      </span>
+                      <span className="text-sm font-black text-black">
+                        {s.metricValue}{isSeconds ? 's' : 'r'}
+                      </span>
+                      {s.weightAddedKg ? (
+                        <span className="text-[10px] bg-zinc-300 text-zinc-800 px-1.5 py-0.5 rounded font-bold">
+                          +{s.weightAddedKg}kg
+                        </span>
+                      ) : null}
+                      {s.rpe ? (
+                        <span className="text-[10px] text-zinc-600 font-semibold">
+                          @{s.rpe}
+                        </span>
+                      ) : null}
+                      {s.isPB && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-black text-[#D1FF00] font-black border border-black uppercase tracking-wider">
+                          PB
+                        </span>
+                      )}
+                    </span>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="p-2.5 rounded-xl bg-[#0A0A0A] border border-[#222222] text-[11px] text-zinc-500 font-mono text-center">
+                No sets recorded yet today
+              </div>
+            )}
+          </div>
+
+          {/* Primary Metric: Reps or Seconds for this set */}
           <div className="space-y-2">
             <div className="flex items-center justify-between font-mono">
               <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
                 {isSeconds ? <Clock className="w-3.5 h-3.5 text-[#D1FF00]" /> : <Award className="w-3.5 h-3.5 text-[#D1FF00]" />}
-                {isSeconds ? 'Static Hold Duration' : 'Repetitions (Best Set)'}
+                {isSeconds ? `Hold Duration (Set #${todaysSets.length + 1})` : `Reps (Set #${todaysSets.length + 1})`}
               </label>
               <span className="text-xl font-black text-[#D1FF00]">
                 {metricValue} {isSeconds ? 'sec' : 'reps'}
@@ -151,9 +262,9 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
               <button
                 type="button"
                 onClick={() => setMetricValue(v => Math.max(1, v - 1))}
-                className="w-10 h-10 rounded-lg bg-[#0A0A0A] hover:bg-[#1a1a1a] active:scale-95 text-lg font-mono font-bold text-white transition flex items-center justify-center cursor-pointer border border-[#222222]"
+                className="w-10 h-10 rounded-xl bg-[#0A0A0A] hover:bg-[#1a1a1a] active:scale-95 text-lg font-mono font-bold text-white transition flex items-center justify-center cursor-pointer border border-[#222222]"
               >
-                -
+                <Minus className="w-4 h-4" />
               </button>
               <input
                 type="range"
@@ -166,48 +277,34 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
               <button
                 type="button"
                 onClick={() => setMetricValue(v => v + 1)}
-                className="w-10 h-10 rounded-lg bg-[#0A0A0A] hover:bg-[#1a1a1a] active:scale-95 text-lg font-mono font-bold text-white transition flex items-center justify-center cursor-pointer border border-[#222222]"
+                className="w-10 h-10 rounded-xl bg-[#0A0A0A] hover:bg-[#1a1a1a] active:scale-95 text-lg font-mono font-bold text-white transition flex items-center justify-center cursor-pointer border border-[#222222]"
               >
-                +
+                <Plus className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Sets & Added Weight */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400">Sets Performed</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  min="1"
-                  max="15"
-                  value={sets}
-                  onChange={e => setSets(Math.max(1, Number(e.target.value)))}
-                  className="w-full bg-[#0A0A0A] border border-[#222222] rounded-lg px-3 py-2 text-sm text-white font-mono focus:border-[#D1FF00] outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400">Added Weight (kg)</label>
-              <input
-                type="number"
-                min="0"
-                step="0.5"
-                max="100"
-                value={weightAddedKg}
-                onChange={e => setWeightAddedKg(Math.max(0, Number(e.target.value)))}
-                placeholder="+0 kg (BW)"
-                className="w-full bg-[#0A0A0A] border border-[#222222] rounded-lg px-3 py-2 text-sm text-white font-mono focus:border-[#D1FF00] outline-none"
-              />
-            </div>
+          {/* Added Weight (+kg) for this set */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400">
+              Added Weight (Set #{todaysSets.length + 1})
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="0.5"
+              max="100"
+              value={weightAddedKg > 0 ? weightAddedKg : ''}
+              onChange={e => setWeightAddedKg(Math.max(0, Number(e.target.value)))}
+              placeholder="+0 kg (Bodyweight)"
+              className="w-full bg-[#0A0A0A] border border-[#222222] rounded-xl px-3 py-2 text-sm text-white font-mono focus:border-[#D1FF00] outline-none"
+            />
           </div>
 
-          {/* RPE Selector */}
+          {/* RPE Selector for this set */}
           <div className="space-y-1.5 font-mono">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Exertion (RPE)</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Exertion (RPE for Set #{todaysSets.length + 1})</span>
               <span className="font-bold text-[#D1FF00]">{rpe}/10</span>
             </div>
             <input
@@ -222,31 +319,16 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
             <p className="text-[10px] text-zinc-500 italic text-right font-sans">{getRpeLabel(rpe)}</p>
           </div>
 
-          {/* Date & Notes */}
-          <div className="space-y-2.5">
-            <div className="space-y-1">
-              <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-1">
-                <Calendar className="w-3 h-3 text-zinc-500" />
-                Workout Date
-              </label>
-              <input
-                type="date"
-                value={date}
-                onChange={e => setDate(e.target.value)}
-                className="w-full bg-[#0A0A0A] border border-[#222222] rounded-lg px-3 py-2 text-sm text-white font-mono focus:border-[#D1FF00] outline-none"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400">Form Notes / Details</label>
-              <textarea
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-                placeholder="e.g. Locked elbows strictly, 2s pause at top, felt clean..."
-                rows={2}
-                className="w-full bg-[#0A0A0A] border border-[#222222] rounded-lg px-3 py-2 text-xs text-zinc-200 placeholder:text-zinc-600 focus:border-[#D1FF00] outline-none resize-none font-sans"
-              />
-            </div>
+          {/* Notes / Feedback */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400">Set Notes / Feedback (Optional)</label>
+            <textarea
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              placeholder="e.g. Crisp lockout, clean hollow body..."
+              rows={2}
+              className="w-full bg-[#0A0A0A] border border-[#222222] rounded-xl px-3 py-2 text-xs text-zinc-200 placeholder:text-zinc-600 focus:border-[#D1FF00] outline-none resize-none font-sans"
+            />
           </div>
 
           {/* Action Buttons */}
@@ -254,17 +336,17 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 rounded-lg border border-[#222222] bg-[#0A0A0A] hover:bg-[#1a1a1a] text-zinc-400 font-mono font-bold text-xs uppercase tracking-wider transition cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl border border-[#222222] bg-[#0A0A0A] hover:bg-[#1a1a1a] text-zinc-400 font-mono font-bold text-xs uppercase tracking-wider transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               id="confirm-save-log-btn"
-              className="flex-1 py-2 rounded-lg bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-extrabold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-extrabold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer"
             >
-              <CheckCircle2 className="w-4 h-4" />
-              Save Record
+              <Check className="w-4 h-4" />
+              Save Set
             </button>
           </div>
         </form>

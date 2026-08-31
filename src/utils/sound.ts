@@ -104,6 +104,57 @@ class SoundFX {
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.05);
   }
+
+  // Short crisp beep for countdown (3, 2, 1)
+  public playCountdownBeep(highPitch = false) {
+    if (this.isMuted) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(highPitch ? 1200 : 750, ctx.currentTime);
+
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.12);
+  }
+
+  // Energetic GO fanfare for static hold start
+  public playGoChime() {
+    if (this.isMuted) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const notes = [
+      { freq: 880, time: 0, dur: 0.1 },
+      { freq: 1760, time: 0.1, dur: 0.3 }
+    ];
+
+    notes.forEach(({ freq, time, dur }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + time);
+
+      gain.gain.setValueAtTime(0.2, ctx.currentTime + time);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + time + dur);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime + time);
+      osc.stop(ctx.currentTime + time + dur);
+    });
+  }
 }
 
 export const soundFX = new SoundFX();
