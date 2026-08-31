@@ -32,6 +32,7 @@ export interface ProgressionExercise {
   secondaryMuscles: string[];
   illustrationType: string;
   tips: string;
+  videoDemoUrl?: string;
 }
 
 export interface SkillTree {

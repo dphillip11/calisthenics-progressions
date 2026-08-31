@@ -44,6 +44,24 @@ export const SKILL_TREES: SkillTree[] = [
     ]
   },
   {
+    id: 'muscle-up-assistance-tree',
+    name: 'Muscle-Up Assistance Progressions',
+    shortName: 'MU Assistance',
+    category: 'Pull',
+    description: 'Dedicated assistance pathway focusing on dynamic transition mechanics, forearm-to-palm transfers, straight-arm pull backs, and progressive band assistance to master the strict bar muscle-up.',
+    iconName: 'Sparkles',
+    color: 'from-orange-500/20 to-amber-600/20',
+    accentColor: 'text-orange-400',
+    exercises: [
+      'mu-assist-russian-pushups',
+      'mu-assist-russian-dips',
+      'mu-assist-jumping-transitions',
+      'mu-assist-pull-backs',
+      'mu-assist-banded-muscle-up',
+      'mu-assist-strict-muscle-up'
+    ]
+  },
+  {
     id: 'push-up-planche',
     name: 'Push-Up to Planche',
     shortName: 'Planche',
@@ -814,6 +832,231 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     secondaryMuscles: ['Core', 'Forearms', 'Serratus Anterior'],
     illustrationType: 'strict-muscle-up',
     tips: 'Rest at least 3-4 minutes between heavy muscle-up attempts to allow full ATP replenishment.'
+  },
+
+  // MUSCLE-UP ASSISTANCE PROGRESSIONS
+  'mu-assist-russian-pushups': {
+    id: 'mu-assist-russian-pushups',
+    skillTreeId: 'muscle-up-assistance-tree',
+    title: 'Russian Push-Ups',
+    subtitle: 'Stage 1 · Forearm-to-Palm Dynamic Triceps Transition',
+    level: 1,
+    difficulty: 'Intermediate',
+    category: 'Push',
+    equipment: ['Floor', 'Gym Mat'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 12,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'Lower from plank into full push-up depth, shift backward onto forearms without hips sagging, and explosively rock forward onto palms to press back up to full protraction.',
+      tempo: '2-1-X-1',
+      notes: 'Eliminates elbow transition weakness and strengthens the triceps tendons.'
+    },
+    prerequisites: [],
+    unlockedSkills: ['mu-assist-russian-dips'],
+    description: 'Builds dynamic tricep tendon durability and teaches the explosive weight transfer from forearms to palms needed for the muscle-up transition.',
+    formCues: [
+      'Keep tight hollow body throughout the forearm rock',
+      'Drive through palms explosively to return from elbows to hands',
+      'Avoid peeling hips up before chest',
+      'Elbows track straight back, not flared outward'
+    ],
+    commonMistakes: [
+      'Piking hips or overarching lower back during the transfer',
+      'Letting elbows flare sideways placing torque on elbows',
+      'Losing core tension and letting knees touch the floor'
+    ],
+    primaryMuscles: ['Triceps Brachii', 'Anterior Deltoids', 'Core / Rectus Abdominis'],
+    secondaryMuscles: ['Pectoralis Major', 'Serratus Anterior', 'Forearms'],
+    illustrationType: 'russian-push-up',
+    tips: 'If needed, begin on knees or with hands on an elevated mat to groove the rocking rhythm.'
+  },
+  'mu-assist-russian-dips': {
+    id: 'mu-assist-russian-dips',
+    skillTreeId: 'muscle-up-assistance-tree',
+    title: 'Russian Dips',
+    subtitle: 'Stage 2 · Forearm-to-Hand Dip Transition on Parallel Bars',
+    level: 2,
+    difficulty: 'Intermediate',
+    category: 'Dip',
+    equipment: ['Parallel Bars', 'Dip Station'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 8,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'From parallel dip bottom, roll elbows back onto the bars into forearm support, then lean aggressively forward and drive through palms to press back to top lockout.',
+      tempo: '2-1-X-1',
+      notes: 'The quintessential calisthenics transition builder.'
+    },
+    prerequisites: ['mu-assist-russian-pushups'],
+    unlockedSkills: ['mu-assist-jumping-transitions'],
+    description: 'The gold-standard transition builder for calisthenics athletes. Isolates the crucial moment where elbows shift from below the hands to above the hands on a parallel surface.',
+    formCues: [
+      'Maintain slight forward torso lean to create leverage',
+      'Engage triceps and lats to pop elbows off the bar onto palms',
+      'Lock out elbows fully at top of each repetition',
+      'Control the descent onto forearms with soft impact'
+    ],
+    commonMistakes: [
+      'Dropping onto elbows uncontrolled without eccentric resistance',
+      'Kicking legs frantically to generate false momentum',
+      'Failing to achieve full straight-arm lockout at the peak'
+    ],
+    primaryMuscles: ['Triceps Brachii (Long Head)', 'Anterior Deltoids', 'Latissimus Dorsi'],
+    secondaryMuscles: ['Pectoralis Major', 'Lower Trapezius', 'Forearms'],
+    illustrationType: 'russian-dip',
+    tips: 'Use chalk on your forearms and bars to prevent sticky friction during the rock.'
+  },
+  'mu-assist-jumping-transitions': {
+    id: 'mu-assist-jumping-transitions',
+    skillTreeId: 'muscle-up-assistance-tree',
+    title: 'Jumping Transitions',
+    subtitle: 'Stage 3 · Chest Forward & Bar Rotation Mechanics',
+    level: 3,
+    difficulty: 'Intermediate',
+    category: 'Pull',
+    equipment: ['Low Pull-up Bar', 'Plyo Box / Floor'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 8,
+      targetSets: 4,
+      restSeconds: 75,
+      formStandard: 'Start with straight locked arms, chest driven forward in front of the bar, and knees bent. Jump while rotating your upper body aggressively over and around the bar into deep dip support, then press out smoothly.',
+      tempo: 'Explosive',
+      notes: 'Focus on symmetrical rotational turnover around the bar—never allow chicken-winging.'
+    },
+    prerequisites: ['mu-assist-russian-dips'],
+    unlockedSkills: ['mu-assist-pull-backs'],
+    description: 'Starts with arms locked out on the low bar, chest pushed actively forward in front of the bar, and knees bent underneath. Focuses on the explosive rotation around the bar into top dip support rather than a traditional vertical pull.',
+    formCues: [
+      'Begin with arms locked out straight and chest pushed forward in front of the bar',
+      'Knees bent underneath to store elastic power for the rotational drive',
+      'Focus on the rotation around the bar, sweeping head and shoulders over the bar',
+      'Both elbows rotate synchronously over the bar into dip support before pressing out'
+    ],
+    commonMistakes: [
+      'Starting with arms bent or body behind the bar instead of locked arms with chest pushed forward',
+      'Uneven elbow turnover (chicken-winging)',
+      'Pulling straight up vertically into the bar instead of rotating around the bar'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Triceps Brachii', 'Shoulder Girdle / Rotator Cuff'],
+    secondaryMuscles: ['Brachialis', 'Pectoralis Major', 'Core / Hip Flexors'],
+    illustrationType: 'jumping-transition',
+    tips: 'Focus entirely on the fluid circular turnover around the bar. Lower the bar height or platform over time to demand more rotational pulling power.'
+  },
+  'mu-assist-pull-backs': {
+    id: 'mu-assist-pull-backs',
+    skillTreeId: 'muscle-up-assistance-tree',
+    title: 'Pull Backs',
+    subtitle: 'Stage 4 · Horizontal Tucked Pull & Clearance Arc',
+    level: 4,
+    difficulty: 'Intermediate',
+    category: 'Pull',
+    equipment: ['Pull-up Bar'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 10,
+      targetSets: 3,
+      restSeconds: 90,
+      formStandard: 'From hang with overhand or false grip, initiate a tucked-knee pull driving chest and hips back away from the bar until your torso is flat/horizontal with the bar, pausing 1 second at apex before controlled lower.',
+      tempo: '2-1-1-1',
+      notes: 'Focus on pulling away from the bar to reach a flat horizontal position.'
+    },
+    prerequisites: ['mu-assist-jumping-transitions'],
+    unlockedSkills: ['mu-assist-banded-muscle-up'],
+    description: 'A specialized pull-up variation where you tuck your knees tightly and pull horizontally away from the bar, aiming to get your torso and body flat with the bar. Builds the horizontal displacement and lat clearance required to avoid hitting the bar during a muscle-up transition.',
+    formCues: [
+      'Tuck knees tightly toward chest as you initiate the pull',
+      'Drive elbows down and back to pull your body horizontally away from the bar',
+      'Aim for your torso and upper body to be completely flat and horizontal with the bar at the apex',
+      'Squeeze lats and mid-back to hold horizontal clearance before lowering with control'
+    ],
+    commonMistakes: [
+      'Pulling vertically straight up under the bar without tucking and pulling back away from the bar',
+      'Failing to reach a flat horizontal torso position relative to the bar',
+      'Dropping down abruptly without controlling the eccentric path'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Teres Major', 'Posterior Deltoids', 'Rhomboids'],
+    secondaryMuscles: ['Rectus Abdominis / Core', 'Biceps & Brachialis', 'Triceps (Long Head)'],
+    illustrationType: 'pull-back',
+    tips: 'Aim to see the bar directly in front of your eyes/chest as your body reaches the flat horizontal plane. Watch the video demo for exact angle timing.',
+    videoDemoUrl: 'https://youtube.com/shorts/Io5Ek8Nzl9I?is=C6V1EcVIvPIczisy'
+  },
+  'mu-assist-banded-muscle-up': {
+    id: 'mu-assist-banded-muscle-up',
+    skillTreeId: 'muscle-up-assistance-tree',
+    title: 'Banded Muscle-Up',
+    subtitle: 'Stage 5 · Full Continuous Trajectory with Progressive Band Support',
+    level: 5,
+    difficulty: 'Advanced',
+    category: 'Pull',
+    equipment: ['Pull-up Bar', 'Loop Resistance Band'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 5,
+      targetSets: 4,
+      restSeconds: 120,
+      formStandard: 'Loop band on bar under feet/knees. Perform strict C-pull to upper ribs, smooth synchronous bilateral elbow turnover, and clean straight bar dip lockout with light band assist.',
+      tempo: 'Explosive',
+      notes: 'Transition to thinner bands as turnover mechanics become effortless.'
+    },
+    prerequisites: ['mu-assist-pull-backs'],
+    unlockedSkills: ['mu-assist-strict-muscle-up'],
+    description: 'Connects the entire kinetic chain from dead hang to top dip lockout under reduced gravity, building confidence and refining the exact transition timing.',
+    formCues: [
+      'Drive explosive C-pull toward sternum/belly button',
+      'Roll wrists over the bar simultaneously as chest crests the bar',
+      'Lean over the bar and immediately drive into the dip press',
+      'Control the negative eccentric on the way back down'
+    ],
+    commonMistakes: [
+      'Using too heavy of a band that bypasses the turnover effort',
+      'One-arm chicken wing turnover under fatigue',
+      'Pausing halfway through the transition instead of maintaining momentum'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Triceps Brachii', 'Pectoralis Major'],
+    secondaryMuscles: ['Biceps Brachii', 'Anterior/Lateral Deltoids', 'Core'],
+    illustrationType: 'banded-muscle-up',
+    tips: 'Use the lightest band that allows clean, symmetrical turnover with zero shoulder pinch.'
+  },
+  'mu-assist-strict-muscle-up': {
+    id: 'mu-assist-strict-muscle-up',
+    skillTreeId: 'muscle-up-assistance-tree',
+    title: 'Strict Bar Muscle-Up',
+    subtitle: 'Stage 6 · Complete Bodyweight Mastery & Top Lockout',
+    level: 6,
+    difficulty: 'Elite',
+    category: 'Pull',
+    equipment: ['Pull-up Bar', 'Chalk'],
+    metricType: 'reps',
+    passCriteria: {
+      targetReps: 3,
+      targetSets: 3,
+      restSeconds: 180,
+      formStandard: 'Start from dead hang without swinging or kipping legs. Perform an explosive high pull to sternum, aggressive bilateral wrist roll, and full straight-bar dip lockout at the top.',
+      tempo: 'Strict',
+      notes: 'Mastery standard: 3 consecutive clean reps with zero knee kick.'
+    },
+    prerequisites: ['mu-assist-banded-muscle-up'],
+    unlockedSkills: [],
+    description: 'The pinnacle upper-body power movement combining max vertical pulling, dynamic shoulder transition, and straight-bar dip pressing into one seamless flow.',
+    formCues: [
+      'Thumbless or deep overhand false grip for rapid wrist turnover',
+      'Pull bar aggressively down toward waist, not chest',
+      'Lean chest over the bar as soon as apex height is reached',
+      'Push straight bar dip to full elbow extension'
+    ],
+    commonMistakes: [
+      'Kicking knees or hips forward (kipping/cheating)',
+      'Asymmetrical single-arm entry causing shoulder impingement',
+      'Dropping down without controlling the negative'
+    ],
+    primaryMuscles: ['Latissimus Dorsi', 'Triceps Brachii', 'Pectoralis Major', 'Deltoids'],
+    secondaryMuscles: ['Biceps', 'Brachialis', 'Core', 'Rotator Cuff', 'Forearms'],
+    illustrationType: 'strict-muscle-up',
+    tips: 'Celebrate reaching this milestone! Maintain regular volume to retain connective tissue conditioning.'
   },
 
   // PUSH-UP TO PLANCHE
@@ -2879,6 +3122,44 @@ export const INITIAL_LOGS: WorkoutLogEntry[] = [
     sets: 3,
     rpe: 9,
     notes: '2 reps away from 10 reps mastery standard!',
+    isPB: true,
+    passedCriteria: false
+  },
+
+  // Muscle-Up Assistance Progressions logs
+  {
+    id: 'log-42',
+    exerciseId: 'mu-assist-russian-pushups',
+    date: '2026-08-04',
+    timestamp: new Date('2026-08-04').getTime(),
+    metricValue: 12,
+    sets: 3,
+    rpe: 8,
+    notes: 'Rocked smoothly from forearms to palms with zero hip lag',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-43',
+    exerciseId: 'mu-assist-russian-dips',
+    date: '2026-08-18',
+    timestamp: new Date('2026-08-18').getTime(),
+    metricValue: 8,
+    sets: 3,
+    rpe: 8.5,
+    notes: 'Clean explosive forearm-to-hand transition on parallel bars',
+    isPB: true,
+    passedCriteria: true
+  },
+  {
+    id: 'log-44',
+    exerciseId: 'mu-assist-jumping-transitions',
+    date: '2026-08-27',
+    timestamp: new Date('2026-08-27').getTime(),
+    metricValue: 6,
+    sets: 4,
+    rpe: 9,
+    notes: 'Both elbows rolling over bar together, 2 reps shy of 8 reps standard',
     isPB: true,
     passedCriteria: false
   }

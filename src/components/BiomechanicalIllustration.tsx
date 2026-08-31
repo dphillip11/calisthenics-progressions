@@ -210,6 +210,142 @@ function renderFigureContent(
         </g>
       );
 
+    case 'russian-push-up':
+      return (
+        <g id="russian-pushup-svg">
+          {/* Floor */}
+          <line x1="30" y1="155" x2="250" y2="155" stroke={apparatus} strokeWidth="4" strokeLinecap="round" />
+          {/* Forearms flat on floor */}
+          <path d="M 70 155 L 110 155" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          {/* Elbow to shoulder transfer */}
+          <path d="M 110 155 L 90 120" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {/* Head */}
+          <circle cx="70" cy="115" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Plank torso */}
+          <path d="M 90 120 L 215 145" stroke={primary} strokeWidth="9" strokeLinecap="round" />
+          {/* Feet */}
+          <circle cx="215" cy="153" r="3.5" fill={apparatus} />
+          {/* Dynamic rock trajectory arc */}
+          <path d="M 80 145 Q 95 125 110 135" stroke={highlight} strokeWidth="3" strokeDasharray="2 2" fill="none" />
+          {showHighlight && (
+            <>
+              <line x1="92" y1="126" x2="108" y2="150" stroke={highlight} strokeWidth="4" strokeLinecap="round" filter={`url(#${glowId})`} />
+              <text x="55" y="90" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">FOREARM TO PALM ROCK</text>
+            </>
+          )}
+        </g>
+      );
+
+    case 'russian-dip':
+      return (
+        <g id="russian-dip-svg">
+          {/* Parallel Bars */}
+          <line x1="40" y1="110" x2="240" y2="110" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <line x1="60" y1="110" x2="60" y2="175" stroke={apparatus} strokeWidth="4" />
+          <line x1="220" y1="110" x2="220" y2="175" stroke={apparatus} strokeWidth="4" />
+          {/* Forearms resting on bar */}
+          <path d="M 105 110 L 140 110" stroke={apparatus} strokeWidth="8" strokeLinecap="round" />
+          {/* Elbows flexed with torso lowered */}
+          <circle cx="120" cy="45" r="11" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 120 60 L 122 105" stroke={primary} strokeWidth="10" strokeLinecap="round" />
+          {/* Arms popping from forearms to palms */}
+          <path d="M 105 110 L 115 80" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {/* Legs tucked */}
+          <path d="M 122 105 L 126 145 L 142 165" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Transition rock arrow */}
+          <path d="M 95 100 Q 115 70 135 90" stroke={highlight} strokeWidth="2.5" strokeDasharray="3 3" fill="none" />
+          {showHighlight && (
+            <>
+              <circle cx="110" cy="95" r="7" fill={highlight} filter={`url(#${glowId})`} />
+              <text x="65" y="35" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">ELBOW TURNOVER</text>
+            </>
+          )}
+        </g>
+      );
+
+    case 'jumping-transition':
+      return (
+        <g id="jumping-transition-svg">
+          {/* Low Bar at chest height */}
+          <line x1="30" y1="95" x2="250" y2="95" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="105" cy="95" r="4" fill={apparatus} />
+          <circle cx="155" cy="95" r="4" fill={apparatus} />
+          {/* Locked-out arms with hands gripping bar */}
+          <path d="M 105 95 L 85 92 M 155 95 L 135 92" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {/* Chest pushed forward in front of the bar, head proud */}
+          <circle cx="65" cy="72" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 75 78 L 105 110" stroke={primary} strokeWidth="9.5" strokeLinecap="round" />
+          {/* Bent knees under/behind the body prepared to assist rotation */}
+          <path d="M 105 110 L 95 140 L 80 148" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Feet on floor */}
+          <line x1="40" y1="170" x2="240" y2="170" stroke={apparatus} strokeWidth="3" strokeDasharray="3 3" />
+          <circle cx="80" cy="170" r="3.5" fill={apparatus} />
+          <path d="M 80 148 L 80 170" stroke={primary} strokeWidth="4" strokeLinecap="round" />
+          {/* Dynamic rotational path around bar over the top */}
+          <path d="M 70 65 Q 110 35 155 60 Q 170 80 160 95" stroke={highlight} strokeWidth="3" strokeDasharray="3 3" fill="none" />
+          <path d="M 152 95 L 160 95 L 163 87" stroke={highlight} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          {showHighlight && (
+            <>
+              <circle cx="115" cy="50" r="8" fill={highlight} filter={`url(#${glowId})`} />
+              <text x="50" y="30" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">CHEST FORWARD &rarr; BAR ROTATION</text>
+            </>
+          )}
+        </g>
+      );
+
+    case 'pull-back':
+      return (
+        <g id="pull-back-svg">
+          {/* Pull-Up Bar */}
+          <line x1="30" y1="65" x2="250" y2="65" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="85" cy="65" r="4" fill={apparatus} />
+          {/* Arms pulling back horizontally away from bar */}
+          <path d="M 85 65 L 120 68" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {/* Head & neck horizontally aligned with bar */}
+          <circle cx="140" cy="68" r="10" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Flat horizontal torso aligned with bar plane */}
+          <path d="M 130 68 L 195 68" stroke={primary} strokeWidth="10" strokeLinecap="round" />
+          {/* Knees tucked tightly toward chest/torso */}
+          <path d="M 195 68 L 180 95 L 155 88" stroke={primary} strokeWidth="6" strokeLinecap="round" />
+          {/* Feet tucked */}
+          <circle cx="155" cy="88" r="3.5" fill={primary} />
+          {/* Horizontal pull-away indicator arrows */}
+          <path d="M 95 50 L 175 50" stroke={highlight} strokeWidth="2.5" strokeDasharray="3 3" />
+          <path d="M 168 45 L 175 50 L 168 55" stroke={highlight} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          {showHighlight && (
+            <>
+              <line x1="130" y1="68" x2="195" y2="68" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+              <text x="45" y="32" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">TUCKED KNEES &middot; FLAT WITH BAR</text>
+            </>
+          )}
+        </g>
+      );
+
+    case 'banded-muscle-up':
+      return (
+        <g id="banded-muscleup-svg">
+          {/* Bar */}
+          <line x1="40" y1="65" x2="240" y2="65" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="110" cy="65" r="4" fill={apparatus} />
+          <circle cx="170" cy="65" r="4" fill={apparatus} />
+          {/* Bright Green Elastic Band from bar around feet */}
+          <path d="M 140 65 Q 115 125 138 178 Q 165 125 140 65" stroke="#10B981" strokeWidth="3.5" strokeDasharray="3 3" fill="none" />
+          {/* Torso cresting above bar */}
+          <circle cx="140" cy="22" r="11" fill="none" stroke={primary} strokeWidth="4" />
+          <path d="M 140 36 L 140 85" stroke={primary} strokeWidth="10" strokeLinecap="round" />
+          {/* Arms completing turnover */}
+          <path d="M 110 65 L 126 45 M 170 65 L 154 45" stroke={primary} strokeWidth="5" strokeLinecap="round" />
+          {/* Legs guided inside band */}
+          <path d="M 140 85 L 138 135 L 140 175" stroke={primary} strokeWidth="4.5" strokeLinecap="round" />
+          {showHighlight && (
+            <>
+              <path d="M 105 60 Q 140 35 175 60" stroke={highlight} strokeWidth="3" strokeDasharray="2 2" fill="none" filter={`url(#${glowId})`} />
+              <text x="65" y="165" fill="#10B981" fontSize="8" fontFamily="monospace" fontWeight="bold">BAND ASSIST TRAJECTORY</text>
+            </>
+          )}
+        </g>
+      );
+
     // ----------------- PUSH MOVEMENTS & PLANCHE -----------------
     case 'incline-pushup':
       return (

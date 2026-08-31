@@ -258,9 +258,22 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                 </div>
               </div>
 
-              {/* Description */}
-              <div className="bg-[#0A0A0A] border border-[#222222] rounded-lg p-4 space-y-1.5">
-                <h4 className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Movement Blueprint &amp; Mechanics</h4>
+              {/* Description & Video Reference */}
+              <div className="bg-[#0A0A0A] border border-[#222222] rounded-lg p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Movement Blueprint &amp; Mechanics</h4>
+                  {exercise.videoDemoUrl && (
+                    <a
+                      href={exercise.videoDemoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-rose-500/15 border border-rose-500/40 text-rose-400 hover:text-white hover:bg-rose-500/30 text-xs font-mono font-bold transition"
+                    >
+                      <span>YouTube Form Breakdown</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
                 <p className="text-xs text-zinc-300 leading-relaxed font-sans">{exercise.description}</p>
               </div>
 

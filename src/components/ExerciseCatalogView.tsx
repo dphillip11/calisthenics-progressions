@@ -10,7 +10,8 @@ import {
   TrendingUp,
   Clock,
   Filter,
-  Layers
+  Layers,
+  ExternalLink
 } from 'lucide-react';
 
 interface ExerciseCatalogViewProps {
@@ -150,9 +151,24 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
                 <div className="space-y-2.5">
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold border uppercase tracking-wider bg-[#2c303a] text-zinc-200 border-[#3f4554]`}>
-                      Lvl {exercise.level} · {exercise.difficulty}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold border uppercase tracking-wider bg-[#2c303a] text-zinc-200 border-[#3f4554]`}>
+                        Lvl {exercise.level} · {exercise.difficulty}
+                      </span>
+                      {exercise.videoDemoUrl && (
+                        <a
+                          href={exercise.videoDemoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-rose-500/15 border border-rose-500/40 text-rose-400 hover:text-white hover:bg-rose-500/30 transition"
+                          title="Watch video demonstration on YouTube"
+                        >
+                          <span>Video</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
+                      )}
+                    </div>
 
                     {isPassed ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-950/70 text-emerald-300 border border-emerald-500/50">

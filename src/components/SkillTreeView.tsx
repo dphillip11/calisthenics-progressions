@@ -12,7 +12,8 @@ import {
   Target,
   ChevronRight,
   Sparkles,
-  Clock
+  Clock,
+  ExternalLink
 } from 'lucide-react';
 
 interface SkillTreeViewProps {
@@ -205,6 +206,19 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                       <span className="text-xs font-mono text-zinc-400 hidden sm:inline-block">
                         · {exercise.equipment.join(', ')}
                       </span>
+                      {exercise.videoDemoUrl && (
+                        <a
+                          href={exercise.videoDemoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/15 border border-rose-500/40 text-rose-400 hover:text-white hover:bg-rose-500/30 transition ml-auto sm:ml-0"
+                          title="Watch video demo breakdown on YouTube"
+                        >
+                          <span>Video Demo</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
+                      )}
                     </div>
 
                     <h3
