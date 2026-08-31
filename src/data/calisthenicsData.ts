@@ -950,7 +950,7 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     id: 'mu-assist-pull-backs',
     skillTreeId: 'muscle-up-assistance-tree',
     title: 'Pull Backs',
-    subtitle: 'Stage 4 · Horizontal Tucked Pull & Clearance Arc',
+    subtitle: 'Stage 4 · Knee-Tuck Momentum & Low Bar Pull',
     level: 4,
     difficulty: 'Intermediate',
     category: 'Pull',
@@ -960,28 +960,28 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
       targetReps: 10,
       targetSets: 3,
       restSeconds: 90,
-      formStandard: 'From hang with overhand or false grip, initiate a tucked-knee pull driving chest and hips back away from the bar until your torso is flat/horizontal with the bar, pausing 1 second at apex before controlled lower.',
-      tempo: '2-1-1-1',
-      notes: 'Focus on pulling away from the bar to reach a flat horizontal position.'
+      formStandard: 'From dead hang with overhand grip, initiate an explosive pull while driving knees into a tight tuck. Use the tuck momentum to pull away from the bar and bring the bar low onto your torso (to lower ribs/upper abdomen) with a vertical torso at the peak.',
+      tempo: 'Explosive',
+      notes: 'Torso remains vertical at the peak with knees tucked, pulling the bar low on the torso.'
     },
     prerequisites: ['mu-assist-jumping-transitions'],
     unlockedSkills: ['mu-assist-banded-muscle-up'],
-    description: 'A specialized pull-up variation where you tuck your knees tightly and pull horizontally away from the bar, aiming to get your torso and body flat with the bar. Builds the horizontal displacement and lat clearance required to avoid hitting the bar during a muscle-up transition.',
+    description: 'A dynamic pull-up where you tuck your knees explosively during the pull while maintaining a vertical torso at the peak. The momentum of the knee tuck allows you to pull away from the bar and draw the bar low on your torso (down to the lower ribs/upper abdomen), ingraining the explosive clearance and deep pulling depth required for the strict muscle-up.',
     formCues: [
-      'Tuck knees tightly toward chest as you initiate the pull',
-      'Drive elbows down and back to pull your body horizontally away from the bar',
-      'Aim for your torso and upper body to be completely flat and horizontal with the bar at the apex',
-      'Squeeze lats and mid-back to hold horizontal clearance before lowering with control'
+      'Initiate an explosive pull while driving knees up into a tight chest tuck',
+      'Maintain a vertical torso at the peak rather than leaning all the way back horizontally',
+      'Use the upward momentum of the knee tuck to pull away from the bar',
+      'Pull the bar deep and low on your torso (aiming for lower ribs / upper abdomen)'
     ],
     commonMistakes: [
-      'Pulling vertically straight up under the bar without tucking and pulling back away from the bar',
-      'Failing to reach a flat horizontal torso position relative to the bar',
-      'Dropping down abruptly without controlling the eccentric path'
+      'Pulling vertically straight up under the bar without tucking and creating clearance away from the bar',
+      'Tilting completely horizontal instead of keeping the torso vertical at the peak',
+      'Stopping the pull at clavicle/chin height instead of pulling the bar low on the torso'
     ],
     primaryMuscles: ['Latissimus Dorsi', 'Teres Major', 'Posterior Deltoids', 'Rhomboids'],
-    secondaryMuscles: ['Rectus Abdominis / Core', 'Biceps & Brachialis', 'Triceps (Long Head)'],
+    secondaryMuscles: ['Rectus Abdominis / Hip Flexors', 'Biceps & Brachialis', 'Forearms / Grip'],
     illustrationType: 'pull-back',
-    tips: 'Aim to see the bar directly in front of your eyes/chest as your body reaches the flat horizontal plane. Watch the video demo for exact angle timing.',
+    tips: 'Synchronize the fast knee tuck with your initial lat pull. Torso stays vertical at the peak so the bar lands low on your torso. Watch the YouTube video breakdown for the exact tuck-to-pull timing.',
     videoDemoUrl: 'https://youtube.com/shorts/Io5Ek8Nzl9I?is=C6V1EcVIvPIczisy'
   },
   'mu-assist-banded-muscle-up': {

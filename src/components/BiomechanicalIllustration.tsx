@@ -296,26 +296,28 @@ function renderFigureContent(
     case 'pull-back':
       return (
         <g id="pull-back-svg">
-          {/* Pull-Up Bar */}
-          <line x1="30" y1="65" x2="250" y2="65" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
-          <circle cx="85" cy="65" r="4" fill={apparatus} />
-          {/* Arms pulling back horizontally away from bar */}
-          <path d="M 85 65 L 120 68" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
-          {/* Head & neck horizontally aligned with bar */}
-          <circle cx="140" cy="68" r="10" fill="none" stroke={primary} strokeWidth="4" />
-          {/* Flat horizontal torso aligned with bar plane */}
-          <path d="M 130 68 L 195 68" stroke={primary} strokeWidth="10" strokeLinecap="round" />
-          {/* Knees tucked tightly toward chest/torso */}
-          <path d="M 195 68 L 180 95 L 155 88" stroke={primary} strokeWidth="6" strokeLinecap="round" />
-          {/* Feet tucked */}
-          <circle cx="155" cy="88" r="3.5" fill={primary} />
-          {/* Horizontal pull-away indicator arrows */}
-          <path d="M 95 50 L 175 50" stroke={highlight} strokeWidth="2.5" strokeDasharray="3 3" />
-          <path d="M 168 45 L 175 50 L 168 55" stroke={highlight} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          {/* Pull-Up Bar positioned low on torso at peak */}
+          <line x1="30" y1="75" x2="250" y2="75" stroke={apparatus} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="115" cy="75" r="4.5" fill={apparatus} />
+          <circle cx="165" cy="75" r="4.5" fill={apparatus} />
+          {/* Head proud and upright above bar */}
+          <circle cx="140" cy="22" r="10.5" fill="none" stroke={primary} strokeWidth="4" />
+          {/* Vertical upright torso at peak */}
+          <path d="M 140 34 L 140 98" stroke={primary} strokeWidth="10" strokeLinecap="round" />
+          {/* Deep flexed arms pulling bar down to lower ribs/torso */}
+          <path d="M 115 75 L 102 65 L 130 48 M 165 75 L 178 65 L 150 48" stroke={primary} strokeWidth="5.5" strokeLinecap="round" />
+          {/* Knees tucked tightly up toward chest */}
+          <path d="M 140 98 L 108 85 L 122 118" stroke={primary} strokeWidth="6" strokeLinecap="round" />
+          <circle cx="122" cy="118" r="3.5" fill={primary} />
+          {/* Upward knee tuck momentum arrow */}
+          <path d="M 110 148 Q 92 120 105 92" stroke={highlight} strokeWidth="2.5" strokeDasharray="3 3" fill="none" />
+          <path d="M 100 98 L 105 92 L 110 97" stroke={highlight} strokeWidth="2" strokeLinecap="round" fill="none" />
+          {/* Low bar clearance contact vector */}
           {showHighlight && (
             <>
-              <line x1="130" y1="68" x2="195" y2="68" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
-              <text x="45" y="32" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">TUCKED KNEES &middot; FLAT WITH BAR</text>
+              <line x1="115" y1="75" x2="165" y2="75" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
+              <circle cx="140" cy="75" r="6" fill={highlight} filter={`url(#${glowId})`} />
+              <text x="35" y="15" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">VERTICAL TORSO &middot; BAR LOW ON TORSO</text>
             </>
           )}
         </g>
