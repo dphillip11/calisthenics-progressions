@@ -3776,22 +3776,88 @@ export const INITIAL_LOGS: WorkoutLogEntry[] = [
 export function deriveInitialPBRecords(logs: WorkoutLogEntry[]): Record<string, PBRecord> {
   const records: Record<string, PBRecord> = {};
 
+  // Group logs by exerciseId
+  const exerciseLogsMap: Record<string, WorkoutLogEntry[]> = {};
   for (const log of logs) {
-    const existing = records[log.exerciseId];
-    if (!existing || log.metricValue > existing.bestValue) {
-      records[log.exerciseId] = {
-        exerciseId: log.exerciseId,
-        bestValue: log.metricValue,
-        bestWeightKg: log.weightAddedKg,
-        bestSets: log.sets,
-        dateAchieved: log.date,
-        isPassed: log.passedCriteria || (existing ? existing.isPassed : false),
-        datePassed: log.passedCriteria ? log.date : (existing ? existing.datePassed : undefined)
-      };
-    } else if (log.passedCriteria && !existing.isPassed) {
-      existing.isPassed = true;
-      existing.datePassed = log.date;
+    if (!exerciseLogsMap[log.exerciseId]) {
+      exerciseLogsMap[log.exerciseId] = [];
     }
+    exerciseLogsMap[log.exerciseId].push(log);
+  }
+
+  for (const [exerciseId, exLogs] of Object.entries(exerciseLogsMap)) {
+    const exercise = EXERCISES[exerciseId];
+    const isSeconds = exercise?.metricType === 'seconds';
+    const targetThreshold = exercise
+      ? (isSeconds ? exercise.passCriteria.targetHoldSeconds || 10 : exercise.passCriteria.targetReps || 10)
+      : 10;
+    const requiredSets = exercise ? exercise.passCriteria.targetSets || 3 : 3;
+
+    let bestValue = 0;
+    let bestWeightKg: number | undefined;
+    let dateAchieved = exLogs[0].date;
+    let isPassed = false;
+    let datePassed: string | undefined;
+
+    // Group sets by date
+    const daySets: Record<string, number[]> = {};
+    for (const log of exLogs) {
+      if (log.metricValue > bestValue) {
+        bestValue = log.metricValue;
+        bestWeightKg = log.weightAddedKg;
+        dateAchieved = log.date;
+      }
+      if (!daySets[log.date]) {
+        daySets[log.date] = [];
+      }
+      const sCount = Math.max(1, log.sets || 1);
+      for (let s = 0; s < sCount; s++) {
+        daySets[log.date].push(log.metricValue);
+      }
+      if (log.passedCriteria && !datePassed) {
+        datePassed = log.date;
+      }
+    }
+
+    let maxCompletionPercent = 0;
+    for (const [dStr, sets] of Object.entries(daySets)) {
+      const qualifyingSets = sets.filter(v => v >= targetThreshold).length;
+      const sorted = [...sets].sort((a, b) => b - a);
+      let sumPct = 0;
+      for (let i = 0; i < requiredSets; i++) {
+        if (i < sorted.length) {
+          sumPct += Math.min(100, Math.max(0, (sorted[i] / targetThreshold) * 100));
+        }
+      }
+      const dayPct = Math.round(sumPct / requiredSets);
+      if (dayPct > maxCompletionPercent) {
+        maxCompletionPercent = dayPct;
+      }
+      if (qualifyingSets >= requiredSets) {
+        isPassed = true;
+        if (!datePassed) {
+          datePassed = dStr;
+        }
+      }
+    }
+
+    // If an initial seed log was explicitly marked passedCriteria, ensure isPassed is true
+    const hasPassedLog = exLogs.some(l => l.passedCriteria);
+    if (hasPassedLog) {
+      isPassed = true;
+      maxCompletionPercent = Math.max(maxCompletionPercent, 100);
+    }
+
+    records[exerciseId] = {
+      exerciseId,
+      bestValue,
+      bestWeightKg,
+      bestSets: requiredSets,
+      dateAchieved,
+      isPassed,
+      datePassed: isPassed ? (datePassed || dateAchieved) : undefined,
+      completionPercent: maxCompletionPercent
+    };
   }
 
   return records;

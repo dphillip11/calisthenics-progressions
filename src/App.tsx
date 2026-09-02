@@ -19,7 +19,8 @@ import {
   clearAllData,
   importUserData,
   resetAllDataToDefault,
-  evaluateWorkoutEntry
+  evaluateWorkoutEntry,
+  evaluateExerciseProgressFromLogs
 } from './utils/storage';
 import { Header } from './components/Header';
 import { SkillTreeView } from './components/SkillTreeView';
@@ -51,6 +52,11 @@ export default function App() {
   const [isTimerOpen, setIsTimerOpen] = useState<boolean>(false);
   const [timerInitialMode, setTimerInitialMode] = useState<'rest' | 'hold'>('rest');
   const [timerTargetExercise, setTimerTargetExercise] = useState<ProgressionExercise | null>(null);
+  const [timerAutoStartTrigger, setTimerAutoStartTrigger] = useState<{
+    id: number;
+    restSeconds: number;
+    exercise: ProgressionExercise;
+  } | null>(null);
   const [isDataModalOpen, setIsDataModalOpen] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
@@ -87,28 +93,24 @@ export default function App() {
     setLogs(updatedLogs);
     saveStoredLogs(updatedLogs);
 
-    // Recalculate PB for this exercise
+    // Recalculate PB and day-based pass progress for this exercise
     const exercise = EXERCISES[newLog.exerciseId];
     if (exercise) {
       const existingPB = pbRecords[exercise.id];
-      const evaluation = evaluateWorkoutEntry(
-        exercise,
-        newLog.metricValue,
-        newLog.sets,
-        newLog.weightAddedKg,
-        existingPB
-      );
+      const progress = evaluateExerciseProgressFromLogs(exercise, updatedLogs, existingPB);
 
-      const isPassed = evaluation.isPass || (existingPB ? existingPB.isPassed : false);
+      const isNewlyPassed = progress.isPassed && !existingPB?.isPassed;
+      const isPB = newLog.metricValue > (existingPB?.bestValue || 0);
 
       const updatedPB: PBRecord = {
         exerciseId: exercise.id,
-        bestValue: evaluation.newPBValue,
-        bestWeightKg: newLog.weightAddedKg || existingPB?.bestWeightKg,
-        bestSets: newLog.sets || existingPB?.bestSets,
-        dateAchieved: newLog.metricValue >= (existingPB?.bestValue || 0) ? newLog.date : (existingPB?.dateAchieved || newLog.date),
-        isPassed: isPassed,
-        datePassed: isPassed ? (existingPB?.datePassed || newLog.date) : undefined
+        bestValue: progress.bestValue,
+        bestWeightKg: progress.bestWeightKg || newLog.weightAddedKg || existingPB?.bestWeightKg,
+        bestSets: exercise.passCriteria.targetSets,
+        dateAchieved: progress.dateAchieved,
+        isPassed: progress.isPassed,
+        datePassed: progress.datePassed,
+        completionPercent: progress.bestCompletionPercent
       };
 
       const updatedPBs = {
@@ -118,6 +120,28 @@ export default function App() {
 
       setPbRecords(updatedPBs);
       saveStoredPBs(updatedPBs);
+
+      // Reset and auto-start rest timer based on recommended rest
+      const restSecs = exercise.passCriteria.restSeconds || 90;
+      setTimerTargetExercise(exercise);
+      setTimerInitialMode('rest');
+      setIsTimerOpen(true);
+      setTimerAutoStartTrigger({
+        id: Date.now(),
+        restSeconds: restSecs,
+        exercise
+      });
+
+      const celebrationPrefix = isNewlyPassed
+        ? '🎉 Pass standard achieved!'
+        : isPB
+        ? '🔥 New Personal Best!'
+        : 'Set recorded!';
+
+      setToast({
+        type: 'success',
+        message: `${celebrationPrefix} Rest timer started (${restSecs}s recommended rest).`
+      });
     }
   };
 
@@ -127,25 +151,23 @@ export default function App() {
     setLogs(updatedLogs);
     saveStoredLogs(updatedLogs);
 
-    // Recalculate all PBs from remaining logs
+    // Recalculate all PBs from remaining logs using day-based set pass evaluation
     const newPBs: Record<string, PBRecord> = {};
-    for (const log of updatedLogs) {
-      const ex = EXERCISES[log.exerciseId];
+    for (const exId of Object.keys(EXERCISES)) {
+      const ex = EXERCISES[exId];
       if (!ex) continue;
-      const target = ex.metricType === 'seconds'
-        ? ex.passCriteria.targetHoldSeconds || 0
-        : ex.passCriteria.targetReps || 0;
-
-      const existing = newPBs[log.exerciseId];
-      if (!existing || log.metricValue > existing.bestValue) {
-        newPBs[log.exerciseId] = {
-          exerciseId: log.exerciseId,
-          bestValue: log.metricValue,
-          bestWeightKg: log.weightAddedKg,
-          bestSets: log.sets,
-          dateAchieved: log.date,
-          isPassed: log.metricValue >= target && target > 0,
-          datePassed: log.metricValue >= target && target > 0 ? log.date : undefined
+      const exLogs = updatedLogs.filter(l => l.exerciseId === exId);
+      if (exLogs.length > 0) {
+        const progress = evaluateExerciseProgressFromLogs(ex, updatedLogs);
+        newPBs[exId] = {
+          exerciseId: exId,
+          bestValue: progress.bestValue,
+          bestWeightKg: progress.bestWeightKg,
+          bestSets: progress.bestSets,
+          dateAchieved: progress.dateAchieved,
+          isPassed: progress.isPassed,
+          datePassed: progress.datePassed,
+          completionPercent: progress.bestCompletionPercent
         };
       }
     }
@@ -247,23 +269,6 @@ export default function App() {
     setIsTimerOpen(true);
   };
 
-  // Callback when RestTimer logs a completed set
-  const handleTimerLogSet = (exercise: ProgressionExercise, metricValue: number) => {
-    handleSaveLog({
-      exerciseId: exercise.id,
-      date: new Date().toISOString().slice(0, 10),
-      metricValue,
-      sets: 1,
-      rpe: 8,
-      notes: `Logged via Chrono / Timer (${metricValue} ${exercise.metricType === 'seconds' ? 's hold' : 'reps'})`
-    });
-
-    setToast({
-      type: 'success',
-      message: `Set recorded: ${metricValue} ${exercise.metricType === 'seconds' ? 'seconds' : 'reps'} for ${exercise.title}`
-    });
-  };
-
   const currentActiveTree = SKILL_TREES.find(t => t.id === selectedTreeId) || SKILL_TREES[0];
 
   return (
@@ -303,10 +308,7 @@ export default function App() {
                   const treeExs = tree.exercises.map(id => EXERCISES[id]).filter(Boolean);
                   const passed = treeExs.filter(ex => {
                     const pb = pbRecords[ex.id];
-                    const target = ex.metricType === 'seconds'
-                      ? ex.passCriteria.targetHoldSeconds || 0
-                      : ex.passCriteria.targetReps || 0;
-                    return pb?.isPassed || (pb && pb.bestValue >= target && target > 0);
+                    return pb?.isPassed || false;
                   }).length;
 
                   return (
@@ -446,7 +448,7 @@ export default function App() {
         activeExercise={timerTargetExercise || selectedExercise}
         defaultRestSeconds={(timerTargetExercise || selectedExercise)?.passCriteria.restSeconds || 90}
         initialMode={timerInitialMode}
-        onLogCompletedSet={handleTimerLogSet}
+        autoStartTrigger={timerAutoStartTrigger}
       />
 
       {/* Toast Notification */}

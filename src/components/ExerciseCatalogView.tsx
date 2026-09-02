@@ -44,7 +44,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
       : ex.passCriteria.targetReps || 0;
 
     const currentBest = pb ? pb.bestValue : 0;
-    const isPassed = pb?.isPassed || (currentBest >= target && target > 0);
+    const isPassed = pb?.isPassed || false;
 
     // Filter by status
     if (statusFilter === 'mastered' && !isPassed) return false;
@@ -140,7 +140,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
               : exercise.passCriteria.targetReps || 0;
 
             const currentBest = pb ? pb.bestValue : 0;
-            const isPassed = pb?.isPassed || (currentBest >= target && target > 0);
+            const isPassed = pb?.isPassed || false;
             const parentTree = treeMap.get(exercise.skillTreeId);
 
             return (
@@ -238,20 +238,21 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => onSelectExercise(exercise)}
-                      className="p-2 rounded-xl bg-[#2b303a] hover:bg-[#383e4c] text-zinc-200 border border-[#3e4453] hover:border-[#525a6c] transition cursor-pointer shadow-xs"
+                      className="px-3.5 py-2 rounded-xl bg-[#2b303a] hover:bg-[#383e4c] text-zinc-200 font-mono font-bold text-xs transition flex items-center gap-1.5 border border-[#3e4453] hover:border-[#525a6c] cursor-pointer shadow-xs whitespace-nowrap shrink-0"
                       title="View Full Details & Graph"
                     >
-                      <TrendingUp className="w-4 h-4 text-[#D1FF00]" />
+                      <TrendingUp className="w-3.5 h-3.5 text-[#D1FF00]" />
+                      <span>Details</span>
                     </button>
                     <button
                       onClick={() => onOpenLogModal(exercise)}
-                      className="px-3 py-2 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition flex items-center gap-1 shadow-xs active:scale-95 cursor-pointer border border-black/20"
+                      className="px-3.5 py-2 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow-xs active:scale-95 cursor-pointer border border-black/20 whitespace-nowrap shrink-0"
                     >
                       <Dumbbell className="w-3.5 h-3.5" />
-                      Log Set
+                      <span>Log</span>
                     </button>
                   </div>
                 </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ProgressionExercise, WorkoutLogEntry, PBRecord, SkillTree } from '../types';
+import { evaluateExerciseProgressFromLogs } from '../utils/storage';
 import { BiomechanicalIllustration } from './BiomechanicalIllustration';
 import { ProgressGraph } from './ProgressGraph';
 import {
@@ -59,10 +60,9 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
   const targetSets = exercise.passCriteria.targetSets || 3;
 
   const currentBest = pbRecord ? pbRecord.bestValue : 0;
-  const isPassed = pbRecord?.isPassed || (currentBest >= targetThreshold && targetThreshold > 0);
-  const percentToGoal = targetThreshold > 0
-    ? Math.min(100, Math.round((currentBest / targetThreshold) * 100))
-    : 100;
+  const progress = evaluateExerciseProgressFromLogs(exercise, logs, pbRecord);
+  const isPassed = pbRecord?.isPassed || progress.isPassed;
+  const percentToGoal = pbRecord?.completionPercent ?? progress.bestCompletionPercent;
 
   const difficultyColors: Record<string, string> = {
     Beginner: 'bg-zinc-800 text-zinc-300 border-zinc-700',
@@ -173,11 +173,11 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
             <button
               id="exercise-tab-log-set-btn"
               onClick={() => onOpenLogModal(exercise)}
-              className="py-2 px-3 rounded-lg font-bold transition cursor-pointer flex items-center justify-center gap-2 bg-[#D1FF00]/10 hover:bg-[#D1FF00] text-[#D1FF00] hover:text-black border border-[#D1FF00]/40 hover:border-[#D1FF00] shadow-sm active:scale-98"
+              className="py-2 px-3 rounded-lg font-bold transition cursor-pointer flex items-center justify-center gap-2 bg-[#D1FF00]/10 hover:bg-[#D1FF00] text-[#D1FF00] hover:text-black border border-[#D1FF00]/40 hover:border-[#D1FF00] shadow-sm active:scale-98 whitespace-nowrap shrink-0"
               title="Log a single set via popup"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
-              <span>Log Set</span>
+              <span>Log</span>
             </button>
           </div>
         </div>
@@ -288,9 +288,12 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                   {/* Quantitative Target Benchmark */}
                   <div className="bg-[#14161b] border border-[#2b2f38] rounded-xl p-4 flex items-center justify-between font-mono shadow-xs">
                     <div>
-                      <div className="text-[10px] text-zinc-400 uppercase tracking-wider">Required Target</div>
+                      <div className="text-[10px] text-zinc-400 uppercase tracking-wider">Required Target (Pass Standard)</div>
                       <div className="text-xl font-black text-[#D1FF00]">
                         {targetSets} sets &times; {targetThreshold} {isSeconds ? 'sec hold' : 'reps'}
+                      </div>
+                      <div className="text-[11px] text-zinc-400 font-sans mt-0.5">
+                        Full {targetSets} sets at target required on a single day to pass.
                       </div>
                     </div>
                     <div className="text-right">
@@ -322,17 +325,22 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                 {/* Pass Status Banner */}
                 <div>
                   {isPassed ? (
-                    <div className="p-3 rounded-xl bg-[#18271e] border border-emerald-500/40 text-emerald-400 text-xs font-mono flex items-center gap-2.5 shadow-xs">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>
-                        <strong>Mastery Achieved!</strong> PB of {currentBest} {isSeconds ? 's' : 'reps'} meets target.
-                      </span>
+                    <div className="p-3 rounded-xl bg-[#18271e] border border-emerald-500/40 text-emerald-400 text-xs font-mono flex items-center justify-between shadow-xs">
+                      <div className="flex items-center gap-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span>
+                          <strong>Mastery Standard Met!</strong> All {targetSets} sets at &ge;{targetThreshold} {isSeconds ? 's' : 'reps'} achieved.
+                        </span>
+                      </div>
+                      {pbRecord?.datePassed && (
+                        <span className="text-[11px] text-zinc-400 font-normal">Passed: {pbRecord.datePassed}</span>
+                      )}
                     </div>
                   ) : (
                     <div className="p-3 rounded-xl bg-[#14161b] border border-[#2b2f38] text-zinc-300 text-xs font-mono flex items-center justify-between shadow-xs">
-                      <span>Current PB: <strong className="text-white">{currentBest}</strong> / {targetThreshold} {isSeconds ? 's' : 'reps'}</span>
+                      <span>Pass Completion: <strong className="text-white">{percentToGoal}% average</strong></span>
                       <span className="font-bold text-[#D1FF00]">
-                        {targetThreshold - currentBest} {isSeconds ? 's' : 'reps'} to pass
+                        Requires {targetSets} &times; {targetThreshold} {isSeconds ? 's' : 'reps'}
                       </span>
                     </div>
                   )}

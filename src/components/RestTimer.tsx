@@ -14,10 +14,8 @@ import {
   Minimize2,
   Maximize2,
   Sparkles,
-  ArrowRight,
   Plus,
-  Minus,
-  Dumbbell
+  Minus
 } from 'lucide-react';
 
 export interface RestTimerModalProps {
@@ -26,7 +24,11 @@ export interface RestTimerModalProps {
   activeExercise?: ProgressionExercise | null;
   defaultRestSeconds?: number;
   initialMode?: 'rest' | 'hold';
-  onLogCompletedSet?: (exercise: ProgressionExercise, metricValue: number) => void;
+  autoStartTrigger?: {
+    id: number;
+    restSeconds: number;
+    exercise: ProgressionExercise;
+  } | null;
 }
 
 export const RestTimer: React.FC<RestTimerModalProps> = ({
@@ -35,13 +37,13 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
   activeExercise,
   defaultRestSeconds,
   initialMode = 'rest',
-  onLogCompletedSet
+  autoStartTrigger
 }) => {
   const isSeconds = activeExercise?.metricType === 'seconds';
   const targetRest = defaultRestSeconds || activeExercise?.passCriteria.restSeconds || 90;
   const targetHold = activeExercise?.passCriteria.targetHoldSeconds || 15;
 
-  const [mode, setMode] = useState<'rest' | 'hold'>(isSeconds ? 'hold' : initialMode);
+  const [mode, setMode] = useState<'rest' | 'hold'>(initialMode || (isSeconds ? 'hold' : 'rest'));
   const [restDuration, setRestDuration] = useState<number>(targetRest);
   const [timeLeft, setTimeLeft] = useState<number>(targetRest);
   const [stopwatchSeconds, setStopwatchSeconds] = useState<number>(0);
@@ -59,6 +61,28 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
   const prepTimerRef = useRef<NodeJS.Timeout | null>(null);
   const holdStartTimeRef = useRef<number>(0);
 
+  // Sync mode whenever initialMode prop explicitly changes
+  useEffect(() => {
+    if (initialMode) {
+      setMode(initialMode);
+    }
+  }, [initialMode]);
+
+  // Handle auto-start trigger (e.g. when any set is logged in the application)
+  useEffect(() => {
+    if (autoStartTrigger) {
+      const rest = autoStartTrigger.restSeconds || autoStartTrigger.exercise?.passCriteria.restSeconds || 90;
+      setMode('rest');
+      setRestDuration(rest);
+      setTimeLeft(rest);
+      setIsRunning(true);
+      setCountdownPrepSeconds(null);
+      setStopwatchSeconds(0);
+      setStopwatchMillis(0);
+      setLastCompletedHold(null);
+    }
+  }, [autoStartTrigger]);
+
   // Sync mode and rest duration when activeExercise or defaultRest changes
   useEffect(() => {
     if (activeExercise) {
@@ -66,12 +90,12 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
       setRestDuration(rest);
       if (!isRunning) {
         setTimeLeft(rest);
-        if (activeExercise.metricType === 'seconds') {
+        if (activeExercise.metricType === 'seconds' && initialMode === 'hold') {
           setMode('hold');
         }
       }
     }
-  }, [activeExercise, defaultRestSeconds]);
+  }, [activeExercise, defaultRestSeconds, initialMode, isRunning]);
 
   // Handle Prepare Countdown before Iso Hold
   useEffect(() => {
@@ -169,7 +193,8 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
     setIsRunning(false);
     setCountdownPrepSeconds(null);
     if (mode === 'rest') {
-      setTimeLeft(restDuration);
+      const rec = activeExercise?.passCriteria.restSeconds || restDuration || 90;
+      setTimeLeft(rec);
     } else {
       setStopwatchSeconds(0);
       setStopwatchMillis(0);
@@ -197,20 +222,6 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
     const mins = Math.floor(secs / 60);
     const remainder = secs % 60;
     return `${mins}:${remainder < 10 ? '0' : ''}${remainder}`;
-  };
-
-  // 1-Tap Log Set and Auto-start Rest Timer
-  const handleLogAndRest = () => {
-    const valueToLog = mode === 'hold' ? (stopwatchSeconds || lastCompletedHold || 1) : (activeExercise?.passCriteria.targetReps || 10);
-    if (activeExercise && onLogCompletedSet) {
-      onLogCompletedSet(activeExercise, valueToLog);
-    }
-    // Switch to Rest Mode and start rest countdown
-    setMode('rest');
-    setTimeLeft(restDuration);
-    setIsRunning(true);
-    setLastCompletedHold(null);
-    setStopwatchSeconds(0);
   };
 
   const progressPercent = mode === 'rest'
@@ -411,9 +422,16 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
                   )}
                 </div>
 
-                <div className="text-[10px] font-bold text-zinc-500 mt-1 uppercase tracking-widest flex items-center gap-1.5">
+                <div className="text-[10px] font-bold text-zinc-500 mt-1 uppercase tracking-widest flex items-center justify-center gap-1.5">
                   {mode === 'rest' ? (
-                    <span>Rest Period Remaining</span>
+                    <span className="flex items-center gap-1.5 flex-wrap justify-center">
+                      <span>Rest Period Remaining</span>
+                      {activeExercise?.passCriteria.restSeconds && (
+                        <span className="text-zinc-400 font-normal">
+                          &middot; Rec: <strong className="text-[#D1FF00]">{activeExercise.passCriteria.restSeconds}s</strong>
+                        </span>
+                      )}
+                    </span>
                   ) : (
                     <span>
                       Active Isometric Hold {targetHold > 0 && `(Target: ${targetHold}s)`}
@@ -428,19 +446,25 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
           {mode === 'rest' && (
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-1.5 font-mono">
-                {[30, 60, 90, 120, 180].map(secs => (
-                  <button
-                    key={secs}
-                    onClick={() => handleSelectPreset(secs)}
-                    className={`flex-1 py-1 rounded-lg text-xs font-mono font-bold transition cursor-pointer ${
-                      restDuration === secs
-                        ? 'bg-[#D1FF00] text-black border border-[#D1FF00] shadow-sm'
-                        : 'bg-[#0A0A0A] text-zinc-400 border border-[#222222] hover:text-white hover:border-zinc-700'
-                    }`}
-                  >
-                    {secs}s
-                  </button>
-                ))}
+                {Array.from(new Set([30, 60, activeExercise?.passCriteria.restSeconds || 90, 90, 120, 180]))
+                  .sort((a, b) => a - b)
+                  .map(secs => {
+                    const isRec = activeExercise?.passCriteria.restSeconds === secs;
+                    return (
+                      <button
+                        key={secs}
+                        onClick={() => handleSelectPreset(secs)}
+                        className={`flex-1 py-1 rounded-lg text-xs font-mono font-bold transition cursor-pointer ${
+                          restDuration === secs
+                            ? 'bg-[#D1FF00] text-black border border-[#D1FF00] shadow-sm'
+                            : 'bg-[#0A0A0A] text-zinc-400 border border-[#222222] hover:text-white hover:border-zinc-700'
+                        }`}
+                        title={isRec ? 'Recommended Rest for this Exercise' : undefined}
+                      >
+                        {secs}s{isRec ? '★' : ''}
+                      </button>
+                    );
+                  })}
               </div>
 
               <div className="flex items-center justify-center gap-2 text-xs text-zinc-400 font-mono pt-1">
@@ -490,22 +514,6 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
               <RotateCcw className="w-4 h-4" />
             </button>
           </div>
-
-          {/* 1-Tap Log Set & Auto-Rest Prompt (if hold was recorded or active exercise open) */}
-          {((mode === 'hold' && (stopwatchSeconds > 0 || lastCompletedHold !== null)) || activeExercise) && (
-            <div className="pt-2 border-t border-[#222222]">
-              <button
-                onClick={handleLogAndRest}
-                className="w-full py-2.5 px-3 rounded-xl bg-[#0A0A0A] hover:bg-[#181818] text-[#D1FF00] border border-[#D1FF00]/40 font-mono font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 cursor-pointer group shadow-sm hover:border-[#D1FF00]"
-              >
-                <Dumbbell className="w-3.5 h-3.5 text-[#D1FF00]" />
-                <span>
-                  Log Set {mode === 'hold' ? `(${stopwatchSeconds || lastCompletedHold}s hold)` : `(${activeExercise?.passCriteria.targetReps || 10} reps)`} &amp; Start Rest
-                </span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

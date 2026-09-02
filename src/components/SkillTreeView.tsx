@@ -45,7 +45,7 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
       : exercise.passCriteria.targetReps || 0;
     
     const currentBest = pb ? pb.bestValue : 0;
-    const isPassed = pb?.isPassed || (currentBest >= target && target > 0);
+    const isPassed = pb?.isPassed || false;
 
     if (isPassed) passedCount++;
 
@@ -53,10 +53,7 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
     // Prerequisite check: either index === 0 or previous exercise was passed
     const prevPassed = index === 0 || treeExercises.slice(0, index).every(prev => {
       const prevPb = pbRecords[prev.id];
-      const prevTarget = prev.metricType === 'seconds'
-        ? prev.passCriteria.targetHoldSeconds || 0
-        : prev.passCriteria.targetReps || 0;
-      return prevPb?.isPassed || (prevPb && prevPb.bestValue >= prevTarget);
+      return prevPb?.isPassed || false;
     });
 
     let status: 'mastered' | 'ready' | 'in-progress' | 'locked' = 'locked';
@@ -278,21 +275,21 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                   </div>
 
                   {/* Action Button Group */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => onSelectExercise(exercise)}
-                      className="px-3.5 py-2 rounded-xl bg-[#2b303a] hover:bg-[#383e4c] text-zinc-200 font-mono font-bold text-xs transition flex items-center gap-1.5 border border-[#3e4453] hover:border-[#525a6c] shadow-sm cursor-pointer"
+                      className="px-3.5 py-2 rounded-xl bg-[#2b303a] hover:bg-[#383e4c] text-zinc-200 font-mono font-bold text-xs transition flex items-center gap-1.5 border border-[#3e4453] hover:border-[#525a6c] shadow-sm cursor-pointer whitespace-nowrap shrink-0"
                     >
                       <TrendingUp className="w-3.5 h-3.5 text-[#D1FF00]" />
-                      Details
+                      <span>Details</span>
                     </button>
 
                     <button
                       onClick={() => onOpenLogModal(exercise)}
-                      className="px-3.5 py-2 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer border border-black/20"
+                      className="px-3.5 py-2 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer border border-black/20 whitespace-nowrap shrink-0"
                     >
                       <Dumbbell className="w-3.5 h-3.5" />
-                      Log Set
+                      <span>Log</span>
                     </button>
                   </div>
                 </div>

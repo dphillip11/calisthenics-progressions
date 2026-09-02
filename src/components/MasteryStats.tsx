@@ -40,7 +40,7 @@ export const MasteryStats: React.FC<MasteryStatsProps> = ({
       ? ex.passCriteria.targetHoldSeconds || 0
       : ex.passCriteria.targetReps || 0;
     
-    const isPass = pb?.isPassed || (pb && pb.bestValue >= target && target > 0);
+    const isPass = pb?.isPassed || false;
     if (isPass) {
       totalPassed++;
     } else if (pb && pb.bestValue > 0) {
@@ -155,10 +155,7 @@ export const MasteryStats: React.FC<MasteryStatsProps> = ({
               .filter((ex): ex is ProgressionExercise => Boolean(ex));
             const passed = treeExs.filter(ex => {
               const pb = pbRecords[ex.id];
-              const target = ex.metricType === 'seconds'
-                ? ex.passCriteria.targetHoldSeconds || 0
-                : ex.passCriteria.targetReps || 0;
-              return pb?.isPassed || (pb && pb.bestValue >= target && target > 0);
+              return pb?.isPassed || false;
             }).length;
 
             const pct = Math.round((passed / treeExs.length) * 100);

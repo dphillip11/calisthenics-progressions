@@ -79,6 +79,149 @@ export interface CheckPassResult {
   newPBValue: number;
 }
 
+/**
+ * Calculates average completion percentage over required sets for a given list of set values on a day.
+ * Full required sets must meet the target on that day to count as a pass (e.g. 3x15 is a pass, 1x15 is 33% and not a pass).
+ */
+export function calculateDayCompletion(
+  exercise: ProgressionExercise,
+  setValues: number[]
+): {
+  completionPercent: number;
+  qualifyingSetsCount: number;
+  requiredSets: number;
+  targetThreshold: number;
+  isPass: boolean;
+} {
+  const isSeconds = exercise.metricType === 'seconds';
+  const targetThreshold = isSeconds
+    ? exercise.passCriteria.targetHoldSeconds || 10
+    : exercise.passCriteria.targetReps || 10;
+  const requiredSets = exercise.passCriteria.targetSets || 3;
+
+  if (targetThreshold <= 0 || requiredSets <= 0) {
+    return {
+      completionPercent: 0,
+      qualifyingSetsCount: 0,
+      requiredSets,
+      targetThreshold,
+      isPass: false
+    };
+  }
+
+  // Count how many sets met or exceeded the pass standard threshold
+  const qualifyingSetsCount = setValues.filter(val => val >= targetThreshold).length;
+
+  // Sort sets descending so best sets count towards required sets
+  const sortedValues = [...setValues].sort((a, b) => b - a);
+
+  let totalPercentSum = 0;
+  for (let i = 0; i < requiredSets; i++) {
+    if (i < sortedValues.length) {
+      const setPercent = Math.min(100, Math.max(0, (sortedValues[i] / targetThreshold) * 100));
+      totalPercentSum += setPercent;
+    } else {
+      totalPercentSum += 0;
+    }
+  }
+
+  const completionPercent = Math.round(totalPercentSum / requiredSets);
+  // Must complete all required sets at standard on a single day to pass
+  const isPass = qualifyingSetsCount >= requiredSets;
+
+  return {
+    completionPercent,
+    qualifyingSetsCount,
+    requiredSets,
+    targetThreshold,
+    isPass
+  };
+}
+
+/**
+ * Evaluates an exercise across all workout logs, computing best single value,
+ * best day average completion percentage over required sets, and overall passed status.
+ */
+export function evaluateExerciseProgressFromLogs(
+  exercise: ProgressionExercise,
+  logs: WorkoutLogEntry[],
+  existingPB?: PBRecord
+): {
+  bestValue: number;
+  bestCompletionPercent: number;
+  isPassed: boolean;
+  datePassed?: string;
+  bestWeightKg?: number;
+  bestSets?: number;
+  dateAchieved: string;
+} {
+  const exerciseLogs = logs.filter(l => l.exerciseId === exercise.id);
+
+  if (exerciseLogs.length === 0) {
+    return {
+      bestValue: existingPB?.bestValue || 0,
+      bestCompletionPercent: existingPB?.completionPercent || 0,
+      isPassed: existingPB?.isPassed || false,
+      datePassed: existingPB?.datePassed,
+      bestWeightKg: existingPB?.bestWeightKg,
+      bestSets: existingPB?.bestSets,
+      dateAchieved: existingPB?.dateAchieved || new Date().toISOString().slice(0, 10)
+    };
+  }
+
+  // Group set values by date
+  const dateMap: Record<string, number[]> = {};
+  let overallBestValue = existingPB ? existingPB.bestValue : 0;
+  let bestWeightKg = existingPB?.bestWeightKg;
+  let dateForBestValue = existingPB?.dateAchieved || exerciseLogs[0].date;
+
+  for (const log of exerciseLogs) {
+    if (log.metricValue > overallBestValue) {
+      overallBestValue = log.metricValue;
+      bestWeightKg = log.weightAddedKg;
+      dateForBestValue = log.date;
+    }
+
+    if (!dateMap[log.date]) {
+      dateMap[log.date] = [];
+    }
+
+    // Expand sets (if a log entry represented multiple sets, e.g. seed data)
+    const numSets = Math.max(1, log.sets || 1);
+    for (let s = 0; s < numSets; s++) {
+      dateMap[log.date].push(log.metricValue);
+    }
+  }
+
+  let maxCompletionPercent = existingPB?.completionPercent || 0;
+  let isPassed = existingPB?.isPassed || false;
+  let datePassed = existingPB?.datePassed;
+
+  // Check each day's performance
+  for (const [dateStr, setValues] of Object.entries(dateMap)) {
+    const dayResult = calculateDayCompletion(exercise, setValues);
+    if (dayResult.completionPercent > maxCompletionPercent) {
+      maxCompletionPercent = dayResult.completionPercent;
+    }
+    if (dayResult.isPass) {
+      isPassed = true;
+      if (!datePassed) {
+        datePassed = dateStr;
+      }
+    }
+  }
+
+  return {
+    bestValue: overallBestValue,
+    bestCompletionPercent: maxCompletionPercent,
+    isPassed,
+    datePassed,
+    bestWeightKg,
+    bestSets: exercise.passCriteria.targetSets,
+    dateAchieved: dateForBestValue
+  };
+}
+
 export function evaluateWorkoutEntry(
   exercise: ProgressionExercise,
   metricValue: number,
@@ -88,19 +231,15 @@ export function evaluateWorkoutEntry(
 ): CheckPassResult {
   const currentBest = existingPB ? existingPB.bestValue : 0;
   const isPB = metricValue > currentBest;
-  
-  let isPass = false;
-  const { passCriteria, metricType } = exercise;
 
-  if (metricType === 'reps' || metricType === 'reps_weighted') {
-    if (passCriteria.targetReps && metricValue >= passCriteria.targetReps) {
-      isPass = true;
-    }
-  } else if (metricType === 'seconds') {
-    if (passCriteria.targetHoldSeconds && metricValue >= passCriteria.targetHoldSeconds) {
-      isPass = true;
-    }
-  }
+  // A single set by itself is only a pass if required targetSets is 1 and metricValue >= target
+  const requiredSets = exercise.passCriteria.targetSets || 3;
+  const isSeconds = exercise.metricType === 'seconds';
+  const targetThreshold = isSeconds
+    ? exercise.passCriteria.targetHoldSeconds || 10
+    : exercise.passCriteria.targetReps || 10;
+
+  const isPass = (sets >= requiredSets) && (metricValue >= targetThreshold);
 
   return {
     isPass,

@@ -69,6 +69,7 @@ export interface PBRecord {
   dateAchieved: string;
   isPassed: boolean;
   datePassed?: string;
+  completionPercent?: number; // average completion % over required sets on best day
 }
 
 export interface UserProgressState {
