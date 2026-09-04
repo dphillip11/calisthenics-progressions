@@ -194,7 +194,7 @@ export const ExerciseCatalogView: React.FC<ExerciseCatalogViewProps> = ({
                       {exercise.title}
                     </h3>
                     <p className="text-[11px] font-mono text-zinc-400 line-clamp-1 mt-0.5">
-                      {parentTree?.shortName || exercise.category} · {exercise.equipment.join(', ')}
+                      {parentTree?.shortName || exercise.category}
                     </p>
                   </div>
 

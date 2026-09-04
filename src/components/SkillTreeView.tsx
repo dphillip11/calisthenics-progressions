@@ -200,9 +200,6 @@ export const SkillTreeView: React.FC<SkillTreeViewProps> = ({
                       <span className="text-xs font-mono font-semibold text-zinc-200">
                         {exercise.difficulty}
                       </span>
-                      <span className="text-xs font-mono text-zinc-400 hidden sm:inline-block">
-                        · {exercise.equipment.join(', ')}
-                      </span>
                       {exercise.videoDemoUrl && (
                         <a
                           href={exercise.videoDemoUrl}

@@ -17,6 +17,7 @@ import {
 
 interface LogWorkoutModalProps {
   exercise: ProgressionExercise;
+  initialMetricValue?: number;
   existingPB?: PBRecord;
   logs?: WorkoutLogEntry[];
   onSaveLog: (entry: Omit<WorkoutLogEntry, 'id' | 'timestamp'>) => void;
@@ -25,6 +26,7 @@ interface LogWorkoutModalProps {
 
 export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
   exercise,
+  initialMetricValue,
   existingPB,
   logs = [],
   onSaveLog,
@@ -69,9 +71,18 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
   }, [todaysSets.length]);
 
   // Strictly a Single Set Prompt
-  const [metricValue, setMetricValue] = useState<number>(
-    currentBest > 0 ? currentBest : Math.max(1, Math.round(targetThreshold * 0.8))
-  );
+  const [metricValue, setMetricValue] = useState<number>(() => {
+    if (typeof initialMetricValue === 'number' && initialMetricValue > 0) {
+      return initialMetricValue;
+    }
+    return currentBest > 0 ? currentBest : Math.max(1, Math.round(targetThreshold * 0.8));
+  });
+
+  useEffect(() => {
+    if (typeof initialMetricValue === 'number' && initialMetricValue > 0) {
+      setMetricValue(initialMetricValue);
+    }
+  }, [initialMetricValue]);
   const [weightAddedKg, setWeightAddedKg] = useState<number>(0);
   const [rpe, setRpe] = useState<number>(8);
   const [notes, setNotes] = useState<string>('');
@@ -283,7 +294,7 @@ export const LogWorkoutModal: React.FC<LogWorkoutModalProps> = ({
                 <input
                   type="range"
                   min="1"
-                  max={isSeconds ? 120 : 50}
+                  max={Math.max(isSeconds ? 120 : 50, metricValue)}
                   value={metricValue}
                   onChange={e => setMetricValue(Number(e.target.value))}
                   className="flex-1 accent-[#D1FF00] cursor-pointer h-2 bg-[#0A0A0A] border border-[#222222] rounded-lg"

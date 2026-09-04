@@ -8,9 +8,7 @@ import {
   Award,
   CheckCircle2,
   AlertCircle,
-  Target,
   ArrowRight,
-  Flame,
   Clock,
   Layers,
   ChevronRight,
@@ -254,7 +252,7 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
           </div>
         </div>
 
-        {/* TAB 1: OVERVIEW & BLUEPRINT */}
+        {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Top Row: Movement Image & Pass Criteria Standard */}
@@ -348,16 +346,6 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
               </div>
             </div>
 
-            {/* Movement Mechanics & Blueprint */}
-            <div className="bg-[#20232a] border border-[#333742] hover:border-[#4b5263] rounded-2xl p-5 space-y-3 shadow-md transition-all duration-200">
-              <h3 className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">
-                Movement Blueprint &amp; Mechanics
-              </h3>
-              <div className="p-3.5 rounded-xl bg-[#16181d] border border-[#2d313b] text-sm text-zinc-200 leading-relaxed font-sans">
-                {exercise.description}
-              </div>
-            </div>
-
             {/* Form Cues vs Common Mistakes */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Form Cues */}
@@ -390,45 +378,6 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                     </li>
                   ))}
                 </ul>
-              </div>
-            </div>
-
-            {/* Muscle Activations & Equipment */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-[#20232a] border border-[#333742] hover:border-[#4b5263] rounded-2xl p-5 space-y-2.5 shadow-md transition-all duration-200">
-                <div className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <Flame className="w-3.5 h-3.5 text-[#D1FF00]" />
-                  Target Muscle Groups
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {exercise.primaryMuscles.map(m => (
-                    <span key={m} className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-[#D1FF00]/15 text-[#D1FF00] border border-[#D1FF00]/40">
-                      {m} (Primary)
-                    </span>
-                  ))}
-                  {exercise.secondaryMuscles.map(m => (
-                    <span key={m} className="px-2.5 py-1 rounded-lg text-xs font-mono text-zinc-200 bg-[#2b303a] border border-[#3e4453]">
-                      {m}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-[#20232a] border border-[#333742] hover:border-[#4b5263] rounded-2xl p-5 space-y-2.5 shadow-md transition-all duration-200">
-                <div className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-zinc-400" />
-                  Required Equipment &amp; Pattern
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {exercise.equipment.map(eq => (
-                    <span key={eq} className="px-2.5 py-1 rounded-lg text-xs font-mono text-zinc-200 bg-[#14161b] border border-[#2b2f38]">
-                      {eq}
-                    </span>
-                  ))}
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-[#2b303a] text-zinc-200 border border-[#3e4453]">
-                    {exercise.category} Pattern
-                  </span>
-                </div>
               </div>
             </div>
 

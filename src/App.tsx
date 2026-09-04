@@ -48,6 +48,7 @@ export default function App() {
   const [selectedTreeId, setSelectedTreeId] = useState<string>('pull-up-muscle-up');
   const [selectedExercise, setSelectedExercise] = useState<ProgressionExercise | null>(null);
   const [loggingExercise, setLoggingExercise] = useState<ProgressionExercise | null>(null);
+  const [loggingInitialValue, setLoggingInitialValue] = useState<number | undefined>(undefined);
   const [viewMode, setViewMode] = useState<'warmup' | 'trees' | 'stretches' | 'stats'>('trees');
   const [isTimerOpen, setIsTimerOpen] = useState<boolean>(false);
   const [timerInitialMode, setTimerInitialMode] = useState<'rest' | 'hold'>('rest');
@@ -269,6 +270,12 @@ export default function App() {
     setIsTimerOpen(true);
   };
 
+  // Open Log Modal with optional prefilled metric value (e.g. from static hold timer)
+  const handleOpenLogModal = (exercise: ProgressionExercise, prefillValue?: number) => {
+    setLoggingExercise(exercise);
+    setLoggingInitialValue(prefillValue);
+  };
+
   const currentActiveTree = SKILL_TREES.find(t => t.id === selectedTreeId) || SKILL_TREES[0];
 
   return (
@@ -354,7 +361,7 @@ export default function App() {
                 pbRecords={pbRecords}
                 logs={logs}
                 onSelectExercise={setSelectedExercise}
-                onOpenLogModal={setLoggingExercise}
+                onOpenLogModal={handleOpenLogModal}
               />
             )}
           </div>
@@ -404,9 +411,7 @@ export default function App() {
             const next = EXERCISES[id];
             if (next) setSelectedExercise(next);
           }}
-          onOpenLogModal={ex => {
-            setLoggingExercise(ex);
-          }}
+          onOpenLogModal={handleOpenLogModal}
           onSaveLog={handleSaveLog}
           onOpenTimer={(ex, mode) => handleOpenTimer(ex, mode)}
           onToggleTimer={() => handleOpenTimer(selectedExercise)}
@@ -420,10 +425,14 @@ export default function App() {
       {loggingExercise && (
         <LogWorkoutModal
           exercise={loggingExercise}
+          initialMetricValue={loggingInitialValue}
           existingPB={pbRecords[loggingExercise.id]}
           logs={logs}
           onSaveLog={handleSaveLog}
-          onClose={() => setLoggingExercise(null)}
+          onClose={() => {
+            setLoggingExercise(null);
+            setLoggingInitialValue(undefined);
+          }}
         />
       )}
 
@@ -449,6 +458,10 @@ export default function App() {
         defaultRestSeconds={(timerTargetExercise || selectedExercise)?.passCriteria.restSeconds || 90}
         initialMode={timerInitialMode}
         autoStartTrigger={timerAutoStartTrigger}
+        onOpenLogModal={(exercise, prefillValue) => {
+          setIsTimerOpen(false);
+          handleOpenLogModal(exercise, prefillValue);
+        }}
       />
 
       {/* Toast Notification */}

@@ -10,6 +10,7 @@ import {
   Timer,
   Flame,
   CheckCircle2,
+  Check,
   X,
   Minimize2,
   Maximize2,
@@ -29,6 +30,7 @@ export interface RestTimerModalProps {
     restSeconds: number;
     exercise: ProgressionExercise;
   } | null;
+  onOpenLogModal?: (exercise: ProgressionExercise, prefillValue: number) => void;
 }
 
 export const RestTimer: React.FC<RestTimerModalProps> = ({
@@ -37,7 +39,8 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
   activeExercise,
   defaultRestSeconds,
   initialMode = 'rest',
-  autoStartTrigger
+  autoStartTrigger,
+  onOpenLogModal
 }) => {
   const isSeconds = activeExercise?.metricType === 'seconds';
   const targetRest = defaultRestSeconds || activeExercise?.passCriteria.restSeconds || 90;
@@ -189,6 +192,28 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
     }
   };
 
+  const handleLogHold = () => {
+    let holdSeconds = stopwatchSeconds;
+    if (holdStartTimeRef.current > 0) {
+      const elapsedSecs = Math.floor((Date.now() - holdStartTimeRef.current) / 1000);
+      if (elapsedSecs > 0) {
+        holdSeconds = elapsedSecs;
+      }
+    }
+    const finalSeconds = Math.max(1, holdSeconds || lastCompletedHold || 1);
+
+    setIsRunning(false);
+    if (countdownPrepSeconds !== null) {
+      setCountdownPrepSeconds(null);
+    }
+    setStopwatchSeconds(finalSeconds);
+    setLastCompletedHold(finalSeconds);
+
+    if (activeExercise && onOpenLogModal) {
+      onOpenLogModal(activeExercise, finalSeconds);
+    }
+  };
+
   const handleReset = () => {
     setIsRunning(false);
     setCountdownPrepSeconds(null);
@@ -249,10 +274,17 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
 
           <div className="flex items-center gap-1 border-l border-[#222222] pl-2">
             <button
-              onClick={isRunning ? handlePause : handleStart}
+              onClick={mode === 'hold' && isRunning ? handleLogHold : (isRunning ? handlePause : handleStart)}
               className="p-1.5 rounded-lg bg-[#D1FF00] text-black hover:bg-[#b8e600] transition cursor-pointer"
+              title={mode === 'hold' && isRunning ? 'Log Hold' : (isRunning ? 'Pause' : 'Start')}
             >
-              {isRunning ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+              {mode === 'hold' && isRunning ? (
+                <Check className="w-3.5 h-3.5 stroke-[3]" />
+              ) : isRunning ? (
+                <Pause className="w-3.5 h-3.5 fill-current" />
+              ) : (
+                <Play className="w-3.5 h-3.5 fill-current" />
+              )}
             </button>
             <button
               onClick={() => setIsMinimized(false)}
@@ -486,25 +518,50 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
 
           {/* Primary Action Controls */}
           <div className="flex items-center gap-2.5 pt-1">
-            <button
-              onClick={isRunning ? handlePause : handleStart}
-              className={`flex-1 py-3 rounded-xl font-mono font-extrabold text-sm uppercase tracking-wider transition flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-98 ${
-                isRunning
-                  ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700'
-                  : 'bg-[#D1FF00] hover:bg-[#b8e600] text-black shadow-[#D1FF00]/20'
-              }`}
-            >
-              {isRunning ? (
-                <>
-                  <Pause className="w-4 h-4 fill-current" /> Pause
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 fill-current" />
-                  {mode === 'hold' ? (prepDuration > 0 ? 'Start Hold (3s Ready)' : 'Start Hold') : 'Start Rest'}
-                </>
-              )}
-            </button>
+            {mode === 'hold' && !isRunning && stopwatchSeconds > 0 ? (
+              <div className="flex-1 flex items-center gap-2">
+                <button
+                  onClick={handleStart}
+                  className="flex-1 py-3 rounded-xl font-mono font-extrabold text-xs uppercase tracking-wider bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-98"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current" /> Resume
+                </button>
+                <button
+                  onClick={handleLogHold}
+                  className="flex-1 py-3 rounded-xl font-mono font-extrabold text-xs uppercase tracking-wider bg-[#D1FF00] hover:bg-[#b8e600] text-black transition flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-[#D1FF00]/20 active:scale-98"
+                >
+                  <Check className="w-3.5 h-3.5 stroke-[3]" /> Log ({stopwatchSeconds}s)
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={isRunning ? (mode === 'hold' ? handleLogHold : handlePause) : handleStart}
+                className={`flex-1 py-3 rounded-xl font-mono font-extrabold text-sm uppercase tracking-wider transition flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-98 ${
+                  isRunning
+                    ? (mode === 'hold'
+                        ? 'bg-[#D1FF00] hover:bg-[#b8e600] text-black shadow-[#D1FF00]/25'
+                        : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700')
+                    : 'bg-[#D1FF00] hover:bg-[#b8e600] text-black shadow-[#D1FF00]/20'
+                }`}
+              >
+                {isRunning ? (
+                  mode === 'hold' ? (
+                    <>
+                      <Check className="w-4 h-4 stroke-[3]" /> Log
+                    </>
+                  ) : (
+                    <>
+                      <Pause className="w-4 h-4 fill-current" /> Pause
+                    </>
+                  )
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 fill-current" />
+                    {mode === 'hold' ? (prepDuration > 0 ? 'Start Hold (3s Ready)' : 'Start Hold') : 'Start Rest'}
+                  </>
+                )}
+              </button>
+            )}
 
             <button
               onClick={handleReset}
