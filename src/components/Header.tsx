@@ -7,7 +7,8 @@ import {
   Activity,
   BarChart3,
   Database,
-  Timer
+  Timer,
+  Dumbbell
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -19,6 +20,7 @@ interface HeaderProps {
   onViewModeChange: (mode: 'warmup' | 'trees' | 'stretches' | 'stats') => void;
   onToggleTimer: () => void;
   onOpenDataModal: () => void;
+  onStartWorkout: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,7 +28,8 @@ export const Header: React.FC<HeaderProps> = ({
   isTimerOpen,
   onViewModeChange,
   onToggleTimer,
-  onOpenDataModal
+  onOpenDataModal,
+  onStartWorkout
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-[#0A0A0A]/95 border-b border-[#222222] backdrop-blur-xl">
@@ -47,8 +50,18 @@ export const Header: React.FC<HeaderProps> = ({
           </h1>
         </div>
 
-        {/* Action Buttons: Database & Chrono Timer */}
+        {/* Action Buttons: Start Workout, Database & Chrono Timer */}
         <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Start Workout Button */}
+          <button
+            id="start-workout-header-btn"
+            onClick={onStartWorkout}
+            className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-[#D1FF00]/20 active:scale-95"
+            title="Launch Guided Superset Workout Session"
+          >
+            <Dumbbell className="w-3.5 h-3.5 stroke-[2.5]" />
+          </button>
+
           {/* Database Icon Button */}
           <button
             id="open-data-modal-btn"

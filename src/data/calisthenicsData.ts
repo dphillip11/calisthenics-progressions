@@ -420,7 +420,7 @@ export const EXERCISES: Record<string, ProgressionExercise> = {
     primaryMuscles: ['Latissimus Dorsi', 'Biceps Brachii', 'Upper Back'],
     secondaryMuscles: ['Forearms', 'Core', 'Posterior Deltoids'],
     illustrationType: 'band-assisted-pullup',
-    tips: 'Step down through band tensions: Heavy Green/Purple &rarr; Medium Black &rarr; Light Red.'
+    tips: 'Step down through band tensions: Heavy Green/Purple → Medium Black → Light Red.'
   },
   'beg-flexed-arm-hang': {
     id: 'beg-flexed-arm-hang',

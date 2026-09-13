@@ -287,7 +287,7 @@ function renderFigureContent(
           {showHighlight && (
             <>
               <circle cx="115" cy="50" r="8" fill={highlight} filter={`url(#${glowId})`} />
-              <text x="50" y="30" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">CHEST FORWARD &rarr; BAR ROTATION</text>
+              <text x="50" y="30" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">CHEST FORWARD → BAR ROTATION</text>
             </>
           )}
         </g>
@@ -317,7 +317,7 @@ function renderFigureContent(
             <>
               <line x1="115" y1="75" x2="165" y2="75" stroke={highlight} strokeWidth="3" filter={`url(#${glowId})`} />
               <circle cx="140" cy="75" r="6" fill={highlight} filter={`url(#${glowId})`} />
-              <text x="35" y="15" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">VERTICAL TORSO &middot; BAR LOW ON TORSO</text>
+              <text x="35" y="15" fill={highlight} fontSize="8" fontFamily="monospace" fontWeight="bold">VERTICAL TORSO · BAR LOW ON TORSO</text>
             </>
           )}
         </g>

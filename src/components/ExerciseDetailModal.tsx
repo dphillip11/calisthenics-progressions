@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProgressionExercise, WorkoutLogEntry, PBRecord, SkillTree } from '../types';
 import { evaluateExerciseProgressFromLogs } from '../utils/storage';
 import { BiomechanicalIllustration } from './BiomechanicalIllustration';
@@ -77,10 +77,14 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
     }
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [exercise.id]);
+
   return (
     <div
-      id="exercise-detail-fullscreen-page"
-      className="fixed inset-0 z-40 bg-[#0A0A0A] overflow-y-auto text-zinc-100 flex flex-col font-sans selection:bg-[#D1FF00]/30 selection:text-[#D1FF00] bg-grid-pattern"
+      id="exercise-detail-page"
+      className="w-full min-h-screen bg-[#0A0A0A] text-zinc-100 flex flex-col font-sans selection:bg-[#D1FF00]/30 selection:text-[#D1FF00] bg-grid-pattern"
     >
       {/* Full-screen Sticky Top Navbar */}
       <header className="sticky top-0 z-30 bg-[#0A0A0A]/95 border-b border-[#222222] backdrop-blur-xl">
@@ -182,13 +186,13 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
       </header>
 
       {/* Main Page Scrollable Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-[100px] pb-6 sm:pb-8 space-y-6">
         {/* Exercise Hero Header & Metrics */}
         <div className="bg-[#20232a] border border-[#333742] hover:border-[#4b5263] rounded-2xl p-5 sm:p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-5 transition-all duration-200">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
               <span className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold border uppercase tracking-wider ${difficultyColors[exercise.difficulty] || 'border-zinc-700 text-zinc-400'}`}>
-                Level {exercise.level} &middot; {exercise.difficulty}
+                Level {exercise.level} · {exercise.difficulty}
               </span>
               <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#2b303a] text-zinc-200 border border-[#3e4453]">
                 {exercise.category} Pattern

@@ -432,7 +432,7 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
             {countdownPrepSeconds !== null ? (
               <div className="relative z-20 flex flex-col items-center justify-center space-y-1 animate-in zoom-in-90 duration-150">
                 <span className="text-[10px] font-mono font-extrabold uppercase tracking-widest text-[#D1FF00]">
-                  Get In Position &middot; Ready
+                  Get In Position · Ready
                 </span>
                 <div className="text-6xl sm:text-7xl font-black tracking-widest text-[#D1FF00] drop-shadow-[0_0_25px_rgba(209,255,0,0.6)]">
                   {countdownPrepSeconds === 0 ? 'GO!' : countdownPrepSeconds}
@@ -460,7 +460,7 @@ export const RestTimer: React.FC<RestTimerModalProps> = ({
                       <span>Rest Period Remaining</span>
                       {activeExercise?.passCriteria.restSeconds && (
                         <span className="text-zinc-400 font-normal">
-                          &middot; Rec: <strong className="text-[#D1FF00]">{activeExercise.passCriteria.restSeconds}s</strong>
+                          · Rec: <strong className="text-[#D1FF00]">{activeExercise.passCriteria.restSeconds}s</strong>
                         </span>
                       )}
                     </span>

@@ -109,3 +109,48 @@ export interface StretchExercise {
   demoVideoUrl?: string;
   illustrationType?: string;
 }
+
+export interface WorkoutSupersetDefinition {
+  treeAId: string;
+  treeBId: string;
+  labelA: string;
+  labelB: string;
+}
+
+export interface WorkoutPreset {
+  id: string;
+  name: string;
+  subtitle: string;
+  focus: string;
+  description: string;
+  superset1: WorkoutSupersetDefinition;
+  superset2: WorkoutSupersetDefinition;
+  warmupIds: string[];
+  stretchIds: string[];
+}
+
+export interface WorkoutSessionConfig {
+  preset: WorkoutPreset;
+  exerciseA1: ProgressionExercise;
+  exerciseB1: ProgressionExercise;
+  exerciseA2: ProgressionExercise;
+  exerciseB2: ProgressionExercise;
+  roundsPerSuperset: number; // default 3
+  restBetweenRoundsSeconds: number; // default 90s
+  restBetweenSupersetsSeconds: number; // default 120s
+}
+
+export interface WorkoutLoggedSet {
+  id: string;
+  exerciseId: string;
+  exerciseTitle: string;
+  supersetIndex: 1 | 2;
+  roundNumber: number;
+  slot: 'A' | 'B';
+  metricValue: number;
+  metricType: MetricType;
+  rpe?: number;
+  weightAddedKg?: number;
+  timestamp: number;
+  isPB?: boolean;
+}

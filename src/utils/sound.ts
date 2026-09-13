@@ -158,3 +158,13 @@ class SoundFX {
 }
 
 export const soundFX = new SoundFX();
+
+export function triggerVibration(pattern: number | number[] = [100, 50, 100]) {
+  if (typeof window !== 'undefined' && 'navigator' in window && 'vibrate' in navigator) {
+    try {
+      navigator.vibrate(pattern);
+    } catch {
+      // Ignore vibration errors if unsupported or blocked by policy
+    }
+  }
+}

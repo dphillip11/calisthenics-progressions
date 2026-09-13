@@ -125,7 +125,7 @@ export const DataManagementModal: React.FC<DataManagementModalProps> = ({
                   </span>
                 </div>
                 <p className="text-[11px] text-zinc-400 font-sans">
-                  Persistent on this device &middot; No account or server required
+                  Persistent on this device · No account or server required
                 </p>
               </div>
             </div>

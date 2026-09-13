@@ -1,13 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import {
   SkillTree,
   ProgressionExercise,
   WorkoutLogEntry,
-  PBRecord
+  PBRecord,
+  WorkoutPreset,
+  WorkoutSessionConfig,
+  WorkoutLoggedSet
 } from './types';
 import { SKILL_TREES, EXERCISES } from './data/calisthenicsData';
 import { WARMUP_EXERCISES } from './data/warmupData';
 import { STRETCH_EXERCISES } from './data/stretchData';
+import { WORKOUT_PRESETS } from './data/workoutPresets';
+import {
+  buildSessionConfig,
+  getCurrentWorkoutPreset,
+  setLastWorkoutPresetIndex
+} from './utils/workoutGenerator';
 import {
   loadStoredLogs,
   saveStoredLogs,
@@ -31,13 +40,17 @@ import { ExerciseDetailModal } from './components/ExerciseDetailModal';
 import { LogWorkoutModal } from './components/LogWorkoutModal';
 import { DataManagementModal } from './components/DataManagementModal';
 import { RestTimer } from './components/RestTimer';
+import { WorkoutSummaryModal } from './components/WorkoutSummaryModal';
+import { WorkoutSandbox } from './components/WorkoutSandbox';
 import {
   Layers,
   Flame,
   Activity,
   CheckCircle2,
   AlertCircle,
-  X
+  X,
+  Dumbbell,
+  Play
 } from 'lucide-react';
 
 export default function App() {
@@ -61,6 +74,13 @@ export default function App() {
   const [isDataModalOpen, setIsDataModalOpen] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
+  // Workout Guided Flow State
+  const [isWorkoutSummaryOpen, setIsWorkoutSummaryOpen] = useState<boolean>(false);
+  const [isWorkoutSandboxOpen, setIsWorkoutSandboxOpen] = useState<boolean>(false);
+  const [activeWorkoutPreset, setActiveWorkoutPreset] = useState<WorkoutPreset>(WORKOUT_PRESETS[0]);
+  const [activePresetIndex, setActivePresetIndex] = useState<number>(0);
+  const [workoutSessionConfig, setWorkoutSessionConfig] = useState<WorkoutSessionConfig | null>(null);
+
   // Auto-dismiss toast after 4.5 seconds
   useEffect(() => {
     if (!toast) return;
@@ -79,7 +99,112 @@ export default function App() {
     setLogs(loadedLogs);
     setPbRecords(loadedPBs);
     setFavorites(loadedFavs);
+
+    // Initialize next workout preset in sequence
+    const { preset, index } = getCurrentWorkoutPreset();
+    setActiveWorkoutPreset(preset);
+    setActivePresetIndex(index);
   }, []);
+
+  // Open Workout Summary (Full Screen Preview)
+  const handleOpenWorkoutSummary = () => {
+    const { preset, index } = getCurrentWorkoutPreset();
+    setActiveWorkoutPreset(preset);
+    setActivePresetIndex(index);
+    const config = buildSessionConfig(preset, pbRecords, EXERCISES);
+    setWorkoutSessionConfig(config);
+    setIsWorkoutSummaryOpen(true);
+  };
+
+  // Change active preset inside summary modal
+  const handleSelectPresetInSummary = (preset: WorkoutPreset) => {
+    setActiveWorkoutPreset(preset);
+    const idx = WORKOUT_PRESETS.findIndex(p => p.id === preset.id);
+    if (idx !== -1) setActivePresetIndex(idx);
+    const config = buildSessionConfig(preset, pbRecords, EXERCISES);
+    setWorkoutSessionConfig(config);
+  };
+
+  // On-the-fly exercise level adjustment inside summary modal
+  const handleChangeExerciseLevelInSummary = (
+    slot: 'A1' | 'B1' | 'A2' | 'B2',
+    exercise: ProgressionExercise
+  ) => {
+    setWorkoutSessionConfig(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        exerciseA1: slot === 'A1' ? exercise : prev.exerciseA1,
+        exerciseB1: slot === 'B1' ? exercise : prev.exerciseB1,
+        exerciseA2: slot === 'A2' ? exercise : prev.exerciseA2,
+        exerciseB2: slot === 'B2' ? exercise : prev.exerciseB2
+      };
+    });
+  };
+
+  // User accepts summary -> Start active workout sandbox
+  const handleStartWorkout = () => {
+    setIsWorkoutSummaryOpen(false);
+    setIsWorkoutSandboxOpen(true);
+  };
+
+  // Finish Workout Session & Commit Sets to Progress
+  const handleFinishWorkoutSession = (loggedSets: WorkoutLoggedSet[], sessionDurationSeconds: number) => {
+    if (loggedSets.length === 0) {
+      setIsWorkoutSandboxOpen(false);
+      return;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const now = Date.now();
+
+    const newLogEntries: WorkoutLogEntry[] = loggedSets.map((s, idx) => ({
+      id: `workout-set-${now}-${idx}-${Math.random().toString(36).substr(2, 4)}`,
+      exerciseId: s.exerciseId,
+      date: todayStr,
+      timestamp: now + idx * 1000,
+      metricValue: s.metricValue,
+      sets: 1,
+      weightAddedKg: s.weightAddedKg,
+      rpe: s.rpe,
+      isPB: s.isPB,
+      notes: `Guided Superset Workout (${activeWorkoutPreset.name} Round ${s.roundNumber} Slot ${s.slot})`
+    }));
+
+    const updatedLogs = [...newLogEntries, ...logs];
+    setLogs(updatedLogs);
+    saveStoredLogs(updatedLogs);
+
+    // Recalculate PB records for touched exercises
+    const touchedExerciseIds = Array.from(new Set(loggedSets.map(s => s.exerciseId)));
+    const updatedPBs = { ...pbRecords };
+
+    touchedExerciseIds.forEach(exId => {
+      const exercise = EXERCISES[exId];
+      if (exercise) {
+        const exerciseLogs = updatedLogs.filter(l => l.exerciseId === exId);
+        const evaluatedPB = evaluateExerciseProgressFromLogs(exercise, exerciseLogs);
+        updatedPBs[exId] = evaluatedPB;
+      }
+    });
+
+    setPbRecords(updatedPBs);
+    saveStoredPBs(updatedPBs);
+
+    // Advance to next preset in sequential rotation
+    const nextIdx = (activePresetIndex + 1) % WORKOUT_PRESETS.length;
+    setActivePresetIndex(nextIdx);
+    setLastWorkoutPresetIndex(nextIdx);
+    setActiveWorkoutPreset(WORKOUT_PRESETS[nextIdx]);
+
+    setIsWorkoutSandboxOpen(false);
+
+    const durationMin = Math.round(sessionDurationSeconds / 60);
+    setToast({
+      type: 'success',
+      message: `Workout complete! Logged ${loggedSets.length} sets in ${durationMin} mins.`
+    });
+  };
 
   // Save Workout Log & Update PB Record
   const handleSaveLog = (newEntryData: Omit<WorkoutLogEntry, 'id' | 'timestamp'>) => {
@@ -276,130 +401,37 @@ export default function App() {
     setLoggingInitialValue(prefillValue);
   };
 
+  // Track scroll position of the tree page to restore when returning from detail page
+  const treeScrollPosRef = useRef<number>(0);
+
+  const handleSelectExercise = (exercise: ProgressionExercise | null) => {
+    if (exercise) {
+      if (!selectedExercise) {
+        // Record scroll position of the tree page before opening detail view
+        treeScrollPosRef.current = window.scrollY;
+      }
+      setSelectedExercise(exercise);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    } else {
+      setSelectedExercise(null);
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (!selectedExercise) {
+      const targetY = treeScrollPosRef.current;
+      if (targetY > 0) {
+        window.scrollTo({ top: targetY, behavior: 'instant' });
+      }
+    }
+  }, [selectedExercise]);
+
   const currentActiveTree = SKILL_TREES.find(t => t.id === selectedTreeId) || SKILL_TREES[0];
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-zinc-100 flex flex-col font-sans selection:bg-[#D1FF00]/30 selection:text-[#D1FF00] bg-grid-pattern">
-      {/* Top Navbar */}
-      <Header
-        trees={SKILL_TREES}
-        selectedTreeId={selectedTreeId}
-        viewMode={viewMode}
-        isTimerOpen={isTimerOpen}
-        onSelectTree={setSelectedTreeId}
-        onViewModeChange={setViewMode}
-        onToggleTimer={() => handleOpenTimer(selectedExercise)}
-        onOpenDataModal={() => setIsDataModalOpen(true)}
-      />
-
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6">
-        {/* VIEW 1: SKILL TREES & PROGRESSION PATHWAYS */}
-        {viewMode === 'trees' && (
-          <div className="space-y-6">
-            {/* Unfiltered Progression Pathways Ribbon / Grid */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-[#D1FF00]" />
-                  Progression Pathways
-                </span>
-                <span className="text-[11px] font-mono text-zinc-500">
-                  {SKILL_TREES.length} Total Pathways &middot; Select to Filter
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-2">
-                {SKILL_TREES.map(tree => {
-                  const isSelected = tree.id === selectedTreeId;
-                  const treeExs = tree.exercises.map(id => EXERCISES[id]).filter(Boolean);
-                  const passed = treeExs.filter(ex => {
-                    const pb = pbRecords[ex.id];
-                    return pb?.isPassed || false;
-                  }).length;
-
-                  return (
-                    <button
-                      key={tree.id}
-                      onClick={() => setSelectedTreeId(tree.id)}
-                      className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between shadow-xs ${
-                        isSelected
-                          ? 'bg-[#20232a] border-[#D1FF00] shadow-md shadow-[#D1FF00]/10 ring-1 ring-[#D1FF00]/40'
-                          : 'bg-[#20232a]/70 hover:bg-[#20232a] border-[#333742] hover:border-[#4b5263]'
-                      }`}
-                    >
-                      <div>
-                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-zinc-400 block">
-                          {tree.category}
-                        </span>
-                        <h4 className={`text-xs sm:text-sm font-bold tracking-tight mt-0.5 line-clamp-1 font-display ${
-                          isSelected ? 'text-[#D1FF00]' : 'text-zinc-200'
-                        }`}>
-                          {tree.shortName}
-                        </h4>
-                      </div>
-
-                      <div className="mt-2.5 pt-2 border-t border-[#333742] flex items-center justify-between text-[10px] font-mono">
-                        <span className={isSelected ? 'text-[#D1FF00] font-bold' : 'text-zinc-400'}>
-                          {passed}/{treeExs.length} done
-                        </span>
-                        {passed === treeExs.length && (
-                          <span className="text-[#D1FF00] text-xs font-bold">★</span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Active Selected Skill Tree Pathway View */}
-            {currentActiveTree && (
-              <SkillTreeView
-                tree={currentActiveTree}
-                exercises={EXERCISES}
-                pbRecords={pbRecords}
-                logs={logs}
-                onSelectExercise={setSelectedExercise}
-                onOpenLogModal={handleOpenLogModal}
-              />
-            )}
-          </div>
-        )}
-
-        {/* VIEW: WARMUP & JOINT PREP */}
-        {viewMode === 'warmup' && (
-          <WarmupView
-            exercises={WARMUP_EXERCISES}
-            onOpenTimer={() => handleOpenTimer(null, 'rest')}
-          />
-        )}
-
-        {/* VIEW: STRETCHES & MOBILITY */}
-        {viewMode === 'stretches' && (
-          <StretchView
-            exercises={STRETCH_EXERCISES}
-            onOpenTimer={() => handleOpenTimer(null, 'hold')}
-          />
-        )}
-
-        {/* VIEW: MASTERY STATS & ANALYTICS */}
-        {viewMode === 'stats' && (
-          <MasteryStats
-            trees={SKILL_TREES}
-            exercises={EXERCISES}
-            pbRecords={pbRecords}
-            logs={logs}
-            onSelectTree={treeId => {
-              setSelectedTreeId(treeId);
-              setViewMode('trees');
-            }}
-          />
-        )}
-      </main>
-
-      {/* FULL-SCREEN DISMISSABLE EXERCISE DETAIL PAGE */}
-      {selectedExercise && (
+      {/* EXERCISE DETAIL PAGE VIEW (When an exercise is selected) */}
+      {selectedExercise ? (
         <ExerciseDetailModal
           exercise={selectedExercise}
           skillTree={SKILL_TREES.find(t => t.id === selectedExercise.skillTreeId)}
@@ -409,7 +441,7 @@ export default function App() {
           isTimerOpen={isTimerOpen}
           onSelectExercise={id => {
             const next = EXERCISES[id];
-            if (next) setSelectedExercise(next);
+            if (next) handleSelectExercise(next);
           }}
           onOpenLogModal={handleOpenLogModal}
           onSaveLog={handleSaveLog}
@@ -417,8 +449,173 @@ export default function App() {
           onToggleTimer={() => handleOpenTimer(selectedExercise)}
           onOpenDataModal={() => setIsDataModalOpen(true)}
           onDeleteLog={handleDeleteLog}
-          onClose={() => setSelectedExercise(null)}
+          onClose={() => handleSelectExercise(null)}
         />
+      ) : (
+        <>
+          {/* Top Navbar */}
+          <Header
+            trees={SKILL_TREES}
+            selectedTreeId={selectedTreeId}
+            viewMode={viewMode}
+            isTimerOpen={isTimerOpen}
+            onSelectTree={id => {
+              treeScrollPosRef.current = 0;
+              setSelectedTreeId(id);
+            }}
+            onViewModeChange={mode => {
+              treeScrollPosRef.current = 0;
+              setViewMode(mode);
+            }}
+            onToggleTimer={() => handleOpenTimer(selectedExercise)}
+            onOpenDataModal={() => setIsDataModalOpen(true)}
+            onStartWorkout={handleOpenWorkoutSummary}
+          />
+
+          {/* Main Container */}
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6">
+            {/* VIEW 1: SKILL TREES & PROGRESSION PATHWAYS */}
+            {viewMode === 'trees' && (
+              <div className="space-y-6">
+                {/* WORKOUT LAUNCHER HERO CARD */}
+                <div className="bg-[#13151a] border border-[#272b36] hover:border-[#D1FF00]/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl transition-all duration-200">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-11 h-11 rounded-xl bg-[#D1FF00] flex items-center justify-center text-black shrink-0 shadow-md shadow-[#D1FF00]/20">
+                      <Dumbbell className="w-6 h-6 stroke-[2.2]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D1FF00] bg-[#D1FF00]/10 px-2 py-0.5 rounded">
+                          Preset #{activePresetIndex + 1} · {activeWorkoutPreset.name}
+                        </span>
+                        <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">
+                          Superset Rotation · 3 Rounds
+                        </span>
+                      </div>
+                      <h3 className="text-sm sm:text-base font-bold text-white font-display">
+                        {activeWorkoutPreset.subtitle}
+                      </h3>
+                      <p className="text-xs text-zinc-400 mt-0.5 line-clamp-1">
+                        {activeWorkoutPreset.focus}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    id="start-workout-banner-btn"
+                    onClick={handleOpenWorkoutSummary}
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-2 shrink-0 shadow-md shadow-[#D1FF00]/20 active:scale-95"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-black stroke-[2]" />
+                    <span>Launch Workout</span>
+                  </button>
+                </div>
+
+                {/* Unfiltered Progression Pathways Ribbon / Grid */}
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5 text-[#D1FF00]" />
+                      Progression Pathways
+                    </span>
+                    <span className="text-[11px] font-mono text-zinc-500">
+                      {SKILL_TREES.length} Total Pathways · Select to Filter
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-2">
+                    {SKILL_TREES.map(tree => {
+                      const isSelected = tree.id === selectedTreeId;
+                      const treeExs = tree.exercises.map(id => EXERCISES[id]).filter(Boolean);
+                      const passed = treeExs.filter(ex => {
+                        const pb = pbRecords[ex.id];
+                        return pb?.isPassed || false;
+                      }).length;
+
+                      return (
+                        <button
+                          key={tree.id}
+                          onClick={() => {
+                            treeScrollPosRef.current = 0;
+                            setSelectedTreeId(tree.id);
+                          }}
+                          className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between shadow-xs ${
+                            isSelected
+                              ? 'bg-[#20232a] border-[#D1FF00] shadow-md shadow-[#D1FF00]/10 ring-1 ring-[#D1FF00]/40'
+                              : 'bg-[#20232a]/70 hover:bg-[#20232a] border-[#333742] hover:border-[#4b5263]'
+                          }`}
+                        >
+                          <div>
+                            <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-zinc-400 block">
+                              {tree.category}
+                            </span>
+                            <h4 className={`text-xs sm:text-sm font-bold tracking-tight mt-0.5 line-clamp-1 font-display ${
+                              isSelected ? 'text-[#D1FF00]' : 'text-zinc-200'
+                            }`}>
+                              {tree.shortName}
+                            </h4>
+                          </div>
+
+                          <div className="mt-2.5 pt-2 border-t border-[#333742] flex items-center justify-between text-[10px] font-mono">
+                            <span className={isSelected ? 'text-[#D1FF00] font-bold' : 'text-zinc-400'}>
+                              {passed}/{treeExs.length} done
+                            </span>
+                            {passed === treeExs.length && (
+                              <span className="text-[#D1FF00] text-xs font-bold">★</span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Active Selected Skill Tree Pathway View */}
+                {currentActiveTree && (
+                  <SkillTreeView
+                    tree={currentActiveTree}
+                    exercises={EXERCISES}
+                    pbRecords={pbRecords}
+                    logs={logs}
+                    onSelectExercise={handleSelectExercise}
+                    onOpenLogModal={handleOpenLogModal}
+                  />
+                )}
+              </div>
+            )}
+
+            {/* VIEW: WARMUP & JOINT PREP */}
+            {viewMode === 'warmup' && (
+              <WarmupView
+                exercises={WARMUP_EXERCISES}
+                onOpenTimer={() => handleOpenTimer(null, 'rest')}
+              />
+            )}
+
+            {/* VIEW: STRETCHES & MOBILITY */}
+            {viewMode === 'stretches' && (
+              <StretchView
+                exercises={STRETCH_EXERCISES}
+                onOpenTimer={() => handleOpenTimer(null, 'hold')}
+              />
+            )}
+
+            {/* VIEW: MASTERY STATS & ANALYTICS */}
+            {viewMode === 'stats' && (
+              <MasteryStats
+                trees={SKILL_TREES}
+                exercises={EXERCISES}
+                pbRecords={pbRecords}
+                logs={logs}
+                onSelectTree={treeId => {
+                  treeScrollPosRef.current = 0;
+                  setSelectedTreeId(treeId);
+                  setViewMode('trees');
+                }}
+              />
+            )}
+          </main>
+        </>
       )}
 
       {/* MODAL 2: LOG WORKOUT / RECORD PB MODAL */}
@@ -463,6 +660,34 @@ export default function App() {
           handleOpenLogModal(exercise, prefillValue);
         }}
       />
+
+      {/* FULL-SCREEN WORKOUT SUMMARY MODAL (Preset Preview & Level Customizer) */}
+      {isWorkoutSummaryOpen && workoutSessionConfig && (
+        <WorkoutSummaryModal
+          isOpen={isWorkoutSummaryOpen}
+          onClose={() => setIsWorkoutSummaryOpen(false)}
+          preset={activeWorkoutPreset}
+          sessionConfig={workoutSessionConfig}
+          trees={SKILL_TREES}
+          pbRecords={pbRecords}
+          allExercises={EXERCISES}
+          onSelectPreset={handleSelectPresetInSummary}
+          onChangeExerciseLevel={handleChangeExerciseLevelInSummary}
+          onStartWorkout={handleStartWorkout}
+        />
+      )}
+
+      {/* MINIMAL-THINKING WORKOUT SANDBOX (Active Execution Engine) */}
+      {isWorkoutSandboxOpen && workoutSessionConfig && (
+        <WorkoutSandbox
+          config={workoutSessionConfig}
+          trees={SKILL_TREES}
+          pbRecords={pbRecords}
+          allExercises={EXERCISES}
+          onFinishWorkout={handleFinishWorkoutSession}
+          onCancelWorkout={() => setIsWorkoutSandboxOpen(false)}
+        />
+      )}
 
       {/* Toast Notification */}
       {toast && (
