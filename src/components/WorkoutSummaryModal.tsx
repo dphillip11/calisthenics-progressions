@@ -155,14 +155,6 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
               <Dumbbell className="w-5 h-5 stroke-[2.3]" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D1FF00] bg-[#D1FF00]/10 px-2 py-0.5 rounded">
-                  Guided Superset Session
-                </span>
-                <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">
-                  3 Sets · 0s Transition · 90s Rest
-                </span>
-              </div>
               <h2 className="text-lg sm:text-xl font-black text-white font-display tracking-tight mt-0.5">
                 {preset.name}: {preset.subtitle}
               </h2>
@@ -180,10 +172,6 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
         {/* Preset Selector Ribbon */}
         <div className="px-5 sm:px-6 py-2.5 bg-[#0f1013] border-b border-[#20222a] flex items-center justify-between gap-2 overflow-x-auto no-scrollbar shrink-0">
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-mono text-zinc-400 font-bold uppercase shrink-0 mr-1 flex items-center gap-1">
-              <RotateCw className="w-3 h-3 text-[#D1FF00]" />
-              Presets:
-            </span>
             {WORKOUT_PRESETS.map((p, idx) => {
               const isSelected = p.id === preset.id;
               return (
@@ -211,16 +199,6 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
         {/* Tab Switcher */}
         <div className="px-5 sm:px-6 pt-3 pb-1 border-b border-[#20222a] flex items-center gap-4 bg-[#121316] shrink-0 text-xs font-mono">
           <button
-            onClick={() => setActiveTab('overview')}
-            className={`pb-2 font-bold transition border-b-2 cursor-pointer ${
-              activeTab === 'overview'
-                ? 'border-[#D1FF00] text-[#D1FF00]'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            Main Supersets (2 Pairs × 3 Sets)
-          </button>
-          <button
             onClick={() => setActiveTab('warmups')}
             className={`pb-2 font-bold transition border-b-2 cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'warmups'
@@ -230,6 +208,17 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
           >
             <Flame className="w-3.5 h-3.5" />
             Warmup ({warmups.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`pb-2 font-bold transition border-b-2 cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'overview'
+                ? 'border-[#D1FF00] text-[#D1FF00]'
+                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <Dumbbell className="w-3.5 h-3.5" />
+            Supersets
           </button>
           <button
             onClick={() => setActiveTab('stretches')}
@@ -268,9 +257,6 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
                       Superset 1 · 3 Rounds
                     </h3>
                   </div>
-                  <span className="text-[11px] font-mono text-zinc-400">
-                    Skill A + Skill B (0s rest) → 90s rest
-                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -299,9 +285,6 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
                       Superset 2 · 3 Rounds
                     </h3>
                   </div>
-                  <span className="text-[11px] font-mono text-zinc-400">
-                    Skill C + Skill D (0s rest) → 90s rest
-                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -375,12 +358,7 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
 
         {/* Bottom Actions Footer */}
         <div className="p-4 sm:p-5 border-t border-[#252833] bg-[#15171c] flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
-          <div className="text-xs font-mono text-zinc-400 flex items-center gap-2 self-start sm:self-auto">
-            <span className="w-2 h-2 rounded-full bg-[#D1FF00] animate-pulse" />
-            <span>Ready · Minimal-thinking auto-timers enabled</span>
-          </div>
-
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto ms-auto">
             <button
               onClick={onClose}
               className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-[#20232b] hover:bg-[#2a2e3b] text-zinc-300 font-mono font-bold text-xs transition cursor-pointer"
@@ -394,7 +372,7 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
               className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-[#D1FF00]/20 active:scale-95"
             >
               <Play className="w-4 h-4 fill-black stroke-[2.2]" />
-              <span>Begin Workout</span>
+              <span>Begin</span>
             </button>
           </div>
         </div>

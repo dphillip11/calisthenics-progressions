@@ -35,7 +35,6 @@ import { Header } from './components/Header';
 import { SkillTreeView } from './components/SkillTreeView';
 import { WarmupView } from './components/WarmupView';
 import { StretchView } from './components/StretchView';
-import { MasteryStats } from './components/MasteryStats';
 import { ExerciseDetailModal } from './components/ExerciseDetailModal';
 import { LogWorkoutModal } from './components/LogWorkoutModal';
 import { DataManagementModal } from './components/DataManagementModal';
@@ -62,7 +61,7 @@ export default function App() {
   const [selectedExercise, setSelectedExercise] = useState<ProgressionExercise | null>(null);
   const [loggingExercise, setLoggingExercise] = useState<ProgressionExercise | null>(null);
   const [loggingInitialValue, setLoggingInitialValue] = useState<number | undefined>(undefined);
-  const [viewMode, setViewMode] = useState<'warmup' | 'trees' | 'stretches' | 'stats'>('trees');
+  const [viewMode, setViewMode] = useState<'warmup' | 'trees' | 'stretches'>('trees');
   const [isTimerOpen, setIsTimerOpen] = useState<boolean>(false);
   const [timerInitialMode, setTimerInitialMode] = useState<'rest' | 'hold'>('rest');
   const [timerTargetExercise, setTimerTargetExercise] = useState<ProgressionExercise | null>(null);
@@ -477,49 +476,12 @@ export default function App() {
             {/* VIEW 1: SKILL TREES & PROGRESSION PATHWAYS */}
             {viewMode === 'trees' && (
               <div className="space-y-6">
-                {/* WORKOUT LAUNCHER HERO CARD */}
-                <div className="bg-[#13151a] border border-[#272b36] hover:border-[#D1FF00]/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl transition-all duration-200">
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-11 h-11 rounded-xl bg-[#D1FF00] flex items-center justify-center text-black shrink-0 shadow-md shadow-[#D1FF00]/20">
-                      <Dumbbell className="w-6 h-6 stroke-[2.2]" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D1FF00] bg-[#D1FF00]/10 px-2 py-0.5 rounded">
-                          Preset #{activePresetIndex + 1} · {activeWorkoutPreset.name}
-                        </span>
-                        <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">
-                          Superset Rotation · 3 Rounds
-                        </span>
-                      </div>
-                      <h3 className="text-sm sm:text-base font-bold text-white font-display">
-                        {activeWorkoutPreset.subtitle}
-                      </h3>
-                      <p className="text-xs text-zinc-400 mt-0.5 line-clamp-1">
-                        {activeWorkoutPreset.focus}
-                      </p>
-                    </div>
-                  </div>
-
-                  <button
-                    id="start-workout-banner-btn"
-                    onClick={handleOpenWorkoutSummary}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-2 shrink-0 shadow-md shadow-[#D1FF00]/20 active:scale-95"
-                  >
-                    <Play className="w-3.5 h-3.5 fill-black stroke-[2]" />
-                    <span>Launch Workout</span>
-                  </button>
-                </div>
-
                 {/* Unfiltered Progression Pathways Ribbon / Grid */}
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                       <Layers className="w-3.5 h-3.5 text-[#D1FF00]" />
                       Progression Pathways
-                    </span>
-                    <span className="text-[11px] font-mono text-zinc-500">
-                      {SKILL_TREES.length} Total Pathways · Select to Filter
                     </span>
                   </div>
 
@@ -531,6 +493,7 @@ export default function App() {
                         const pb = pbRecords[ex.id];
                         return pb?.isPassed || false;
                       }).length;
+                      const progressPct = treeExs.length > 0 ? (passed / treeExs.length) * 100 : 0;
 
                       return (
                         <button
@@ -556,13 +519,25 @@ export default function App() {
                             </h4>
                           </div>
 
-                          <div className="mt-2.5 pt-2 border-t border-[#333742] flex items-center justify-between text-[10px] font-mono">
-                            <span className={isSelected ? 'text-[#D1FF00] font-bold' : 'text-zinc-400'}>
-                              {passed}/{treeExs.length} done
-                            </span>
-                            {passed === treeExs.length && (
-                              <span className="text-[#D1FF00] text-xs font-bold">★</span>
-                            )}
+                          <div className="mt-2.5 space-y-1.5 w-full">
+                            {/* Thin progress bar replacing the hard rule */}
+                            <div className="w-full bg-[#14161c] h-1 rounded-full overflow-hidden border border-[#2b2f3a]/50">
+                              <div
+                                className={`h-full rounded-full transition-all duration-300 ${
+                                  isSelected ? 'bg-[#D1FF00]' : 'bg-[#D1FF00]/70'
+                                }`}
+                                style={{ width: `${progressPct}%` }}
+                              />
+                            </div>
+
+                            <div className="flex items-center justify-between text-[10px] font-mono">
+                              <span className={isSelected ? 'text-[#D1FF00] font-bold' : 'text-zinc-400'}>
+                                {passed}/{treeExs.length} done
+                              </span>
+                              {passed === treeExs.length && (
+                                <span className="text-[#D1FF00] text-xs font-bold leading-none">★</span>
+                              )}
+                            </div>
                           </div>
                         </button>
                       );
@@ -597,21 +572,6 @@ export default function App() {
               <StretchView
                 exercises={STRETCH_EXERCISES}
                 onOpenTimer={() => handleOpenTimer(null, 'hold')}
-              />
-            )}
-
-            {/* VIEW: MASTERY STATS & ANALYTICS */}
-            {viewMode === 'stats' && (
-              <MasteryStats
-                trees={SKILL_TREES}
-                exercises={EXERCISES}
-                pbRecords={pbRecords}
-                logs={logs}
-                onSelectTree={treeId => {
-                  treeScrollPosRef.current = 0;
-                  setSelectedTreeId(treeId);
-                  setViewMode('trees');
-                }}
               />
             )}
           </main>

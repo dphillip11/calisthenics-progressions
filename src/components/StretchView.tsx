@@ -71,60 +71,6 @@ export const StretchView: React.FC<StretchViewProps> = ({
             Targeted passive and active stretches to decompress loaded joints, accelerate muscular recovery, and increase active range of motion for calisthenics skills.
           </p>
         </div>
-
-        {/* Quick Progress & Actions */}
-        <div className="flex items-center gap-3 self-stretch md:self-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-[#1f1f1f]">
-          <div className="text-left md:text-right">
-            <div className="text-xs font-mono font-bold text-white flex items-center gap-1.5 md:justify-end">
-              <span className="text-[#D1FF00]">{completedCount}</span> / {exercises.length} Stretched
-              {progressPercent === 100 && (
-                <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#D1FF00]/20 text-[#D1FF00] font-mono">
-                  Finished!
-                </span>
-              )}
-            </div>
-            <div className="w-28 sm:w-36 h-1.5 bg-[#222222] rounded-full overflow-hidden mt-1.5">
-              <div
-                className="h-full bg-[#D1FF00] rounded-full transition-all duration-300"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <button
-              id="toggle-stretch-diagrams-btn"
-              onClick={() => setShowDiagrams(!showDiagrams)}
-              className={`p-2 rounded-lg border text-xs font-mono transition cursor-pointer ${
-                showDiagrams
-                  ? 'bg-[#1a1a1a] text-[#D1FF00] border-[#333333]'
-                  : 'bg-[#141414] text-zinc-400 border-[#262626] hover:text-white'
-              }`}
-              title="Toggle schematic diagrams"
-            >
-              <Eye className="w-3.5 h-3.5" />
-            </button>
-            {completedCount > 0 && (
-              <button
-                id="reset-stretches-btn"
-                onClick={handleResetChecklist}
-                className="p-2 rounded-lg bg-[#181818] hover:bg-[#222222] text-zinc-400 hover:text-white border border-[#262626] transition text-xs font-mono"
-                title="Reset checklist"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
-            )}
-            <button
-              id="stretch-timer-btn"
-              onClick={onOpenTimer}
-              className="px-3 py-1.5 rounded-lg bg-[#181818] hover:bg-[#242424] text-zinc-200 hover:text-[#D1FF00] border border-[#262626] transition text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
-              title="Open hold timer & stopwatch"
-            >
-              <Timer className="w-3.5 h-3.5 text-[#D1FF00]" />
-              <span className="hidden sm:inline">Hold Timer</span>
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Category Filter Bar */}

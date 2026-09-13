@@ -3,7 +3,7 @@ import { WorkoutPreset } from '../types';
 export const WORKOUT_PRESETS: WorkoutPreset[] = [
   {
     id: 'workout-a-vertical-strength',
-    name: 'Workout A',
+    name: 'A',
     subtitle: 'Vertical Push & Pull + Compression',
     focus: 'Pull-Up & Dips Mastery, L-Sit & Pistol Squats',
     description: 'A classic antagonistic strength session pairing vertical pulling (Pull-Up / Muscle-Up tree) with vertical pushing (Dips tree), followed by core compression (L-Sit to Manna) and unilateral leg balance (Pistol Squat).',
@@ -33,7 +33,7 @@ export const WORKOUT_PRESETS: WorkoutPreset[] = [
   },
   {
     id: 'workout-b-straight-arm-levers',
-    name: 'Workout B',
+    name: 'B',
     subtitle: 'Straight-Arm Levers & Inversion',
     focus: 'Front Lever & Planche, Handstand & Dragon Flag',
     description: 'A pure gymnastic leverage session pairing horizontal straight-arm pulling (Front Lever tree) with horizontal anterior shoulder push (Push-Up to Planche), followed by overhead inversion (Handstand / HSPU) and posterior core lever control (Dragon Flag).',
@@ -63,7 +63,7 @@ export const WORKOUT_PRESETS: WorkoutPreset[] = [
   },
   {
     id: 'workout-c-transition-power',
-    name: 'Workout C',
+    name: 'C',
     subtitle: 'Dynamic Transitions & Overhead Power',
     focus: 'MU Assistance & Handstand, Front Lever & Pistols',
     description: 'Build explosive dynamic transition mechanics and lockouts pairing muscle-up assistance drills with handstand balance and pike pressing, rounded out with horizontal back strength and single-leg mobility.',
@@ -93,7 +93,7 @@ export const WORKOUT_PRESETS: WorkoutPreset[] = [
   },
   {
     id: 'workout-d-foundations-volume',
-    name: 'Workout D',
+    name: 'D',
     subtitle: 'High Volume Pull/Push & Core Rigidity',
     focus: 'Foundational Pull & Push, Dips & Dragon Flag',
     description: 'Target high-volume calisthenics capacity from zero pull-up foundations and floor push variations, progressing into parallel bar stability and Bruce Lee dragon flag core tension.',
