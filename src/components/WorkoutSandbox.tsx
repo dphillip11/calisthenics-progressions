@@ -73,6 +73,20 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
   const [currentSlot, setCurrentSlot] = useState<'A' | 'B'>('A');
   const [loggedSets, setLoggedSets] = useState<WorkoutLoggedSet[]>([]);
 
+  // Persistent refs to guarantee fresh values inside timer intervals & callbacks
+  const currentSupersetIdxRef = useRef<1 | 2>(1);
+  const currentRoundRef = useRef<number>(1);
+  const isRestBetweenSupersetsRef = useRef<boolean>(false);
+  const handleRestCompleteRef = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    currentSupersetIdxRef.current = currentSupersetIdx;
+  }, [currentSupersetIdx]);
+
+  useEffect(() => {
+    currentRoundRef.current = currentRound;
+  }, [currentRound]);
+
   // Reps Stepper state
   const [inputReps, setInputReps] = useState<number>(8);
   const [addedWeightKg, setAddedWeightKg] = useState<number>(0);
@@ -246,16 +260,15 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
       // Move to paired Skill B immediately with 0s rest!
       setCurrentSlot('B');
     } else {
-      // Skill B completed -> Start automated Rest Timer!
+      // Skill B completed -> Check if all rounds for current superset are done!
       const isFinalRoundOfSuperset = currentRound >= config.roundsPerSuperset;
 
       if (isFinalRoundOfSuperset) {
         if (currentSupersetIdx === 1) {
-          // Finished Superset 1! Start 120s Transition Rest
-          setIsRestBetweenSupersets(true);
-          startRestCountdown(config.restBetweenSupersetsSeconds);
+          // Finished Superset 1! Start 120s Transition Rest before Superset 2
+          startRestCountdown(config.restBetweenSupersetsSeconds, true);
         } else {
-          // Finished Superset 2! All superset rounds complete -> proceed to Stretches
+          // Finished Superset 2! All superset rounds complete -> proceed to Stretches or Summary
           soundFX.playCelebrationFanfare();
           triggerVibration([100, 50, 100, 50, 200]);
           if (stretchList.length > 0) {
@@ -267,14 +280,15 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
         }
       } else {
         // Standard round rest (90s)
-        setIsRestBetweenSupersets(false);
-        startRestCountdown(config.restBetweenRoundsSeconds);
+        startRestCountdown(config.restBetweenRoundsSeconds, false);
       }
     }
   };
 
   // --- REST TIMER HANDLERS ---
-  const startRestCountdown = (seconds: number) => {
+  const startRestCountdown = (seconds: number, isTransition: boolean = false) => {
+    setIsRestBetweenSupersets(isTransition);
+    isRestBetweenSupersetsRef.current = isTransition;
     setRestDuration(seconds);
     setRestTimeLeft(seconds);
     setPhase('rest');
@@ -293,7 +307,7 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
           restTimerRef.current = null;
           soundFX.playTimerComplete();
           triggerVibration([150, 100, 150]);
-          handleRestComplete();
+          handleRestCompleteRef.current();
           return 0;
         }
         return prev - 1;
@@ -307,20 +321,45 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
       restTimerRef.current = null;
     }
 
-    if (isRestBetweenSupersets) {
+    const currentIdx = currentSupersetIdxRef.current;
+    const round = currentRoundRef.current;
+    const shouldTransitionToSuperset2 =
+      isRestBetweenSupersetsRef.current || (currentIdx === 1 && round >= config.roundsPerSuperset);
+
+    if (shouldTransitionToSuperset2) {
       // Transition from Superset 1 to Superset 2 Round 1
       setCurrentSupersetIdx(2);
+      currentSupersetIdxRef.current = 2;
       setCurrentRound(1);
+      currentRoundRef.current = 1;
       setCurrentSlot('A');
       setIsRestBetweenSupersets(false);
+      isRestBetweenSupersetsRef.current = false;
       setPhase('superset');
+    } else if (currentIdx === 2 && round >= config.roundsPerSuperset) {
+      // Finished all rounds of Superset 2 -> proceed to stretches or summary
+      soundFX.playCelebrationFanfare();
+      triggerVibration([100, 50, 100, 50, 200]);
+      if (stretchList.length > 0) {
+        setPhase('stretches');
+        startStretch(0);
+      } else {
+        setPhase('summary');
+      }
     } else {
-      // Advance to next round, Slot A
-      setCurrentRound(prev => prev + 1);
+      // Advance to next round within current superset, Slot A
+      const nextRound = round + 1;
+      setCurrentRound(nextRound);
+      currentRoundRef.current = nextRound;
       setCurrentSlot('A');
+      setIsRestBetweenSupersets(false);
+      isRestBetweenSupersetsRef.current = false;
       setPhase('superset');
     }
   };
+
+  // Keep ref up-to-date on every render
+  handleRestCompleteRef.current = handleRestComplete;
 
   const handleSkipRest = () => {
     handleRestComplete();
@@ -514,11 +553,11 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
             <span className="text-xs font-mono font-black uppercase tracking-wider px-2.5 py-1 rounded-lg bg-[#D1FF00]/10 text-[#D1FF00] border border-[#D1FF00]/25">
               {phase === 'warmup' && `WARMUP ${warmupIdx + 1}/${warmupList.length}`}
               {phase === 'superset' &&
-                `SUPERSET ${currentSupersetIdx}/2 · ROUND ${currentRound}/3 · SLOT ${currentSlot}`}
+                `SUPERSET ${currentSupersetIdx}/2 · ROUND ${currentRound}/${config.roundsPerSuperset} · SLOT ${currentSlot}`}
               {phase === 'rest' &&
                 (isRestBetweenSupersets
                   ? 'SUPERSET TRANSITION REST'
-                  : `REST · ROUND ${currentRound}/3`)}
+                  : `REST · ROUND ${currentRound}/${config.roundsPerSuperset}`)}
               {phase === 'stretches' && `COOLDOWN ${stretchIdx + 1}/${stretchList.length}`}
               {phase === 'summary' && 'WORKOUT COMPLETE'}
             </span>
@@ -653,13 +692,21 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
                     </>
                   ) : (
                     <>
-                      Completes Round {currentRound}/3 → Auto-starts 90s rest
+                      {currentRound >= config.roundsPerSuperset
+                        ? currentSupersetIdx === 1
+                          ? `Completes Superset 1 (${config.roundsPerSuperset}/${config.roundsPerSuperset} Rounds) → Transition Rest to Superset 2`
+                          : `Completes Final Round (${config.roundsPerSuperset}/${config.roundsPerSuperset}) → Cooldown Stretches`
+                        : `Completes Round ${currentRound}/${config.roundsPerSuperset} → Auto-starts ${config.restBetweenRoundsSeconds}s rest`}
                     </>
                   )}
                 </span>
               </div>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-black/40 text-zinc-400">
-                {currentSlot === 'A' ? '0s Rest Next' : 'Round Finisher'}
+                {currentSlot === 'A'
+                  ? '0s Rest Next'
+                  : currentRound >= config.roundsPerSuperset && currentSupersetIdx === 1
+                  ? 'Superset 1 Finisher'
+                  : 'Round Finisher'}
               </span>
             </div>
 
@@ -673,7 +720,7 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
                     {currentTree?.shortName} · Slot {currentSlot}
                   </span>
                   <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D1FF00] bg-[#D1FF00]/10 px-2 py-0.5 rounded">
-                    Round {currentRound} of 3
+                    Round {currentRound} of {config.roundsPerSuperset}
                   </span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-white font-display tracking-tight pt-1">
@@ -759,7 +806,14 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
                     >
                       <Check className="w-5 h-5 stroke-[2.5]" />
                       <span>
-                        Log Hold ({holdElapsedSeconds}s) & {currentSlot === 'A' ? 'Go to Skill B' : 'Start Rest'}
+                        Log Hold ({holdElapsedSeconds}s) &{' '}
+                        {currentSlot === 'A'
+                          ? 'Go to Skill B'
+                          : currentRound >= config.roundsPerSuperset
+                          ? currentSupersetIdx === 1
+                            ? 'Complete Superset 1'
+                            : 'Complete Workout'
+                          : 'Start Rest'}
                       </span>
                     </button>
                   )}
@@ -802,7 +856,11 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
                     <span>
                       {currentSlot === 'A'
                         ? `Log Set (${inputReps} Reps) & Switch to ${pairedExercise.title} ➔`
-                        : `Log Set (${inputReps} Reps) & Start Rest (90s) ➔`}
+                        : currentRound >= config.roundsPerSuperset
+                        ? currentSupersetIdx === 1
+                          ? `Complete Superset 1 & Rest (${config.restBetweenSupersetsSeconds}s) ➔`
+                          : `Complete Workout & Start Cooldown ➔`
+                        : `Log Set (${inputReps} Reps) & Start Rest (${config.restBetweenRoundsSeconds}s) ➔`}
                     </span>
                   </button>
                 </div>
@@ -855,7 +913,7 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
             {/* Set History in Current Workout */}
             <div className="flex items-center justify-between text-xs font-mono text-zinc-400 px-1">
               <span>Sets Logged This Session: <strong>{loggedSets.length}</strong></span>
-              <span>Rounds Done: <strong>{currentRound - 1}/3</strong></span>
+              <span>Rounds Done: <strong>{currentRound - 1}/{config.roundsPerSuperset}</strong></span>
             </div>
 
           </div>
@@ -893,7 +951,9 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
               <span className="text-white font-bold block text-sm">
                 {isRestBetweenSupersets
                   ? `Superset 2 Round 1: ${exerciseA2.title}`
-                  : `Round ${currentRound + 1}: ${exerciseA1.title}`}
+                  : currentSupersetIdx === 1
+                  ? `Round ${currentRound + 1}: ${exerciseA1.title}`
+                  : `Round ${currentRound + 1}: ${exerciseA2.title}`}
               </span>
             </div>
 
@@ -911,7 +971,11 @@ export const WorkoutSandbox: React.FC<WorkoutSandboxProps> = ({
                 onClick={handleSkipRest}
                 className="px-6 py-3 rounded-xl bg-[#D1FF00] hover:bg-[#b8e600] text-black font-mono font-black text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 shadow-lg shadow-[#D1FF00]/20 active:scale-95"
               >
-                <span>Skip Rest & Start Next Round</span>
+                <span>
+                  {isRestBetweenSupersets
+                    ? 'Skip Rest & Start Superset 2'
+                    : 'Skip Rest & Start Next Round'}
+                </span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
