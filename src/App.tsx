@@ -107,6 +107,7 @@ export default function App() {
 
   // Open Workout Summary (Full Screen Preview)
   const handleOpenWorkoutSummary = () => {
+    setSelectedExercise(null);
     const { preset, index } = getCurrentWorkoutPreset();
     setActiveWorkoutPreset(preset);
     setActivePresetIndex(index);
@@ -450,6 +451,22 @@ export default function App() {
           onDeleteLog={handleDeleteLog}
           onClose={() => handleSelectExercise(null)}
         />
+      ) : isWorkoutSummaryOpen && workoutSessionConfig ? (
+        /* WORKOUT SUMMARY PAGE VIEW (Preset Preview & Level Customizer) */
+        <WorkoutSummaryModal
+          preset={activeWorkoutPreset}
+          sessionConfig={workoutSessionConfig}
+          trees={SKILL_TREES}
+          pbRecords={pbRecords}
+          allExercises={EXERCISES}
+          isTimerOpen={isTimerOpen}
+          onToggleTimer={() => handleOpenTimer(null)}
+          onOpenDataModal={() => setIsDataModalOpen(true)}
+          onSelectPreset={handleSelectPresetInSummary}
+          onChangeExerciseLevel={handleChangeExerciseLevelInSummary}
+          onStartWorkout={handleStartWorkout}
+          onClose={() => setIsWorkoutSummaryOpen(false)}
+        />
       ) : (
         <>
           {/* Top Navbar */}
@@ -620,22 +637,6 @@ export default function App() {
           handleOpenLogModal(exercise, prefillValue);
         }}
       />
-
-      {/* FULL-SCREEN WORKOUT SUMMARY MODAL (Preset Preview & Level Customizer) */}
-      {isWorkoutSummaryOpen && workoutSessionConfig && (
-        <WorkoutSummaryModal
-          isOpen={isWorkoutSummaryOpen}
-          onClose={() => setIsWorkoutSummaryOpen(false)}
-          preset={activeWorkoutPreset}
-          sessionConfig={workoutSessionConfig}
-          trees={SKILL_TREES}
-          pbRecords={pbRecords}
-          allExercises={EXERCISES}
-          onSelectPreset={handleSelectPresetInSummary}
-          onChangeExerciseLevel={handleChangeExerciseLevelInSummary}
-          onStartWorkout={handleStartWorkout}
-        />
-      )}
 
       {/* MINIMAL-THINKING WORKOUT SANDBOX (Active Execution Engine) */}
       {isWorkoutSandboxOpen && workoutSessionConfig && (
